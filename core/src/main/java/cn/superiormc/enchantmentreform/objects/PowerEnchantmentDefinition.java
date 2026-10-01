@@ -103,8 +103,23 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
         }
         this.exclusiveWith = stringOrList("exclusive-with");
 
-        this.nativeEffectsConfigured = config.isConfigurationSection("effects");
-        this.nativeEffects = loadNativeEffects();
+        Object selectedEffects;
+        Map<String, Object> resolvedEffects;
+        try {
+            selectedEffects = NativeEffectsSelector.select(config, NativeEffectsSelector::currentVersion);
+            if (config.contains("auto-migrate-effects") && !config.isBoolean("auto-migrate-effects")) {
+                throw new IllegalArgumentException("'auto-migrate-effects' must be a boolean");
+            }
+            resolvedEffects = copyEffects(selectedEffects);
+            if (!resolvedEffects.isEmpty() && config.getBoolean("auto-migrate-effects", true)) {
+                resolvedEffects = Map.copyOf(NativeEffectsMigrator.migrate(
+                        resolvedEffects, NativeEffectsSelector.currentVersion()));
+            }
+        } catch (IllegalArgumentException exception) {
+            throw error(exception.getMessage());
+        }
+        this.nativeEffectsConfigured = selectedEffects != null;
+        this.nativeEffects = resolvedEffects;
 
         ConfigurationSection raritySection = rarity.settings();
         this.weight = rangedInt(
@@ -377,9 +392,19 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
         return false;
     }
 
-    private Map<String, Object> loadNativeEffects() {
-        ConfigurationSection section = config.getConfigurationSection("effects");
-        return section == null ? Map.of() : Map.copyOf(copySection(section));
+    private Map<String, Object> copyEffects(Object selected) {
+        if (selected == null) return Map.of();
+        if (selected instanceof ConfigurationSection section) {
+            return Map.copyOf(copySection(section));
+        }
+        Map<String, Object> result = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> entry : ((Map<?, ?>) selected).entrySet()) {
+            if (!(entry.getKey() instanceof String key)) {
+                throw error("effects map keys must be strings");
+            }
+            result.put(key, copyYamlValue(entry.getValue()));
+        }
+        return Map.copyOf(result);
     }
 
     private Map<String, Object> copySection(ConfigurationSection section) {
