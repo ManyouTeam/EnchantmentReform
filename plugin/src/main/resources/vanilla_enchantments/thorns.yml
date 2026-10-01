@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:thorns
+name: '{lang:vanilla-enchantment-thorns-name}'
+description: '{lang:vanilla-enchantment-thorns-description}'
+
+rarity: EPIC
+
+variables:
+  'trigger_chance': '{level} * 15'

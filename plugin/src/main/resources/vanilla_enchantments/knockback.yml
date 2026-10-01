@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:knockback
+name: '{lang:vanilla-enchantment-knockback-name}'
+description: '{lang:vanilla-enchantment-knockback-description}'
+
+rarity: UNCOMMON

@@ -1,0 +1,751 @@
+error:
+  player-not-found: "&#98FB98[EnchantmentReform] &cWe can't find player {player}!"
+  args: "&#98FB98[EnchantmentReform] &cWrong command usage, if you need help, use /enchantmentreform help!"
+  in-game: "&#98FB98[EnchantmentReform] &cYou have to use this command in game!"
+  miss-permission: "&#98FB98[EnchantmentReform] &cYou don't have permission to use this command!"
+  save-item-not-found: "&#98FB98[EnchantmentReform] &cSaved item {item} was not found!"
+  attribute-not-found: "&#98FB98[EnchantmentReform] &cCustom attribute {attribute} was not found!"
+  invalid-number: "&#98FB98[EnchantmentReform] &c{value} is not a valid integer!"
+  invalid-decimal: "&#98FB98[EnchantmentReform] &c{value} is not a valid number!"
+  attribute-modifier-invalid: "&#98FB98[EnchantmentReform] &cInvalid attribute modifier: {value}!"
+  attribute-modifier-exists: "&#98FB98[EnchantmentReform] &cAttribute modifier {modifier} already exists!"
+  skill-not-found: "&#98FB98[EnchantmentReform] &cSkill {skill} was not found!"
+  skills-disabled: "&#98FB98[EnchantmentReform] &cThe skill module is disabled!"
+  invalid-multiplier: "&#98FB98[EnchantmentReform] &c{value} is not a valid non-negative multiplier!"
+  invalid-skill-experience: "&#98FB98[EnchantmentReform] &c{value} is not valid non-negative skill XP!"
+  invalid-skill-level: "&#98FB98[EnchantmentReform] &c{value} is not a valid skill level (0-{maximum})!"
+attribute:
+  set: "&#98FB98[EnchantmentReform] &fSet {player}'s {attribute} base value to {value}; current value: {current}."
+  add: "&#98FB98[EnchantmentReform] &fChanged {player}'s {attribute} base value to {value}; current value: {current}."
+  modifier-added: "&#98FB98[EnchantmentReform] &fAdded {modifier} ({operation} {amount}) to {player}'s {attribute}; current value: {value}."
+  modifier-set: "&#98FB98[EnchantmentReform] &fSet {modifier} ({operation} {amount}) on {player}'s {attribute}; current value: {value}."
+skill:
+  multiplier-set: "&#98FB98[EnchantmentReform] &fSet {player}'s {skill} skill XP multiplier to {multiplier}."
+  progress-updated: "&#98FB98[EnchantmentReform] &fUpdated {player}'s {skill}: level {level}/{maximum_level}, XP {experience}/{required_experience}."
+plugin:
+  reloading: "&#98FB98[EnchantmentReform] &fTrying reload the plugin. We recommend you restart the server instead of reloading the plugin to keep the data safe."
+  reloaded: "&#98FB98[EnchantmentReform] &fPlugin reloaded!"
+  registry-restart-required: "&#98FB98[EnchantmentReform] &fEnchantment registry changes require a full server restart!"
+  saved: "&#98FB98[EnchantmentReform] &fItem saved!"
+  generated: "&#98FB98[EnchantmentReform] &fGenerated hold item's item format at plugin config folder, please copy them into your configs!"
+give-save-item: "&#98FB98[EnchantmentReform] &fGave {amount} of saved item {item} to {player}!"
+command-tab:
+  type-item-id: "[item ID]"
+dupe-removed: "&#98FB98[EnchantmentReform] &fAn illegal item from your inventory has been removed!"
+help:
+  main: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu <menu-id> &7- Open a menu by ID."
+  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu <menu-id> &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin."
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin."
+override-lang:
+  menu-not-found: '&#98FB98[EnchantmentReform] &cThat menu does not exist.'
+  menu-requires-context: '&#98FB98[EnchantmentReform] &cOpen this detail menu from a skill or attribute button.'
+  skill-menu-title: '&8Skills'
+  skill-menu-level: '&7Level: &a{level}&7/&a{maximum_level}'
+  skill-menu-experience: '&7XP: &b{experience}&7/&b{required_experience}'
+  skill-menu-progress: '&7Progress: &e{progress}%'
+  skill-menu-sources: '&7XP sources ({source_count}):'
+  skill-menu-click: '&eClick to view XP sources and level rewards'
+  skill-menu-info: '&eSkill information'
+  skill-menu-amount: '&7Skills: &f{amount}'
+  skill-menu-points: '&7Available attribute points: &e{points}'
+  skill-allocation-title: '&8Attribute Points &7- &e{points}'
+  skill-allocation-info: '&eAttribute allocation'
+  skill-level-up: '&#98FB98[EnchantmentReform] &a{skill} reached level {level}! &e+{points} attribute points.'
+  skill-xp-gain: '&b+{gained} {skill} XP &8| &7Lv.{level} &f{experience}&7/&f{required_experience}'
+  skill-level-up-title: '&6&lSkill Level Up!'
+  skill-level-up-subtitle: '{skill} &freached level &e{level}'
+  skill-detail-source-title: '&8{name} &7- XP Sources ({page}/{pages})'
+  skill-detail-reward-title: '&8{name} &7- Level Rewards ({page}/{pages})'
+  skill-detail-back: '&aBack to Skills'
+  skill-detail-back-lore: '&7Click to view all skills'
+  skill-detail-show-rewards: '&eView level rewards'
+  skill-detail-show-rewards-lore: '&7Click to view the reward for every level'
+  skill-detail-show-sources: '&bView XP sources'
+  skill-detail-show-sources-lore: '&7Click to view every way to earn XP'
+  skill-detail-remaining: '&7XP until next level: &e{remaining_experience}'
+  skill-source-xp: '&7Base XP: &a{source_xp}{source_unit}'
+  skill-reward-name: '&eLevel {reward_level} Reward'
+  skill-reward-status-claimed: '&aClaimed'
+  skill-reward-status-next: '&eNext reward'
+  skill-reward-status-locked: '&7Not yet unlocked'
+  skill-reward-attribute-points: '&7Attribute points: &e+{reward_attribute_points}'
+  skill-reward-attributes: '&7Attribute increases:'
+  skill-reward-attribute-line: '&8- &f{attribute}: &a+{amount}'
+  skill-reward-commands: '&7Command rewards:'
+  skill-reward-command-line: '&8- &f{command}'
+  skill-reward-items: '&7Item rewards:'
+  skill-reward-item-line: '&8- &f{item} &7x{amount}'
+  skill-reward-line: '&8- &f{reward}'
+  skill-reward-default-attribute-points: '&e+{amount} Attribute Points'
+  skill-reward-default-attribute: '&a+{amount} {attribute}'
+  skill-reward-default-attributes: '&aStats: {attributes}'
+  skill-reward-attribute-summary: '+{amount} {attribute}'
+  skill-reward-attribute-separator: ', '
+  skill-reward-default-item: '{item} &7x{amount}'
+  skill-reward-none: '&8None'
+  skill-allocation-success: '&#98FB98[EnchantmentReform] &aAdded {add} to {attribute} for {price} points; {points} remain.'
+  skill-allocation-not-enough: '&#98FB98[EnchantmentReform] &cYou need {price} attribute points.'
+  skill-allocation-maximum: '&#98FB98[EnchantmentReform] &c{attribute} cannot be increased by {add}; it is at the limit.'
+  skill-allocation-condition-not-met: '&#98FB98[EnchantmentReform] &cYou do not meet the conditions for increasing {attribute} by {add}.'
+  skill-allocation-skill-level-requirement: '&7Requirement: {skill} &elevel {level}'
+  skill-allocation-invalid: '&#98FB98[EnchantmentReform] &cThat allocation option is invalid.'
+  skill-allocation-current-value: '&7Current: &f{base_value} &8(final {value})'
+  skill-allocation-maximum-value: '&7Maximum: &f{maximum_value}'
+  skill-allocation-point-price: '&7Cost to reach level &f{next_base}&7: &e{price} points'
+  skill-allocation-available-points: '&7Available points: &e{points}'
+  skill-allocation-click-option: '&eClick to upgrade: &f{base_before} &7-> &a{base_after} &8(final {value_before} -> {value_after})'
+  skill-attribute-summary-level: '&7Level: &f{base_value}&8/&f{maximum_value} &8(final {value})'
+  skill-attribute-summary-next-cost: '&7Next level cost: &e{price} points'
+  skill-attribute-summary-maximum: '&7Status: &aMaximum level reached'
+  skill-attribute-open-details: '&eClick to view details and upgrade options'
+  attribute-detail-modifier-label: '&8Attribute Modifier'
+  attribute-detail-modifier-operation: '&7Operation: &f{operation_display}'
+  attribute-detail-modifier-amount: '&7Effect: &a{amount_display}'
+  attribute-detail-operation-add-value: 'Flat value'
+  attribute-detail-operation-add-base: 'Base value percentage'
+  attribute-detail-operation-multiply-total: 'Final value multiplier'
+  attribute-detail-no-modifiers: '&7No active modifiers'
+  attribute-detail-no-modifiers-lore: '&8Equipment, temporary, and persistent modifiers appear here.'
+  attribute-detail-values-header: '&fValue Information'
+  attribute-detail-base-value: '&7Base value: &f{base_value}'
+  attribute-detail-final-value: '&7Final value: &a{value}'
+  attribute-detail-default-value: '&7Default value: &f{default_value}'
+  attribute-detail-range: '&7Range: &f{minimum_value} &8- &f{maximum_value}'
+  attribute-detail-modifier-count: '&7Active modifiers: &e{modifier_count}'
+  attribute-detail-upgrade: '&aUpgrade Attribute'
+  attribute-detail-upgrade-description: '&8Spend attribute points to increase the base level.'
+  attribute-detail-level-change: '&7Level change: &f{base_value} &8-> &a{next_base}'
+  attribute-detail-value-change: '&7Final value change: &f{value} &8-> &a{next_value}'
+  attribute-detail-upgrade-cost: '&7This upgrade costs: &e{price} points'
+  attribute-detail-points-owned: '&7Points available: &f{points}'
+  attribute-detail-click-upgrade: '&eLeft-click to upgrade one level'
+  attribute-detail-maximum: '&7Maximum level reached'
+  attribute-detail-current-level: '&7Current level: &f{base_value}&8/&f{allocation_maximum_value}'
+  attribute-detail-back: '&aBack'
+  attribute-detail-previous: '&aPrevious Page'
+  attribute-detail-next: '&aNext Page'
+  attribute-detail-page: '&7Modifier page: &f{page}&8/&f{pages}'
+  attribute-detail-close: '&cClose'
+  attribute-detail-status-enabled: '&aEnabled'
+  attribute-detail-status-disabled: '&cDisabled'
+  attribute-detail-toggle-enabled: '&aAttribute Enabled'
+  attribute-detail-toggle-disabled: '&cAttribute Disabled'
+  attribute-detail-toggle-description: '&7Current status: {attribute_status}\n&8Disabling does not refund points or clear levels.'
+  attribute-detail-click-enable: '&eClick to enable this attribute'
+  attribute-detail-click-disable: '&eClick to disable this attribute'
+  attribute-detail-effective-level: '&bSet Effective Level'
+  attribute-detail-effective-level-description: '&7Choose the level at which this attribute takes effect.'
+  attribute-detail-unlocked-level: '&7Unlocked level: &f{base_value}'
+  attribute-detail-selected-level: '&7Effective level: &a{effective_base_value}'
+  attribute-detail-effective-final-value: '&7After modifiers: &a{effective_value}'
+  attribute-detail-effective-level-controls: '&eLeft-click +1, right-click -1\n&eShift-left sets unlocked level\n&eShift-right sets minimum level'
+  skill-mining-name: '&bMining'
+  skill-mining-description: '&7Mine natural ores and stone to improve Mining.'
+  skill-combat-name: '&cCombat'
+  skill-combat-description: '&7Damage enemies with melee attacks to train Combat.'
+  skill-farming-name: '&aFarming'
+  skill-farming-description: '&7Harvest mature crops and renewable farm produce.'
+  skill-foraging-name: '&2Foraging'
+  skill-foraging-description: '&7Cut natural trees, giant mushrooms, and Nether stems.'
+  skill-excavation-name: '&eExcavation'
+  skill-excavation-description: '&7Dig soil, sand, gravel, clay, and soul ground.'
+  skill-fishing-name: '&3Fishing'
+  skill-fishing-description: '&7Catch fish, treasure, and other rewards.'
+  skill-archery-name: '&6Archery'
+  skill-archery-description: '&7Deal damage using bows, crossbows, and thrown tridents.'
+  skill-defense-name: '&9Defense'
+  skill-defense-description: '&7Survive attacks from mobs and other players.'
+  skill-agility-name: '&fAgility'
+  skill-agility-description: '&7Train by sprinting, swimming, jumping, and surviving falls.'
+  skill-alchemy-name: '&dAlchemy'
+  skill-alchemy-description: '&7Consume potions and rare alchemical foods.'
+  skill-enchanting-name: '&5Enchanting'
+  skill-enchanting-description: '&7Enchant equipment, tools, and books at an enchanting table.'
+  skill-source-unit-block: '&7/block'
+  skill-source-unit-harvest: '&7/harvest'
+  skill-source-unit-catch: '&7/catch'
+  skill-source-unit-damage: '&7/damage'
+  skill-source-unit-jump: '&7/jump'
+  skill-source-unit-use: '&7/use'
+  skill-source-unit-enchant-level: '&7/enchanting level spent'
+  skill-source-unit-dodge: '&7/dodge'
+  skill-source-unit-target: '&7/target'
+  skill-source-mining-stone: '&fStone'
+  skill-source-mining-stone-desc: '&7Stone, granite, diorite, and andesite.'
+  skill-source-mining-deep-stone: '&8Deep Stone'
+  skill-source-mining-deep-stone-desc: '&7Deepslate, tuff, calcite, and dripstone blocks.'
+  skill-source-mining-coal: '&8Coal Ore'
+  skill-source-mining-coal-desc: '&7Mine regular coal ore.'
+  skill-source-mining-deepslate-coal: '&8Deepslate Coal Ore'
+  skill-source-mining-deepslate-coal-desc: '&7Mine the rarer deep coal ore.'
+  skill-source-mining-copper: '&6Copper Ore'
+  skill-source-mining-copper-desc: '&7Mine regular or deepslate copper ore.'
+  skill-source-mining-iron: '&fIron Ore'
+  skill-source-mining-iron-desc: '&7Mine regular or deepslate iron ore.'
+  skill-source-mining-gold: '&eGold Ore'
+  skill-source-mining-gold-desc: '&7Mine Overworld or Nether gold ore.'
+  skill-source-mining-redstone: '&cRedstone Ore'
+  skill-source-mining-redstone-desc: '&7Mine regular or deepslate redstone ore.'
+  skill-source-mining-lapis: '&9Lapis Ore'
+  skill-source-mining-lapis-desc: '&7Mine regular or deepslate lapis ore.'
+  skill-source-mining-diamond: '&bDiamond Ore'
+  skill-source-mining-diamond-desc: '&7Mine regular or deepslate diamond ore.'
+  skill-source-mining-emerald: '&aEmerald Ore'
+  skill-source-mining-emerald-desc: '&7Mine regular or deepslate emerald ore.'
+  skill-source-mining-quartz: '&fNether Quartz Ore'
+  skill-source-mining-quartz-desc: '&7Mine quartz in the Nether.'
+  skill-source-mining-debris: '&4Ancient Debris'
+  skill-source-mining-debris-desc: '&7Mine rare ancient debris.'
+  skill-source-mining-amethyst: '&dAmethyst Cluster'
+  skill-source-mining-amethyst-desc: '&7Harvest a fully grown amethyst cluster.'
+  skill-source-mining-obsidian: '&5Obsidian'
+  skill-source-mining-obsidian-desc: '&7Mine obsidian or crying obsidian.'
+  skill-source-foraging-logs: '&6Overworld Logs'
+  skill-source-foraging-logs-desc: '&7Cut any log or wood type.'
+  skill-source-foraging-stems: '&cNether Stems'
+  skill-source-foraging-stems-desc: '&7Cut crimson or warped stems.'
+  skill-source-foraging-mushroom: '&cGiant Mushrooms'
+  skill-source-foraging-mushroom-desc: '&7Harvest giant mushroom blocks and stems.'
+  skill-source-foraging-nether: '&4Nether Fungi Produce'
+  skill-source-foraging-nether-desc: '&7Harvest shroomlights and wart blocks.'
+  skill-source-foraging-leaves: '&aLeaves'
+  skill-source-foraging-leaves-desc: '&7Clear natural leaves for a small amount of XP.'
+  skill-source-foraging-cleave: '&cCleave Target'
+  skill-source-foraging-cleave-desc: '&7Hit a secondary target with an axe through the Cleave enchantment.'
+  skill-source-foraging-sunder: '&6Sunder Stack'
+  skill-source-foraging-sunder-desc: '&7Apply a Sunder stack by striking a target with a melee weapon.'
+  skill-source-farming-crops: '&eMature Crops'
+  skill-source-farming-crops-desc: '&7Harvest mature wheat, carrots, potatoes, or beetroot.'
+  skill-source-farming-wart: '&cMature Nether Wart'
+  skill-source-farming-wart-desc: '&7Harvest fully grown Nether wart.'
+  skill-source-farming-cocoa: '&6Mature Cocoa'
+  skill-source-farming-cocoa-desc: '&7Harvest fully grown cocoa pods.'
+  skill-source-farming-gourds: '&aGourds'
+  skill-source-farming-gourds-desc: '&7Harvest melons or pumpkins.'
+  skill-source-farming-tall: '&2Tall Crops'
+  skill-source-farming-tall-desc: '&7Harvest sugar cane, cactus, bamboo, or kelp.'
+  skill-source-farming-ancient: '&dAncient Plants'
+  skill-source-farming-ancient-desc: '&7Harvest torchflowers or pitcher plants.'
+  skill-source-excavation-soil: '&6Soil'
+  skill-source-excavation-soil-desc: '&7Dig dirt, mycelium, and podzol variants.'
+  skill-source-excavation-sand: '&eSand'
+  skill-source-excavation-sand-desc: '&7Dig sand, red sand, and suspicious sand.'
+  skill-source-excavation-gravel: '&7Gravel'
+  skill-source-excavation-gravel-desc: '&7Dig gravel and suspicious gravel.'
+  skill-source-excavation-clay: '&bClay and Mud'
+  skill-source-excavation-clay-desc: '&7Dig clay, mud, or muddy mangrove roots.'
+  skill-source-excavation-soul: '&8Soul Ground'
+  skill-source-excavation-soul-desc: '&7Dig soul sand or soul soil.'
+  skill-source-excavation-snow: '&fSnow'
+  skill-source-excavation-snow-desc: '&7Shovel snow, snow blocks, or powder snow.'
+  skill-source-fishing-common: '&fCod'
+  skill-source-fishing-common-desc: '&7Catch common cod.'
+  skill-source-fishing-valuable: '&bValuable Fish'
+  skill-source-fishing-valuable-desc: '&7Catch salmon, pufferfish, or tropical fish.'
+  skill-source-fishing-treasure: '&eTreasure'
+  skill-source-fishing-treasure-desc: '&7Catch books, bows, rods, name tags, and other treasure.'
+  skill-source-fishing-junk: '&7Junk'
+  skill-source-fishing-junk-desc: '&7Catch common discarded items.'
+  skill-source-fishing-entity: '&cHooked Entity'
+  skill-source-fishing-entity-desc: '&7Successfully pull an entity with a fishing rod.'
+  skill-source-combat-monster: '&cMelee Monster Damage'
+  skill-source-combat-monster-desc: '&7Deal melee damage to hostile mobs.'
+  skill-source-combat-animal: '&6Melee Animal Damage'
+  skill-source-combat-animal-desc: '&7Attacking animals grants only a small amount of XP.'
+  skill-source-combat-player: '&4Melee Player Damage'
+  skill-source-combat-player-desc: '&7Deal melee PvP damage with a per-target cooldown.'
+  skill-source-archery-bow: '&6Bow Hit'
+  skill-source-archery-bow-desc: '&7Damage a hostile mob with a bow.'
+  skill-source-archery-crossbow: '&6Crossbow Hit'
+  skill-source-archery-crossbow-desc: '&7Damage a hostile mob with a crossbow.'
+  skill-source-archery-trident: '&bThrown Trident'
+  skill-source-archery-trident-desc: '&7Damage a hostile mob with a thrown trident.'
+  skill-source-archery-player: '&cRanged PvP Damage'
+  skill-source-archery-player-desc: '&7Damage players at range with a per-target cooldown.'
+  skill-source-defense-monster: '&9Withstand Monsters'
+  skill-source-defense-monster-desc: '&7Take damage from hostile mobs.'
+  skill-source-defense-player: '&cWithstand Players'
+  skill-source-defense-player-desc: '&7Take damage dealt by another player.'
+  skill-source-agility-sprint: '&fSprinting'
+  skill-source-agility-sprint-desc: '&7Gain XP while sprinting across land.'
+  skill-source-agility-swim: '&3Swimming'
+  skill-source-agility-swim-desc: '&7Gain XP while moving in the swimming pose.'
+  skill-source-agility-jump: '&aJumping'
+  skill-source-agility-jump-desc: '&7Normal jumps; this source is available on Paper only.'
+  skill-source-agility-fall: '&cSurvived Fall'
+  skill-source-agility-fall-desc: '&7Take fall damage after dropping from a height.'
+  skill-source-alchemy-potion: '&dDrink Potion'
+  skill-source-alchemy-potion-desc: '&7Drink any consumable potion.'
+  skill-source-alchemy-golden-apple: '&6Golden Apple'
+  skill-source-alchemy-golden-apple-desc: '&7Eat a golden apple.'
+  skill-source-alchemy-enchanted-apple: '&dEnchanted Golden Apple'
+  skill-source-alchemy-enchanted-apple-desc: '&7Eat a rare enchanted golden apple.'
+  skill-source-enchanting-weapon: '&cEnchant Weapon'
+  skill-source-enchanting-weapon-desc: '&7Enchant a sword or axe at an enchanting table.'
+  skill-source-enchanting-armor: '&9Enchant Armor'
+  skill-source-enchanting-armor-desc: '&7Enchant armor at an enchanting table.'
+  skill-source-enchanting-tool: '&bEnchant Tool'
+  skill-source-enchanting-tool-desc: '&7Enchant a pickaxe, shovel, or hoe.'
+  skill-source-enchanting-book: '&dEnchant Book'
+  skill-source-enchanting-book-desc: '&7Enchant a book at an enchanting table.'
+  skill-source-enchanting-misc: '&eEnchant Other Gear'
+  skill-source-enchanting-misc-desc: '&7Enchant bows, rods, tridents, and special equipment.'
+  custom-item-night_vision_helmet-name: "&eNight Vision Helmet"
+  custom-item-night_vision_helmet-lore: '&7Grants night vision while worn.'
+  custom-attribute-breathing-name: "&bSurface Breathing"
+  custom-attribute-breathing-description: '&8Prevents air loss within &a{breathing_distance} blocks &8of a water or lava surface.'
+  enchantment-air_dash-name: "Air Dash"
+  enchantment-air_dash-description: '&8After a sprint-jump, left-click the air to dash horizontally in the look direction at &a{dash_force_display} blocks/second&8; the maximum level grants &a{max_charges} &8uses per jump, and each dash costs the leggings &a1 &8durability. Levels require &b10/20/30/40 Agility&8 respectively and downgrade when the current requirement is not met.'
+  enchantment-air_dash-trigger-message: '[actionbar]&bAir Dash &8| &aDashed forward[/actionbar]'
+  enchantment-charged_leap-name: "Charged Leap"
+  enchantment-charged_leap-description: '&8Sneak-jump to leap approximately &a{jump_height} blocks &8high. Levels I–IV require &b10/20/30/40 Agility&8 respectively and downgrade when the current requirement is not met.'
+  enchantment-charged_leap-trigger-message: '[actionbar]&6Charged Leap &8| &aEmpowered jump triggered[/actionbar]'
+  custom-attribute-dodge-name: "&bDodge"
+  custom-attribute-dodge-description: '&8With the matching enchantment, has a &a{melee_dodge_chance}% &8melee dodge chance and a &a{projectile_dodge_chance}% &8projectile dodge chance.'
+  custom-attribute-endurance-name: "&bEndurance"
+  custom-attribute-endurance-description: '&8Reduces exhaustion from sprinting and sprint-jumping by &a{exhaustion_reduction}&8.'
+  custom-attribute-absorption-name: "&eAbsorption"
+  custom-attribute-absorption-description: '&8Can hold up to &a{level} &8absorption layers. Each layer grants &e0.5 absorption hearts&8, for &e{absorption_hearts} hearts &8at full capacity. A source such as an enchantment must generate the layers.'
+  enchantment-cleave-name: "Cleave"
+  enchantment-cleave-description: '&8Axe attacks made at 90% attack cooldown deal &a{damage_percentage} &8of the primary hit damage to up to &a{target_cap} &8additional targets in a &a{arc_degrees}° &8frontal arc within &a{radius} blocks&8.'
+  custom-attribute-sunder-name: "&6Sunder"
+  custom-attribute-sunder-description: '&8Melee-weapon hits apply Sunder for &a{duration_seconds} seconds&8, stacking up to &a{max_stacks} times&8. Each stack removes &c{armor_shred_per_stack} armor &8and &c{toughness_shred_per_stack} armor toughness&8.'
+  custom-attribute-potion_mastery-name: "&bPotion Mastery"
+  custom-attribute-potion_mastery-description: '&8Extends beneficial effect durations by &a{beneficial_extension}% &8and shortens harmful effect durations by &a{harmful_reduction}%&8.'
+  custom-attribute-work_speed-name: "&6Work Speed"
+  custom-attribute-work_speed-description: '&8Advances active furnaces, smokers, blast furnaces, and brewing stands within &a{work_radius} blocks &8by an extra &a{extra_ticks} ticks &8each second.'
+  enchantment-bark_hide-name: "Barkskin"
+  enchantment-bark_hide-description: '&8Chopping logs with this axe generates &a1 &8Absorption layer, capped by the Absorption attribute. After you stop chopping for &a{grace_seconds} seconds&8, one layer expires every &a{decay_seconds} seconds&8.'
+  enchantment-ore_guard-name: "Ore Guard"
+  enchantment-ore_guard-description: '&8Mining ores with this pickaxe generates &a1 &8Absorption layer, capped by the Absorption attribute. After you stop mining for &a{grace_seconds} seconds&8, one layer expires every &a{decay_seconds} seconds&8.'
+  skill-source-agility-projectile-dodge: '&bProjectile Dodge'
+  skill-source-agility-projectile-dodge-desc: '&7Successfully dodge one projectile attack while sprinting.'
+  enchantment-liquid_surface_breathing-name: "Surface Breathing"
+  enchantment-liquid_surface_breathing-description: '&8Adds &a{breathing_distance} blocks &8of liquid-surface breathing distance while worn.'
+  enchantment-lava_grace-name: "Lava Grace"
+  enchantment-lava_grace-description: '&8Prevents lava damage for the first &a{immunity_seconds} seconds &8after entering lava.'
+  enchantment-lingering_affliction-name: "Lingering Affliction"
+  enchantment-lingering_affliction-description: '&8Attacking an enemy with harmful potion effects extends their remaining durations by &a{duration_increase_percentage}%&8.'
+  enchantment-rotten_flesh_tolerance-name: "Rotten Flesh Tolerance"
+  enchantment-rotten_flesh_tolerance-description: '&8Has a &a{trigger_chance}% &8chance to avoid Hunger when eating rotten flesh.'
+  enchantment-experience_lifeblood-name: "Experience Lifeblood"
+  enchantment-experience_lifeblood-description: '&8When below &a50% &8health, collected experience orbs automatically restore health; every accumulated &a3 &8experience restores &a1 &8health, up to &a50% &8of maximum health.'
+  enchantment-threat_limit-name: "Threat Barrier"
+  enchantment-threat_limit-description: '&8At most &a{max_threat_count} &8monsters may target you at the same time unless you attack them first.'
+  enchantment-foolishness_curse-name: "Curse of Foolishness"
+  enchantment-foolishness_curse-description: '&8This curse doubles the experience-level cost of the item in an anvil.'
+  enchantment-firework_conservation-name: "Firework Conservation"
+  enchantment-firework_conservation-description: '&8When a firework boosts your elytra, it has a &a{trigger_chance}% &8chance not to be consumed.'
+  enchantment-kinetic_protection-name: "Kinetic Protection"
+  enchantment-kinetic_protection-description: '&8Reduces kinetic damage from flying into a wall with an elytra by &a{damage_reduction}%&8.'
+  enchantment-sprint_plating-name: "Sprint Plating"
+  enchantment-sprint_plating-description: '&8Gradually gains up to &a{armor_bonus} armor &8while sprinting; the armor fades after sprinting stops.'
+  enchantment-sprint_plating-charge-message: '[actionbar]&6Sprint Plating &8| &eArmor is charging[/actionbar]'
+  enchantment-sprint_plating-charged-message: '[actionbar]&6Sprint Plating &8| &aArmor fully charged[/actionbar]'
+  enchantment-sprint_plating-decay-message: '[actionbar]&6Sprint Plating &8| &cArmor is fading[/actionbar]'
+  enchantment-sprint_plating-empty-message: '[actionbar]&6Sprint Plating &8| &7Armor bonus expired[/actionbar]'
+  enchantment-emergency_repair-name: "Emergency Repair"
+  enchantment-emergency_repair-description: '&8When the item is about to break, lowers this enchantment by &a1 &8level and restores &a{repair_percentage}% &8of its maximum durability.'
+  enchantment-adaptive_resistance-stack-add: '[actionbar]&bResistance stacks: &f{stacks}&7/&f{max_stacks} &8| &aDamage reduction: &f{percent}%[/actionbar]'
+  enchantment-adaptive_resistance-stack-max: '[actionbar]&3Resistance stacks are full &8| &aDamage reduction: &f{percent}%[/actionbar]'
+  enchantment-adaptive_resistance-stack-expire: '[actionbar]&7Resistance stacks cleared[/actionbar]'
+  enchantment-stronghold_locator-found: '&aStronghold found nearby! It is &e{distance} &ablocks to the &e{direction}&a.'
+  enchantment-stronghold_locator-not-found: '&cNo stronghold was found within the current search radius.'
+  enchantment-combo-stack-add: '[actionbar]&eCombo stacks: &f{stacks}&7/&f{max_stacks} &8| &eNext damage bonus: &f{percent}%[/actionbar]'
+  enchantment-combo-stack-max: '[actionbar]&6Combo stacks are full &8| &eNext damage bonus: &f{percent}%[/actionbar]'
+  enchantment-combo-stack-expire: '[actionbar]&7Combo stacks cleared[/actionbar]'
+  enchantment-rage-stack-add: '[actionbar]&cRage stacks: &f{stacks}&7/&f{max_stacks} &8| &eNext damage bonus: &f{percent}%[/actionbar]'
+  enchantment-rage-stack-max: '[actionbar]&6Rage stacks are full &8| &eNext damage bonus: &f{percent}%[/actionbar]'
+  enchantment-rage-stack-expire: '[actionbar]&7Rage stacks cleared[/actionbar]'
+  enchantment-rage-stack-consume: '[actionbar]&cRage activated! &8| &eDamage bonus: &f{percent}%[/actionbar]'
+  enchantment-menu-title: "&8Enchantment Catalogue"
+  enchantment-menu-max-level: "&8• &7Maximum level &8» &f{max_level}"
+  enchantment-menu-rarity: "&8• &7Rarity &8» &f{rarity}"
+  enchantment-menu-weight: "&8• &7Selection weight &8» &f{weight}"
+  enchantment-menu-supported-items: "&8• &7Applies to &8» &f{supported_items}"
+  enchantment-menu-key: "&l&eEnchantment Info"
+  enchantment-menu-level-description: "&8[&eLevel {level}&8] &f{description}"
+  enchantment-menu-previous: "&a« Previous"
+  enchantment-menu-next: "&aNext »"
+  enchantment-menu-page: "&7Page &8» &f{page}&8/&f{pages}"
+  enchantment-menu-info: "&eEnchantment Catalogue"
+  enchantment-menu-amount: "&7Entries &8» &f{amount}"
+  enchantment-menu-filter-rarity: "&eFilter by rarity"
+  enchantment-menu-filter-supported-item: "&eFilter by item type"
+  enchantment-menu-filter-current: "&7Current filter &8» &f{rarity_filter}"
+  enchantment-menu-filter-current-supported-item: "&7Current filter &8» &f{supported_item_filter}"
+  enchantment-menu-filter-click: "&8Left-click: next  Right-click: previous"
+  enchantment-menu-filter-all: "&fAll"
+  enchantment-menu-close: "&cClose menu"
+  attribute-menu-title: "&8Custom Attributes"
+  attribute-menu-key: "&8• &7ID &8» &f{id}"
+  attribute-menu-base-value: "&8• &7Base value &8» &f{base_value}"
+  attribute-menu-current-value: "&8• &7Current value &8» &a{value}"
+  attribute-menu-default-value: "&8• &7Default value &8» &f{default_value}"
+  attribute-menu-range: "&8• &7Range &8» &f{minimum_value} &8- &f{maximum_value}"
+  attribute-menu-modifiers: "&eModifiers &7({modifier_count})"
+  attribute-menu-modifier: "&8• &f{modifier} &7{operation} &e{amount}"
+  attribute-menu-no-modifiers: "&8• &7None"
+  attribute-menu-previous: "&a« Previous"
+  attribute-menu-next: "&aNext »"
+  attribute-menu-page: "&7Page &8» &f{page}&8/&f{pages}"
+  attribute-menu-info: "&eCustom Attributes"
+  attribute-menu-amount: "&7Entries &8» &f{amount}"
+  attribute-menu-close: "&cClose menu"
+  rarity-common: "Common"
+  rarity-uncommon: "Uncommon"
+  rarity-rare: "Rare"
+  rarity-epic: "Epic"
+  rarity-legendary: "Legendary"
+  rarity-mythic: "Mythic"
+  rarity-curse: "Curse"
+  supported-item-sword: "Sword"
+  supported-item-axe: "Axe"
+  supported-item-pickaxe: "Pickaxe"
+  supported-item-shovel: "Shovel"
+  supported-item-hoe: "Hoe"
+  supported-item-tool: "Tool"
+  supported-item-bow: "Bow"
+  supported-item-crossbow: "Crossbow"
+  supported-item-trident: "Trident"
+  supported-item-spear: "Spear"
+  supported-item-fishing-rod: "Fishing Rod"
+  supported-item-shield: "Shield"
+  supported-item-elytra: "Elytra"
+  supported-item-helmet: "Helmet"
+  supported-item-chestplate: "Chestplate"
+  supported-item-leggings: "Leggings"
+  supported-item-boots: "Boots"
+  enchantment-adaptive_resistance-name: "Adaptive Resistance"
+  enchantment-adaptive_resistance-description: '&8Consecutive damage of the same type within &a8 &8seconds is reduced by &a3% &8per stack, up to &a{max_stacks} &8stacks.'
+  enchantment-auto_feed-name: "Auto Feed"
+  enchantment-auto_feed-description: '&8Automatically eats when hunger falls to &a10 &8or lower; the threshold rises to &a18 &8when health is not full.'
+  enchantment-auto_feed-trigger-message: '[actionbar]&6Auto Feed &7| &aAutomatically ate once[/actionbar]'
+  enchantment-auto_purify-name: "Auto Purify"
+  enchantment-auto_purify-description: '&8Removes one negative potion effect every &a{interval} &8seconds.'
+  enchantment-auto_purify-trigger-message: '[actionbar]&6Auto Purify &7| &aAutomatically purified once[/actionbar]'
+  enchantment-battle_spirit-name: "Battle Spirit"
+  enchantment-battle_spirit-description: '&8Taking damage has a &a{trigger_chance}% &8chance to grant Strength I for &a{duration} &8seconds.'
+  enchantment-biome_regeneration-name: "Biome Rejuvenation"
+  enchantment-biome_regeneration-description: '&8Entering a new biome grants Regeneration I for &a5 &8seconds.'
+  enchantment-double_jump-name: "Double Jump"
+  enchantment-double_jump-description: '&8Allows a double jump while airborne and not sneaking every &a{cooldown} &8seconds.'
+  enchantment-double_jump-cooldown-message: '[actionbar]&cDouble Jump will be ready in &4{remaining} &cseconds![/actionbar]'
+  enchantment-double_jump-trigger-message: '[actionbar]&6Double Jump &7| &aTriggered once[/actionbar]'
+  enchantment-emerald_refund-name: "Emerald Refund"
+  enchantment-emerald_refund-description: '&8Completing a villager trade has a &a{refund_chance}% &8chance to refund the emeralds spent.'
+  enchantment-piglin_barter-name: "Piglin Barter"
+  enchantment-piglin_barter-description: '&8Bartering with a piglin has a &a{extra_chance}% &8chance for it to drop an extra random item after a short delay.'
+  enchantment-piglin_barter-trigger-message: '&aPiglin Barter triggered: the piglin dropped an extra random item.'
+  enchantment-end_walker-name: "End Walker"
+  enchantment-end_walker-description: '&8Grants Speed {potion_level_roman} and Jump Boost {potion_level_roman} while in the End.'
+  enchantment-ender_veil-name: "Ender Veil"
+  enchantment-ender_veil-description: '&8Prevents Endermen from becoming hostile when you look directly at them.'
+  enchantment-experience_evasion-name: "Experience Evasion"
+  enchantment-experience_evasion-description: '&8When attacked by an entity, has a &a{dodge_chance}% &8chance to consume &a{experience_cost} &8experience points and evade all damage.'
+  enchantment-experience_refund-name: "Experience Refund"
+  enchantment-experience_refund-description: '&8Enchanting an item has a &a{refund_chance}% &8chance to refund &a{refund_ratio}% &8of the experience levels spent, at least 1.'
+  enchantment-experience_refund-trigger-message: '&aExperience Refund triggered: refunded &e{refund_amount} &aexperience level(s).'
+  enchantment-melee_dodge-name: "Melee Dodge"
+  enchantment-melee_dodge-description: '&8Enables melee damage dodging. Its chance and sidestep strength are determined by the Dodge attribute.'
+  enchantment-projectile_dodge-name: "Projectile Dodge"
+  enchantment-projectile_dodge-description: '&8Enables projectile damage dodging. Its chance and sidestep strength are determined by the Dodge attribute.'
+  enchantment-farmland_guard-name: "Farmland Guard"
+  enchantment-farmland_guard-description: '&8Prevents farmland from turning into dirt when trampled.'
+  enchantment-first_strike_guard-name: "First Strike Guard"
+  enchantment-first_strike_guard-description: '&8Reduces the first attack from each monster by &a{damage_reduction_percentage}%&8, consuming armor durability based on the damage prevented.'
+  enchantment-jump_boost-name: "Jump Boost"
+  enchantment-jump_boost-description: '&8Increases jumping ability by &a{jump_power}%&8.'
+  enchantment-knockback_resistance-name: "Steadfast"
+  enchantment-knockback_resistance-description: '&8Increases knockback resistance by &a{knockback_resistance}%&8.'
+  enchantment-lava_walker-name: "Lava Walker"
+  enchantment-lava_walker-description: '&8While walking on the ground, converts nearby lava surfaces within &a{conversion_radius} &8blocks into magma blocks and prevents magma block damage.'
+  enchantment-lapis_refund-name: "Lapis Refund"
+  enchantment-lapis_refund-description: '&8Enchanting an item has a &a{refund_chance}% &8chance to refund up to &a{refund_amount} &8lapis lazuli, never more than was spent.'
+  enchantment-magic_protection-name: "Magic Protection"
+  enchantment-magic_protection-description: '&8Reduces magic and wither damage by &a{damage_reduction}%&8.'
+  enchantment-magma_response-name: "Magma Response"
+  enchantment-magma_response-description: '&8Taking magma damage grants Fire Resistance III for &a5 &8seconds; cooldown: &a{cooldown} &8seconds.'
+  enchantment-nourishing_armor-name: "Nourishing Armor"
+  enchantment-nourishing_armor-description: '&8Increases the hunger restored by food by &a{increase_percentage}%&8.'
+  enchantment-phantom_guard-name: "Phantom Guard"
+  enchantment-phantom_guard-description: '&8Prevents phantoms from spawning because of your insomnia while worn.'
+  enchantment-piglin_disguise-name: "Piglin Disguise"
+  enchantment-piglin_disguise-description: '&8Prevents piglins from becoming hostile because you are not wearing gold armor. Attacking or angering them still provokes them.'
+  enchantment-potion_resistance-name: "Potion Resistance"
+  enchantment-potion_resistance-description: '&8Has a &a{trigger_chance}% &8chance to resist an incoming negative potion effect.'
+  enchantment-quick_reflexes-name: "Quick Reflexes"
+  enchantment-quick_reflexes-description: '&8Taking damage has a &a{trigger_chance}% &8chance to grant Speed I for &a{duration} &8seconds.'
+  enchantment-ranged_retribution-name: "Ranged Retribution"
+  enchantment-ranged_retribution-description: '&8Reduces ranged damage by &a{damage_reduction_percentage}% &8and reflects the prevented damage to all monsters within &a6 &8blocks.'
+  enchantment-retaliation-name: "Retaliation"
+  enchantment-retaliation-description: '&8Taking entity damage marks the attacker for &a{retaliation_duration_seconds} &8seconds; melee damage dealt to it is increased by &a{bonus_damage_percentage}%&8.'
+  enchantment-retaliation-mark-message: '[actionbar]&6Retaliation &7| &eAttacker marked for &f{retaliation_duration_seconds} &eseconds[/actionbar]'
+  enchantment-retaliation-trigger-message: '[actionbar]&6Retaliation &7| &aDamage to the marked target increased by &f{bonus_damage_percentage}%[/actionbar]'
+  enchantment-rebirth-name: "Rebirth"
+  enchantment-rebirth-description: '&8Revives you at full health upon death, grants Resistance IV for &a3 &8seconds, and consumes this enchantment.'
+  enchantment-safe_fall-name: "Safe Fall"
+  enchantment-safe_fall-description: '&8Increases the safe fall distance by &a{safe_distance} &8blocks.'
+  enchantment-shrewd_bargain-name: "Shrewd Bargain"
+  enchantment-shrewd_bargain-description: '&8Provides &a25% &8more uses for villager trades; reopening the trading screen may sometimes be required to refresh them.'
+  enchantment-sprint_efficiency-name: "Sprint Efficiency"
+  enchantment-sprint_efficiency-description: '&8Reduces exhaustion from sprinting and sprint-jumping by &a{exhaustion_reduction}&8.'
+  enchantment-step_assist-name: "Step Assist"
+  enchantment-step_assist-description: '&8Increases automatic step height by &a{step_height} &8blocks.'
+  enchantment-stronghold_locator-name: "Stronghold Locator"
+  enchantment-stronghold_locator-description: '&8Sneak and right-click a block to locate a nearby stronghold.'
+  enchantment-stronghold_locator-cooldown-message: '&cStronghold Locator is on cooldown for another &e{remaining} &cseconds.'
+  enchantment-suffocation_escape-name: "Suffocation Escape"
+  enchantment-suffocation_escape-description: '&8When taking suffocation damage, teleports you to a nearby safe location and costs this item &a10 &8durability.'
+  enchantment-tempting_presence-name: "Tempting Presence"
+  enchantment-tempting_presence-description: '&8Increases the distance from which creatures are tempted by &a{attraction_distance} &8blocks.'
+  enchantment-vitality-name: "Vitality"
+  enchantment-vitality-description: '&8Increases maximum health by &a{bonus_health} &8points.'
+  enchantment-void_return-name: "Void Return"
+  enchantment-void_return-description: '&8When void damage triggers, returns you to the current world spawn, prevents the damage, and consumes this enchantment.'
+  enchantment-warden_concealment-name: "Warden Concealment"
+  enchantment-warden_concealment-description: '&8Reduces the Warden anger you generate by &a50%&8, delaying its detection of you.'
+  enchantment-silent_step-name: "Silent Step"
+  enchantment-silent_step-description: '&8Has a &a{cancel_chance}% &8chance to cancel vibrations you create in the Deep Dark, preventing the Warden from being alerted.'
+  enchantment-dictatorship_curse-name: "Dictatorship Curse"
+  enchantment-dictatorship_curse-description: '&8Prevents all other non-vanilla, non-curse enchantments from taking effect.'
+  enchantment-fragility_curse-name: "Fragility Curse"
+  enchantment-fragility_curse-description: '&8Whenever this item loses durability, it has a &c5% &8chance to break immediately.'
+  enchantment-gravity_curse-name: "Gravity Curse"
+  enchantment-gravity_curse-description: '&8Adds &c{gravity} &8gravity, making the player fall faster.'
+  enchantment-healing_curse-name: "Mercy Curse"
+  enchantment-healing_curse-description: '&8Attacks against monsters deal no damage and instead heal them for the amount that would have been dealt.'
+  enchantment-hunger_curse-name: "Hunger Curse"
+  enchantment-hunger_curse-description: '&8Increases hunger consumption by &c{increase_percentage}%&8.'
+  enchantment-auto_fish-name: "Auto Fishing"
+  enchantment-auto_fish-description: '&8Automatically reels in and casts again when a fish bites.'
+  enchantment-auto_fish-trigger-message: '[actionbar]&6Auto Fishing &7| &aAutomatically caught once[/actionbar]'
+  enchantment-grappling_hook-name: "Grappling Hook"
+  enchantment-grappling_hook-description: '&8Pulls you toward the fishing hook when it lands outside water.'
+  enchantment-instant_cook-name: "Instant Cook"
+  enchantment-instant_cook-description: '&8Raw fish caught while fishing is immediately converted into cooked fish.'
+  enchantment-ocean_companion-name: "Ocean Companion"
+  enchantment-ocean_companion-description: '&8After catching a fish in an ocean biome, has a &a15% &8chance to spawn a friendly sea creature nearby.'
+  enchantment-storm_angler-name: "Storm Angler"
+  enchantment-storm_angler-description: '&8During thunderstorms, hooking a creature summons lightning and deals 6 damage.'
+  enchantment-absorption_harvest-name: "Soul Harvest"
+  enchantment-absorption_harvest-description: '&8Increases maximum damage absorption by &a{absorption_limit} &8points; killing an enemy grants &a2 &8absorption health.'
+  enchantment-butcher-name: "Butcher"
+  enchantment-butcher-description: '&8Deals &a{bonus_damage} &8additional damage to passive animals.'
+  enchantment-combo-name: "Combo"
+  enchantment-combo-description: '&8Consecutive attacks within &a{time} &8seconds gain &a8% &8damage per stack, up to &a{max_stacks} &8stacks.'
+  enchantment-end_bane-name: "End Bane"
+  enchantment-end_bane-description: '&8Deals &a{bonus_damage} &8additional damage to creatures from the End.'
+  enchantment-executioner-name: "Executioner"
+  enchantment-executioner-description: '&8Axe attacks deal more damage as the target loses health, up to &a{max_damage_increase_percentage}% &8additional damage near death.'
+  enchantment-full_health_strike-name: "Full Health Strike"
+  enchantment-full_health_strike-description: '&8Deals &a{damage_increase_percentage}% &8more damage when attacking a creature near full health.'
+  enchantment-inventory_shuffle_curse-name: "Inventory Shuffle Curse"
+  enchantment-inventory_shuffle_curse-description: '&8Attacks have a &c25% &8chance to randomly shuffle the items in your inventory.'
+  enchantment-nether_bane-name: "Nether Bane"
+  enchantment-nether_bane-description: '&8Deals &a{bonus_damage} &8additional damage while in the Nether.'
+  enchantment-rage-name: "Rage"
+  enchantment-rage-description: '&8Taking damage builds rage for &a10 &8seconds. Each rage point increases your next attack by &a{damage}%&8, up to &a{max_stacks} &8stacks.'
+  enchantment-sneak_attack-name: "Sneak Attack"
+  enchantment-sneak_attack-description: '&8Swords deal &a{damage_increase_percentage}% &8more damage while sneaking.'
+  enchantment-spawner_slayer-name: "Spawner Slayer"
+  enchantment-spawner_slayer-description: '&8Deals &a{bonus_damage} &8additional damage to creatures spawned by spawners.'
+  enchantment-trial_weakness-name: "Trial Intimidation"
+  enchantment-trial_weakness-description: '&8The first attack against each monster in a trial chamber inflicts Weakness I for &a{duration} &8seconds.'
+  enchantment-cobweb-name: "Cobweb"
+  enchantment-cobweb-description: '&8Arrow hits have a &a{trigger_chance}% &8chance to create a cobweb lasting &a{duration} &8seconds.'
+  enchantment-evoker_fangs-name: "Evoker Fangs"
+  enchantment-evoker_fangs-description: '&8After an arrow hits a creature, summons a line of evoker fangs that each deal &a{fang_damage} &8damage.'
+  enchantment-headshot-name: "Headshot"
+  enchantment-headshot-description: '&8Projectiles that hit the target head deal &a{damage_increase_percentage}% &8more damage.'
+  enchantment-point_blank-name: "Point Blank"
+  enchantment-point_blank-description: '&8Deals &a{damage_increase_percentage}% &8more damage to targets within &a{distance} &8blocks.'
+  enchantment-ricochet_bolt-name: "Ricochet Bolt"
+  enchantment-ricochet_bolt-description: '&8Arrows ricochet from blocks up to &a{maximum_ricochets} &8times and travel at most &a{maximum_ricochet_distance} &8blocks after each bounce. Each ricochet adds &a{damage_bonus} &8bonus damage.'
+  enchantment-meteor_cadence-name: "Meteor Cadence"
+  enchantment-meteor_cadence-description: '&8Sneak while falling with this mace to gain &a{gravity_boost_percentage}% &8gravity, reduce air drag by &a{drag_reduction_percentage}%&8, and accelerate downward by &a{downward_acceleration} &8per tick, up to &a{terminal_fall_speed} &8blocks per tick.'
+  enchantment-impact_coil-name: "Impact Coil"
+  enchantment-impact_coil-description: '&8After a successful smash attack, gain &a{bounciness} &8bounciness and reduce fall damage by &a{fall_damage_reduction_percentage}% &8for &a{rebound_window_seconds} &8seconds.'
+  enchantment-gale_impact-name: "Gale Impact"
+  enchantment-gale_impact-description: '&8Smash after falling at least &a{minimum_fall_distance} &8blocks to hurl up to 16 nearby enemies within &a{burst_radius} &8blocks away with &a{knockback_force} &8force. Cooldown: &a{cooldown} &8seconds.'
+  enchantment-tracking_arrow-name: "Tracking Arrow"
+  enchantment-tracking_arrow-description: '&8Fired arrows track targets within &a{distance} &8blocks ahead.'
+  enchantment-triple_shot-name: "Triple Shot"
+  enchantment-triple_shot-description: '&8Consumes &a3 &8regular arrows per shot and fires &a3 &8arrows at once.'
+  enchantment-triple_shot-no-arrows-message: '[actionbar]&6Triple Shot &7| &4Not enough arrows[/actionbar]'
+  enchantment-frost_guard-name: "Frost Guard"
+  enchantment-frost_guard-description: '&8Successful blocks have a &a{trigger_chance}% &8chance to inflict Slowness I on the attacker for &a{duration} &8seconds.'
+  enchantment-instant_shield-name: "Instant Shield"
+  enchantment-instant_shield-description: '&8Reduces the cooldown after a shield is disabled by &a50%&8.'
+  enchantment-shadow_guard-name: "Shadow Guard"
+  enchantment-shadow_guard-description: '&8Successful blocks have a &a20% &8chance to grant Speed II and Invisibility for 5 seconds.'
+  enchantment-shield_might-name: "Shield Might"
+  enchantment-shield_might-description: '&8Successful blocks have a &a{trigger_chance}% &8chance to grant Strength I for &a{duration} &8seconds.'
+  enchantment-shield_preservation-name: "Shield Preservation"
+  enchantment-shield_preservation-description: '&8When the shield is about to be disabled, has a &a{trigger_chance}% &8chance to prevent it.'
+  enchantment-shield_rebound-name: "Shield Rebound"
+  enchantment-shield_rebound-description: '&8When the shield is disabled, knocks the entity that disabled it away.'
+  enchantment-shield_reflection-name: "Shield Reflection"
+  enchantment-shield_reflection-description: '&8After a successful block, reflects &a{reflection_percentage}% &8of the blocked damage to the attacker.'
+  enchantment-mirror_block-name: "Mirror Block"
+  enchantment-mirror_block-description: '&8Successful projectile blocks have a &a{trigger_chance}% &8chance to send the projectile back at &a{reflected_velocity_percentage}% &8speed and &a{reflected_damage_percentage}% &8damage. Cooldown: &a{reflection_cooldown}s&8.'
+  enchantment-perfect_guard-name: "Perfect Guard"
+  enchantment-perfect_guard-description: '&8Perfect guards have a &a{trigger_chance}% &8chance to restore &a{repair_percentage}% &8of the shield''s maximum durability.'
+  enchantment-perfect_guard-trigger-message: '[actionbar]&6Perfect Guard &7| &aRestored &f{repair_percentage}% &aof shield durability[/actionbar]'
+  enchantment-sonic_rebound-name: "Sonic Rebound"
+  enchantment-sonic_rebound-description: '&8After a successful block, has a &a{trigger_chance}% &8chance to unleash a sonic blast that deals &c{sonic_boom_damage} &8damage and knocks the attacker back.'
+  enchantment-spear_point_blank-name: "Spear Point Blank"
+  enchantment-spear_point_blank-description: '&8Spears deal &a{damage_increase_percentage}% &8more damage to targets within 3 blocks.'
+  enchantment-sprint_assault-name: "Sprint Assault"
+  enchantment-sprint_assault-description: '&8Deals &a{damage_increase_percentage}% &8more damage while sprinting.'
+  enchantment-skewer_lock-name: "Skewer Lock"
+  enchantment-skewer_lock-description: '&8Spear hits between &a3 &8and &a{sweet_max_distance} &8blocks pin the target with Slowness &a{slowness_level} &8for &a{slowness_duration_seconds} &8seconds. Per-target cooldown: &a2.5 &8seconds.'
+  enchantment-skewer_lock-trigger-message: '[actionbar]&6Skewer Lock &7| &aTarget pinned for &f{slowness_duration_seconds} &aseconds[/actionbar]'
+  enchantment-aqua_oxygen-name: "Aqua Oxygen"
+  enchantment-aqua_oxygen-description: '&8Breaking a block underwater restores &a{oxygen} &8seconds of oxygen.'
+  enchantment-auto_pickup-name: "Auto Pickup"
+  enchantment-auto_pickup-description: '&8Drops from blocks mined with the correct tool go directly into your inventory; overflow still drops at the block.'
+  enchantment-mob_pickup-name: "Loot Collector"
+  enchantment-mob_pickup-description: '&8Drops from monsters you kill go directly into your inventory; overflow still drops at the monster.'
+  enchantment-fishing_pickup-name: "Catch Collector"
+  enchantment-fishing_pickup-description: '&8Items caught while fishing go directly into your inventory; overflow still drops at the hook.'
+  enchantment-area_tilling-name: "Area Tilling"
+  enchantment-area_tilling-description: '&8Right-clicking a tillable block with a hoe converts a centered &a{range}×{range} &8area into farmland.'
+  enchantment-area_tilling-blocked-message: '[actionbar]&cSome blocks have obstructions above them and cannot be converted to farmland![/actionbar]'
+  enchantment-axe_attack_speed-name: "Swift Swing"
+  enchantment-axe_attack_speed-description: '&8Increases attack speed by &a{attack_speed} &8while holding an axe.'
+  enchantment-block_reach-name: "Block Reach"
+  enchantment-block_reach-description: '&8Increases block interaction range by &a{block_reach} &8blocks while holding a tool.'
+  enchantment-block_rotator-name: "Block Rotator"
+  enchantment-block_rotator-description: '&8Sneak and right-click a directional block to rotate it to the next available direction. Costs &a1 &8durability per use.'
+  enchantment-crop_growth-name: "Crop Growth"
+  enchantment-crop_growth-description: '&8Right-clicking a crop consumes one bone meal and grows crops in a centered &a{range}×{range} &8area by one stage.'
+  enchantment-crop_growth-no-bone-meal-message: '[actionbar]&bCrop Growth &7| &4Not enough bone meal[/actionbar]'
+  enchantment-cube_excavation-name: "Cube Excavation"
+  enchantment-cube_excavation-description: '&8Breaking a block also breaks matching blocks in a surrounding cube with side length &a{side_length}&8; disabled while sneaking.'
+  enchantment-entity_reach-name: "Entity Reach"
+  enchantment-entity_reach-description: '&8Increases entity interaction range by &a{entity_reach} &8blocks while holding a tool or sword.'
+  enchantment-farmland_hydration-name: "Farmland Hydration"
+  enchantment-farmland_hydration-description: '&8Right-clicking farmland with a hoe fully hydrates farmland in a centered &a{range}×{range} &8area.'
+  enchantment-copper_smelting-name: "Copper Smelting"
+  enchantment-copper_smelting-description: '&8Mining copper ore with a pickaxe automatically smelts all block drops into copper ingots.'
+  enchantment-gold_smelting-name: "Gold Smelting"
+  enchantment-gold_smelting-description: '&8Mining gold ore with a pickaxe automatically smelts all block drops into gold ingots.'
+  enchantment-iron_smelting-name: "Iron Smelting"
+  enchantment-iron_smelting-description: '&8Mining iron ore with a pickaxe automatically smelts all block drops into iron ingots.'
+  enchantment-layer_excavation-name: "Layer Excavation"
+  enchantment-layer_excavation-description: '&8Breaking a block also breaks matching blocks in a &a{range}×{range} &8area on the same horizontal layer; disabled while sneaking.'
+  enchantment-mass_harvest-name: "Mass Harvest"
+  enchantment-mass_harvest-description: '&8Right-clicking a crop harvests mature crops in a centered &a{range}×{range} &8area. Costs &a1 &8durability per use.'
+  enchantment-miner_rhythm-name: "Miner's Rhythm"
+  enchantment-miner_rhythm-description: '&8Every &a10 &8blocks mined randomly grants Haste I or Mining Fatigue I for &a10 &8seconds.'
+  enchantment-obsidian_haste-name: "Obsidian Haste"
+  enchantment-obsidian_haste-description: '&8Grants Haste {haste_level} while breaking obsidian.'
+  enchantment-plane_excavation-name: "Plane Excavation"
+  enchantment-plane_excavation-description: '&8Breaking a block also breaks matching blocks in a &a{range}×{range} &8plane aligned with your view; disabled while sneaking.'
+  enchantment-replant_crops-name: "Replant Crops"
+  enchantment-replant_crops-description: '&8After breaking a mature crop, consumes the matching seed from your inventory to replant it and costs the tool &a1 &8durability.'
+  enchantment-sphere_excavation-name: "Sphere Excavation"
+  enchantment-sphere_excavation-description: '&8Breaking a block also breaks matching blocks in a surrounding sphere with radius &a{radius}&8; disabled while sneaking.'
+  enchantment-stone_refining-name: "Stone Refining"
+  enchantment-stone_refining-description: '&8Sneak and right-click waste stone to convert it into stone at a cost of &a1 &8durability.'
+  enchantment-tunnel_excavation-name: "Tunnel Excavation"
+  enchantment-tunnel_excavation-description: '&8Breaking a block excavates matching blocks along your view for &a{length} &8blocks with a &a{cross_section_size} &8wide cross-section; disabled while sneaking.'
+  enchantment-vein_excavation-name: "Vein Excavation"
+  enchantment-vein_excavation-description: '&8Breaking a block also breaks up to &a{amount} &8connected matching blocks; disabled while sneaking.'
+  enchantment-axolotl_rescue-name: "Axolotl Rescue"
+  enchantment-axolotl_rescue-description: '&8While in water at no more than 10% health, attacking a target can summon an axolotl nearby to assist you once every 30 seconds.'
+  enchantment-fatigue_conversion-name: "Fatigue Conversion"
+  enchantment-fatigue_conversion-description: '&8Gaining Mining Fatigue also grants Speed II and Strength I for the same duration.'
+  enchantment-poison_cloud-name: "Poison Cloud"
+  enchantment-poison_cloud-description: '&8Trident hits have a 25% chance to create a poison cloud near the target.'
+  enchantment-storm_burst-name: "Storm Burst"
+  enchantment-storm_burst-description: '&8Hits have a &a{trigger_chance}% &8chance to deal &a{lightning_damage} &8lightning damage near the target.'
+  enchantment-tridal_hunter-name: "Tidal Hunter"
+  enchantment-tridal_hunter-description: '&8Deals &a{bonus_damage} &8additional damage when attacking guardians or elder guardians, or while you are in water.'
+  vanilla-enchantment-aqua_affinity-name: "Aqua Affinity"
+  vanilla-enchantment-aqua_affinity-description: '&8Removes the underwater mining speed penalty.'
+  vanilla-enchantment-bane_of_arthropods-name: "Bane of Arthropods"
+  vanilla-enchantment-bane_of_arthropods-description: '&8Deals &a{damage} &8additional damage to arthropods and inflicts Slowness IV for &a1.5-{slowness_duration} &8seconds.'
+  vanilla-enchantment-binding_curse-name: "Curse of Binding"
+  vanilla-enchantment-binding_curse-description: '&8Prevents a worn item from being removed until it breaks or the player dies; Creative mode is unaffected.'
+  vanilla-enchantment-blast_protection-name: "Blast Protection"
+  vanilla-enchantment-blast_protection-description: '&8Reduces explosion damage by &a{damage_reduction}% &8and grants &a{knockback_reduction}% &8explosion knockback resistance; total enchantment protection is capped at &a80%&8.'
+  vanilla-enchantment-breach-name: "Breach"
+  vanilla-enchantment-breach-description: '&8Mace attacks reduce the effectiveness of the target armor by &a{armor_reduction}%&8.'
+  vanilla-enchantment-channeling-name: "Channeling"
+  vanilla-enchantment-channeling-description: '&8During thunderstorms, a thrown trident summons lightning when it hits an exposed entity or lightning rod.'
+  vanilla-enchantment-density-name: "Density"
+  vanilla-enchantment-density-description: '&8Mace smash attacks deal &a{damage_per_block} &8additional damage for each block fallen.'
+  vanilla-enchantment-depth_strider-name: "Depth Strider"
+  vanilla-enchantment-depth_strider-description: '&8Improves underwater movement efficiency by &a{underwater_efficiency}%&8; level III removes movement slowdown from flowing water.'
+  vanilla-enchantment-efficiency-name: "Efficiency"
+  vanilla-enchantment-efficiency-description: '&8Adds &a{mining_efficiency} &8mining efficiency when breaking blocks with the appropriate tool.'
+  vanilla-enchantment-feather_falling-name: "Feather Falling"
+  vanilla-enchantment-feather_falling-description: '&8Reduces fall damage by &a{damage_reduction}%&8; total enchantment protection is capped at &a80%&8.'
+  vanilla-enchantment-fire_aspect-name: "Fire Aspect"
+  vanilla-enchantment-fire_aspect-description: '&8Melee hits set the target on fire for &a{fire_duration} &8seconds.'
+  vanilla-enchantment-fire_protection-name: "Fire Protection"
+  vanilla-enchantment-fire_protection-description: '&8Reduces fire damage by &a{damage_reduction}% &8and burning duration by &a{fire_duration_reduction}%&8; total enchantment protection is capped at &a80%&8.'
+  vanilla-enchantment-flame-name: "Flame"
+  vanilla-enchantment-flame-description: '&8Ignites fired arrows, setting hit targets and interactable blocks on fire.'
+  vanilla-enchantment-fortune-name: "Fortune"
+  vanilla-enchantment-fortune-description: '&8Increases drop counts or bonus drop chances from certain blocks; the exact increase depends on the block loot table.'
+  vanilla-enchantment-frost_walker-name: "Frost Walker"
+  vanilla-enchantment-frost_walker-description: '&8While walking on the ground, freezes water within &a{freezing_radius} &8blocks beneath your feet into frosted ice and prevents magma block damage.'
+  vanilla-enchantment-impaling-name: "Impaling"
+  vanilla-enchantment-impaling-description: '&8Tridents deal &a{damage} &8additional damage to aquatic creatures.'
+  vanilla-enchantment-infinity-name: "Infinity"
+  vanilla-enchantment-infinity-description: '&8When an arrow hits, it has a &a{refund_chance}% &8chance to return one regular arrow. Levels I–IV require &c10/20/30/40 Combat&8 respectively and downgrade when the current requirement is not met.'
+  vanilla-enchantment-knockback-name: "Knockback"
+  vanilla-enchantment-knockback-description: '&8Melee hits gain &a{level} &8additional levels of knockback strength.'
+  vanilla-enchantment-looting-name: "Looting"
+  vanilla-enchantment-looting-description: '&8Increases normal mob drops and rare drop chances, and raises the chance for mob equipment to drop by &a{level}%&8.'
+  vanilla-enchantment-loyalty-name: "Loyalty"
+  vanilla-enchantment-loyalty-description: '&8Makes thrown tridents return automatically; higher levels increase return acceleration.'
+  vanilla-enchantment-luck_of_the_sea-name: "Luck of the Sea"
+  vanilla-enchantment-luck_of_the_sea-description: '&8Adds &a{level} &8luck while fishing, increasing treasure chances and reducing junk chances.'
+  vanilla-enchantment-lunge-name: "Lunge"
+  vanilla-enchantment-lunge-description: '&8Spear thrusts propel you forward with &a{thrust} &8impulse, cost &a1 &8durability, and add &a{exhaustion} &8exhaustion; unavailable while riding, gliding, in water, or below 7 hunger.'
+  vanilla-enchantment-lure-name: "Lure"
+  vanilla-enchantment-lure-description: '&8Reduces the wait for a bite by up to &a{time_reduction} &8seconds each time you fish.'
+  vanilla-enchantment-mending-name: "Mending"
+  vanilla-enchantment-mending-description: '&8When experience is collected, randomly repairs one equipped damaged enchanted item by &a2 &8durability per &a1 &8experience consumed.'
+  vanilla-enchantment-multishot-name: "Multishot"
+  vanilla-enchantment-multishot-description: '&8Crossbows fire &a3 &8projectiles spread 10° apart while consuming only &a1 &8piece of ammunition.'
+  vanilla-enchantment-piercing-name: "Piercing"
+  vanilla-enchantment-piercing-description: '&8Arrows can pass through entities and shields, hitting up to &a{hit_count} &8entities in sequence.'
+  vanilla-enchantment-power-name: "Power"
+  vanilla-enchantment-power-description: '&8Increases damage dealt by arrows fired from bows by &a{damage}&8.'
+  vanilla-enchantment-projectile_protection-name: "Projectile Protection"
+  vanilla-enchantment-projectile_protection-description: '&8Reduces projectile damage by &a{damage_reduction}%&8; total enchantment protection is capped at &a80%&8.'
+  vanilla-enchantment-protection-name: "Protection"
+  vanilla-enchantment-protection-description: '&8Reduces incoming attack damage by &a{damage}&8, up to a maximum of &a50%&8.'
+  vanilla-enchantment-punch-name: "Punch"
+  vanilla-enchantment-punch-description: '&8Arrows fired from bows gain &a{level} &8additional levels of knockback strength.'
+  vanilla-enchantment-quick_charge-name: "Quick Charge"
+  vanilla-enchantment-quick_charge-description: '&8Reduces crossbow loading time to &a{charge_time} &8seconds.'
+  vanilla-enchantment-respiration-name: "Respiration"
+  vanilla-enchantment-respiration-description: '&8Each air loss has a &a{oxygen_conservation_chance}% &8chance to preserve air, extending average underwater breathing time to &a{duration_multiplier} &8times normal.'
+  vanilla-enchantment-riptide-name: "Riptide"
+  vanilla-enchantment-riptide-description: '&8Using a trident in water or rain launches the player into a spinning charge with &a{riptide_strength} &8additional thrust strength.'
+  vanilla-enchantment-sharpness-name: "Sharpness"
+  vanilla-enchantment-sharpness-description: '&8Increases melee attack damage by &a{damage}&8.'
+  vanilla-enchantment-silk_touch-name: "Silk Touch"
+  vanilla-enchantment-silk_touch-description: '&8Makes applicable blocks drop themselves and prevents those blocks from dropping experience.'
+  vanilla-enchantment-smite-name: "Smite"
+  vanilla-enchantment-smite-description: '&8Deals &a{damage} &8additional damage to undead creatures.'
+  vanilla-enchantment-soul_speed-name: "Soul Speed"
+  vanilla-enchantment-soul_speed-description: '&8Removes slowdown and increases movement speed by &a{speed_increase}% &8on soul sand or soul soil; each block traveled has a &a{durability_loss_chance}% &8chance to cost 1 durability.'
+  vanilla-enchantment-sweeping_edge-name: "Sweeping Edge"
+  vanilla-enchantment-sweeping_edge-description: '&8Makes sweeping attacks deal &a{sweep_damage}% &8of the main target damage to nearby targets.'
+  vanilla-enchantment-swift_sneak-name: "Swift Sneak"
+  vanilla-enchantment-swift_sneak-description: '&8Increases sneaking speed to &a{sneak_speed}% &8of normal walking speed.'
+  vanilla-enchantment-thorns-name: "Thorns"
+  vanilla-enchantment-thorns-description: '&8When attacked, has a &a{trigger_chance}% &8chance to reflect 1-5 damage; triggering costs the enchanted item 2 additional durability.'
+  vanilla-enchantment-unbreaking-name: "Unbreaking"
+  vanilla-enchantment-unbreaking-description: '&8Non-armor items have a &a{tool_durability_conservation}% &8chance to preserve durability and last &a{durability_multiplier} &8times longer on average; armor has a &a{armor_durability_conservation}% &8preservation chance.'
+  vanilla-enchantment-vanishing_curse-name: "Curse of Vanishing"
+  vanilla-enchantment-vanishing_curse-description: '&8The item vanishes instead of dropping when the player dies; it does not trigger when keep inventory is enabled.'
+  vanilla-enchantment-wind_burst-name: "Wind Burst"
+  vanilla-enchantment-wind_burst-description: '&8A mace smash from at least 1.5 blocks high creates a wind burst that launches the attacker upward with a &a{knock_up_strength} &8knockback multiplier.'

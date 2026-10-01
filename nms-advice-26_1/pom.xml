@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.superiormc.enchantmentreform</groupId>
+        <artifactId>EnchantmentReform</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>nms-advice-26_1</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.18.7</version>
+        </dependency>
+    </dependencies>
+</project>

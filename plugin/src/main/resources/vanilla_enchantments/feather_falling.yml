@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:feather_falling
+name: '{lang:vanilla-enchantment-feather_falling-name}'
+description: '{lang:vanilla-enchantment-feather_falling-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'damage_reduction': '{level} * 12'

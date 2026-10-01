@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:luck_of_the_sea
+name: '{lang:vanilla-enchantment-luck_of_the_sea-name}'
+description: '{lang:vanilla-enchantment-luck_of_the_sea-description}'
+
+rarity: RARE

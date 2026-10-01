@@ -1,0 +1,56 @@
+package cn.superiormc.enchantmentreform.objects.changes;
+
+import cn.superiormc.enchantmentreform.objects.ObjectSingleChange;
+import cn.superiormc.enchantmentreform.utils.MathUtil;
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+
+public class AddNBTDouble extends AbstractChangesRule {
+
+    public AddNBTDouble() {
+        super();
+    }
+
+    @Override
+    public ItemStack setChange(ObjectSingleChange singleChange) {
+        NBTItem nbtItem = new NBTItem(singleChange.getItem().clone());
+        List<String> tempVal1 = singleChange.getStringList("add-nbt-double");
+        for (String key : tempVal1) {
+            String[] parentKeys = key.split(";;");
+            if (parentKeys.length == 2) {
+                nbtItem.setDouble(parentKeys[0], MathUtil.doCalculate(parentKeys[1]));
+            } else if (parentKeys.length > 2) {
+                NBTCompound nbtCompound = null;
+                String lastElement = parentKeys[parentKeys.length - 1];
+                String last2Element = parentKeys[parentKeys.length - 2];
+                String[] newArray = new String[parentKeys.length - 2];
+                System.arraycopy(parentKeys, 0, newArray, 0, parentKeys.length - 2);
+                parentKeys = newArray;
+                for (String parentKey : parentKeys) {
+                    if (parentKey.isEmpty()) {
+                        continue;
+                    }
+                    if (nbtCompound == null) {
+                        nbtCompound = nbtItem.getOrCreateCompound(parentKey);
+                    } else {
+                        nbtCompound = nbtCompound.getOrCreateCompound(parentKey);
+                    }
+                }
+                if (nbtCompound != null) {
+                    nbtCompound.setDouble(last2Element, MathUtil.doCalculate(lastElement));
+                }
+            }
+        }
+        singleChange.setNeedRewriteItem();
+        return nbtItem.getItem();
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return !section.contains("add-nbt-double");
+    }
+}

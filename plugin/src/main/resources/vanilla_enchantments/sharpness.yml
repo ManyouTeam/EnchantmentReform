@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:sharpness
+name: '{lang:vanilla-enchantment-sharpness-name}'
+description: '{lang:vanilla-enchantment-sharpness-description}'
+
+rarity: COMMON
+
+variables:
+  'damage': '{level} * 0.5 + 0.5'

@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:aqua_affinity
+name: '{lang:vanilla-enchantment-aqua_affinity-name}'
+description: '{lang:vanilla-enchantment-aqua_affinity-description}'
+
+rarity: RARE

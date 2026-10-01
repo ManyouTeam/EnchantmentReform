@@ -1,0 +1,59 @@
+enabled: true
+key: minecraft:infinity
+name: '{lang:vanilla-enchantment-infinity-name}'
+description: '{lang:vanilla-enchantment-infinity-description}'
+
+supported-items: enchantmentreform:bow_and_crossbow
+primary-items: enchantmentreform:bow_and_crossbow
+max-level: 4
+
+exclusive-with:
+  - minecraft:mending
+  - enchantmentreform:triple_shot
+  - enchantmentreform:tracking_arrow
+
+rarity: EPIC
+
+# Remove Infinity's original ammo-use component and replace it with runtime Power.
+effects: {}
+
+conditions:
+  '1':
+    combat-level:
+      type: skill_level
+      skill: combat
+      min: 10
+  '2':
+    combat-level:
+      type: skill_level
+      skill: combat
+      min: 20
+  '3':
+    combat-level:
+      type: skill_level
+      skill: combat
+      min: 30
+  '4':
+    combat-level:
+      type: skill_level
+      skill: combat
+      min: 40
+
+variables:
+  refund_chance:
+    '==1': 15
+    '==2': 25
+    '==3': 35
+    '==4': 45
+  refund_chance_decimal: '{refund_chance} / 100'
+
+powers:
+  on-projectile-hit:
+    abilities:
+      return-arrow:
+        type: give_item
+        target: PLAYER
+        amount: 1
+        random: '{refund_chance_decimal}'
+        item:
+          material: ARROW

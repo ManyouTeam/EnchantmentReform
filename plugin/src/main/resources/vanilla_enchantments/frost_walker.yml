@@ -1,0 +1,13 @@
+enabled: true
+key: minecraft:frost_walker
+name: '{lang:vanilla-enchantment-frost_walker-name}'
+description: '{lang:vanilla-enchantment-frost_walker-description}'
+
+rarity: LEGENDARY
+
+exclusive-with:
+  - minecraft:depth_strider
+  - enchantmentreform:lava_walker
+
+variables:
+  'freezing_radius': '{level} + 2'

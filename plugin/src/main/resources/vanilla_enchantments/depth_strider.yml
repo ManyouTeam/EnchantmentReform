@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:depth_strider
+name: '{lang:vanilla-enchantment-depth_strider-name}'
+description: '{lang:vanilla-enchantment-depth_strider-description}'
+
+rarity: RARE
+
+variables:
+  'underwater_efficiency': '{level} * 100 / 3'

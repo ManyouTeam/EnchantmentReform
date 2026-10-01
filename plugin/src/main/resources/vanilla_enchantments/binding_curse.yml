@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:binding_curse
+name: '{lang:vanilla-enchantment-binding_curse-name}'
+description: '{lang:vanilla-enchantment-binding_curse-description}'
+
+rarity: CURSE

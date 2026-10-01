@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:flame
+name: '{lang:vanilla-enchantment-flame-name}'
+description: '{lang:vanilla-enchantment-flame-description}'
+
+rarity: RARE

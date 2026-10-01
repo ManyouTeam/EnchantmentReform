@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:fire_aspect
+name: '{lang:vanilla-enchantment-fire_aspect-name}'
+description: '{lang:vanilla-enchantment-fire_aspect-description}'
+
+rarity: RARE
+
+variables:
+  'fire_duration': '{level} * 4'

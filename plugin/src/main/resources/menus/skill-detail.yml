@@ -1,0 +1,113 @@
+source-title: '{lang:skill-detail-source-title}'
+reward-title: '{lang:skill-detail-reward-title}'
+size: 54
+source-symbol: S
+reward-symbol: R
+attribute-symbol: A
+back-symbol: B
+view-symbol: V
+layout:
+  - 'FFFFFFFFF'
+  - 'FAAAAAAAF'
+  - 'FSSSSSSSF'
+  - 'FSSSSSSSF'
+  - 'FSSSSSSSF'
+  - 'BFFVPIFNC'
+reward-layout:
+  - 'FRRRRRRRF'
+  - 'FFFFFFFRF'
+  - 'FRRRRRRRF'
+  - 'FRFFFFFFF'
+  - 'FRRRRRRRF'
+  - 'BFFVPIFNC'
+source-item:
+  material: EXPERIENCE_BOTTLE
+  name: '&f{source_name}'
+  lore:
+    - '&7{source_description}'
+    - ' '
+    - '{lang:skill-source-xp}'
+attribute-item:
+  material: NETHER_STAR
+  name: '&a{attribute_name}'
+  lore:
+    - '&7{attribute_description}'
+    - ' '
+    - '{lang:skill-attribute-summary-level}'
+    - '{next_cost}'
+    - ' '
+    - '{lang:skill-attribute-open-details}'
+reward-item:
+  material: RED_STAINED_GLASS_PANE
+  name: '{lang:skill-reward-name}'
+  lore:
+    - '{reward_status}'
+    - ' '
+    - '{reward_lines}'
+reward-item-claimed:
+  material: LIME_STAINED_GLASS_PANE
+reward-item-next:
+  material: YELLOW_STAINED_GLASS_PANE
+buttons:
+  F:
+    material: BLACK_STAINED_GLASS_PANE
+    name: ' '
+  B:
+    material: ARROW
+    name: '{lang:skill-detail-back}'
+    lore:
+      - '{lang:skill-detail-back-lore}'
+  V:
+    material: CHEST
+    name: '{lang:skill-detail-show-rewards}'
+    lore:
+      - '{lang:skill-detail-show-rewards-lore}'
+    reward-view-item:
+      material: EXPERIENCE_BOTTLE
+      name: '{lang:skill-detail-show-sources}'
+      lore:
+        - '{lang:skill-detail-show-sources-lore}'
+  P:
+    material: ARROW
+    name: '{lang:enchantment-menu-previous}'
+    lore:
+      - '{lang:enchantment-menu-page}'
+    actions:
+      previous-page:
+        type: previous_page
+    hide-on-first-page: true
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+  N:
+    material: ARROW
+    name: '{lang:enchantment-menu-next}'
+    lore:
+      - '{lang:enchantment-menu-page}'
+    actions:
+      next-page:
+        type: next_page
+    hide-on-last-page: true
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+  I:
+    material: NETHER_STAR
+    name: '&b{name} &7Lv.{level}'
+    lore:
+      - '&7{description}'
+      - ' '
+      - '{lang:skill-menu-experience}'
+      - '{progress_bar}'
+      - '{lang:skill-detail-remaining}'
+      - ' '
+      - '{lang:skill-menu-sources}'
+    actions:
+      refresh:
+        type: refresh
+  C:
+    material: BARRIER
+    name: '{lang:enchantment-menu-close}'
+    actions:
+      close:
+        type: close

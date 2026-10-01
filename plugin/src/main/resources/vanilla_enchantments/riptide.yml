@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:riptide
+name: '{lang:vanilla-enchantment-riptide-name}'
+description: '{lang:vanilla-enchantment-riptide-description}'
+
+rarity: RARE
+
+variables:
+  'riptide_strength': '{level} * 0.75 + 0.75'

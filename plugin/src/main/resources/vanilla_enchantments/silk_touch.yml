@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:silk_touch
+name: '{lang:vanilla-enchantment-silk_touch-name}'
+description: '{lang:vanilla-enchantment-silk_touch-description}'
+
+rarity: EPIC

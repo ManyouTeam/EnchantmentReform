@@ -1,0 +1,21 @@
+enabled: true
+key: minecraft:protection
+name: '{lang:vanilla-enchantment-protection-name}'
+description: '{lang:vanilla-enchantment-protection-description}'
+
+max-level: 6
+
+rarity: COMMON
+
+effects: {}
+
+variables:
+  'damage': '{level}'
+
+powers:
+  on-damage:
+    modifiers:
+      1:
+        type: damage
+        operation: SUBTRACT
+        value: 'min({level}, {original} * 0.5)'

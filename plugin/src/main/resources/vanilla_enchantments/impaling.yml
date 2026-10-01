@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:impaling
+name: '{lang:vanilla-enchantment-impaling-name}'
+description: '{lang:vanilla-enchantment-impaling-description}'
+
+rarity: RARE
+
+variables:
+  'damage': '{level} * 2.5'

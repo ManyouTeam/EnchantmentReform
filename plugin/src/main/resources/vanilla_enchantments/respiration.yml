@@ -1,0 +1,10 @@
+enabled: true
+key: minecraft:respiration
+name: '{lang:vanilla-enchantment-respiration-name}'
+description: '{lang:vanilla-enchantment-respiration-description}'
+
+rarity: RARE
+
+variables:
+  'oxygen_conservation_chance': '100 * {level} / ({level} + 1)'
+  'duration_multiplier': '{level} + 1'

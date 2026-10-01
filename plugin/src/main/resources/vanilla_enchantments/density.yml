@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:density
+name: '{lang:vanilla-enchantment-density-name}'
+description: '{lang:vanilla-enchantment-density-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'damage_per_block': '{level} * 0.5'

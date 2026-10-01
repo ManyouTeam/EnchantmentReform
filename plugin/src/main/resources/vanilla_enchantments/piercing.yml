@@ -1,0 +1,16 @@
+enabled: true
+key: minecraft:piercing
+name: '{lang:vanilla-enchantment-piercing-name}'
+description: '{lang:vanilla-enchantment-piercing-description}'
+
+supported-items:
+  - minecraft:bow
+  - minecraft:crossbow
+primary-items:
+  - minecraft:bow
+  - minecraft:crossbow
+
+rarity: COMMON
+
+variables:
+  'hit_count': '{level} + 1'

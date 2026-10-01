@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:punch
+name: '{lang:vanilla-enchantment-punch-name}'
+description: '{lang:vanilla-enchantment-punch-description}'
+
+rarity: RARE

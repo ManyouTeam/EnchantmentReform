@@ -1,0 +1,751 @@
+error:
+  player-not-found: "&#98FB98[EnchantmentReform] &c找不到玩家 {player}!"
+  args: "&#98FB98[EnchantmentReform] &c命令用法错误，请使用/enchantmentreform help获取帮助!"
+  in-game: "&#98FB98[EnchantmentReform] &c你必须在游戏中使用该命令!"
+  miss-permission: "&#98FB98[EnchantmentReform] &c你没有权限使用该命令!"
+  save-item-not-found: "&#98FB98[EnchantmentReform] &c找不到已保存物品 {item}!"
+  attribute-not-found: "&#98FB98[EnchantmentReform] &c找不到自定义属性 {attribute}!"
+  invalid-number: "&#98FB98[EnchantmentReform] &c{value} 不是有效整数！"
+  invalid-decimal: "&#98FB98[EnchantmentReform] &c{value} 不是有效数字！"
+  attribute-modifier-invalid: "&#98FB98[EnchantmentReform] &c无效的属性修改器：{value}！"
+  attribute-modifier-exists: "&#98FB98[EnchantmentReform] &c属性修改器 {modifier} 已存在！"
+  skill-not-found: "&#98FB98[EnchantmentReform] &c找不到技能 {skill}！"
+  skills-disabled: "&#98FB98[EnchantmentReform] &c技能模块已关闭！"
+  invalid-multiplier: "&#98FB98[EnchantmentReform] &c{value} 不是有效的非负倍率！"
+  invalid-skill-experience: "&#98FB98[EnchantmentReform] &c{value} 不是有效的非负技能经验值！"
+  invalid-skill-level: "&#98FB98[EnchantmentReform] &c{value} 不是有效技能等级（0-{maximum}）！"
+attribute:
+  set: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {attribute} 基础值设为 {value}，当前值：{current}。"
+  add: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {attribute} 基础值修改为 {value}，当前值：{current}。"
+  modifier-added: "&#98FB98[EnchantmentReform] &f已为玩家 {player} 的 {attribute} 添加 {modifier}（{operation} {amount}），当前值：{value}。"
+  modifier-set: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {attribute} 修改器 {modifier} 设为 {operation} {amount}，当前值：{value}。"
+skill:
+  multiplier-set: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {skill} 技能经验倍率设为 {multiplier}。"
+  progress-updated: "&#98FB98[EnchantmentReform] &f已更新玩家 {player} 的 {skill}：等级 {level}/{maximum_level}，经验 {experience}/{required_experience}。"
+plugin:
+  reloading: "&#98FB98[EnchantmentReform] &f插件重载中，您的服务器可能会有卡顿。除非特殊情况，我们建议您重启服务器，而不是重载插件，这样能保证数据储存安全。"
+  reloaded: "&#98FB98[EnchantmentReform] &f插件已重载!"
+  registry-restart-required: "&#98FB98[EnchantmentReform] &f附魔注册表的变更需要完整重启服务器后生效!"
+  saved: "&#98FB98[EnchantmentReform] &f物品已保存!"
+  generated: "&#98FB98[EnchantmentReform] &f已在插件根目录下生成手持物品的物品格式文件!"
+give-save-item: "&#98FB98[EnchantmentReform] &f已将 {amount} 个已保存物品 {item} 给予玩家 {player}!"
+command-tab:
+  type-item-id: "[物品 ID]"
+dupe-removed: "&#98FB98[EnchantmentReform] &f已从您的背包中移除一个非法物品!"
+help:
+  main: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu <菜单ID> &7- 打开指定菜单。"
+  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu <菜单ID> &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。"
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。"
+override-lang:
+  menu-not-found: '&#98FB98[EnchantmentReform] &c找不到这个菜单。'
+  menu-requires-context: '&#98FB98[EnchantmentReform] &c该详情菜单需要从技能或属性按钮进入。'
+  skill-menu-title: '&8技能'
+  skill-menu-level: '&7等级：&a{level}&7/&a{maximum_level}'
+  skill-menu-experience: '&7经验：&b{experience}&7/&b{required_experience}'
+  skill-menu-progress: '&7进度：&e{progress}%'
+  skill-menu-sources: '&7经验来源（{source_count}）：'
+  skill-menu-click: '&e点击查看经验来源与等级奖励'
+  skill-menu-info: '&e技能信息'
+  skill-menu-amount: '&7技能数量：&f{amount}'
+  skill-menu-points: '&7可用属性点：&e{points}'
+  skill-allocation-title: '&8属性加点 &7- &e{points} 点'
+  skill-allocation-info: '&e属性加点'
+  skill-level-up: '&#98FB98[EnchantmentReform] &a{skill} 升至 {level} 级！&e获得 {points} 属性点。'
+  skill-xp-gain: '&b+{gained} {skill} 经验 &8| &7Lv.{level} &f{experience}&7/&f{required_experience}'
+  skill-level-up-title: '&6&l技能升级！'
+  skill-level-up-subtitle: '{skill} &f达到 &e{level} &f级'
+  skill-detail-source-title: '&8{name} &7- 经验来源 ({page}/{pages})'
+  skill-detail-reward-title: '&8{name} &7- 等级奖励 ({page}/{pages})'
+  skill-detail-back: '&a返回技能列表'
+  skill-detail-back-lore: '&7点击返回全部技能'
+  skill-detail-show-rewards: '&e查看等级奖励'
+  skill-detail-show-rewards-lore: '&7点击查看每一级可获得的奖励'
+  skill-detail-show-sources: '&b查看经验来源'
+  skill-detail-show-sources-lore: '&7点击查看全部经验获取方式'
+  skill-detail-remaining: '&7距离升级还需：&e{remaining_experience} 经验'
+  skill-source-xp: '&7基础经验：&a{source_xp}{source_unit}'
+  skill-reward-name: '&e等级 {reward_level} 奖励'
+  skill-reward-status-claimed: '&a已领取'
+  skill-reward-status-next: '&e下一级奖励'
+  skill-reward-status-locked: '&7尚未解锁'
+  skill-reward-attribute-points: '&7属性点：&e+{reward_attribute_points}'
+  skill-reward-attributes: '&7属性提升：'
+  skill-reward-attribute-line: '&8- &f{attribute}：&a+{amount}'
+  skill-reward-commands: '&7命令奖励：'
+  skill-reward-command-line: '&8- &f{command}'
+  skill-reward-items: '&7物品奖励：'
+  skill-reward-item-line: '&8- &f{item} &7x{amount}'
+  skill-reward-line: '&8- &f{reward}'
+  skill-reward-default-attribute-points: '&e+{amount} 属性点'
+  skill-reward-default-attribute: '&a+{amount} {attribute}'
+  skill-reward-default-attributes: '&a属性提升：{attributes}'
+  skill-reward-attribute-summary: '+{amount} {attribute}'
+  skill-reward-attribute-separator: '，'
+  skill-reward-default-item: '{item} &7x{amount}'
+  skill-reward-none: '&8无'
+  skill-allocation-success: '&#98FB98[EnchantmentReform] &a已为 {attribute} 增加 {add} 点，消耗 {price} 属性点；剩余 {points} 点。'
+  skill-allocation-not-enough: '&#98FB98[EnchantmentReform] &c属性点不足，需要 {price} 点。'
+  skill-allocation-maximum: '&#98FB98[EnchantmentReform] &c{attribute} 已达到上限，无法增加 {add} 点。'
+  skill-allocation-condition-not-met: '&#98FB98[EnchantmentReform] &c你不满足将 {attribute} 增加 {add} 点的条件。'
+  skill-allocation-skill-level-requirement: '&7解锁条件：{skill}&e等级 {level}'
+  skill-allocation-invalid: '&#98FB98[EnchantmentReform] &c该加点选项无效。'
+  skill-allocation-current-value: '&7当前：&f{base_value} &8（最终 {value}）'
+  skill-allocation-maximum-value: '&7上限：&f{maximum_value}'
+  skill-allocation-point-price: '&7升至 &f{next_base} &7级需要：&e{price} 属性点'
+  skill-allocation-available-points: '&7可用属性点：&e{points}'
+  skill-allocation-click-option: '&e点击升级：&f{base_before} &7→ &a{base_after} &8（最终 {value_before} → {value_after}）'
+  skill-attribute-summary-level: '&7等级：&f{base_value}&8/&f{maximum_value} &8（最终值 {value}）'
+  skill-attribute-summary-next-cost: '&7下一级消耗：&e{price} 属性点'
+  skill-attribute-summary-maximum: '&7状态：&a已达到最高等级'
+  skill-attribute-open-details: '&e点击查看属性详情与升级选项'
+  attribute-detail-modifier-label: '&8属性修改器'
+  attribute-detail-modifier-operation: '&7运算方式：&f{operation_display}'
+  attribute-detail-modifier-amount: '&7效果：&a{amount_display}'
+  attribute-detail-operation-add-value: '固定数值加成'
+  attribute-detail-operation-add-base: '基础值百分比加成'
+  attribute-detail-operation-multiply-total: '最终值倍率加成'
+  attribute-detail-no-modifiers: '&7没有生效中的修改器'
+  attribute-detail-no-modifiers-lore: '&8装备、临时效果或持久修改器会显示在这里。'
+  attribute-detail-values-header: '&f数值信息'
+  attribute-detail-base-value: '&7基础值：&f{base_value}'
+  attribute-detail-final-value: '&7最终值：&a{value}'
+  attribute-detail-default-value: '&7默认值：&f{default_value}'
+  attribute-detail-range: '&7范围：&f{minimum_value} &8- &f{maximum_value}'
+  attribute-detail-modifier-count: '&7生效修改器：&e{modifier_count}'
+  attribute-detail-upgrade: '&a升级属性'
+  attribute-detail-upgrade-description: '&8消耗属性点提升基础等级。'
+  attribute-detail-level-change: '&7等级变化：&f{base_value} &8→ &a{next_base}'
+  attribute-detail-value-change: '&7最终值变化：&f{value} &8→ &a{next_value}'
+  attribute-detail-upgrade-cost: '&7本次需要：&e{price} 属性点'
+  attribute-detail-points-owned: '&7当前拥有：&f{points} 属性点'
+  attribute-detail-click-upgrade: '&e左键点击升级一级'
+  attribute-detail-maximum: '&7已达到最高等级'
+  attribute-detail-current-level: '&7当前等级：&f{base_value}&8/&f{allocation_maximum_value}'
+  attribute-detail-back: '&a返回上一页'
+  attribute-detail-previous: '&a上一页'
+  attribute-detail-next: '&a下一页'
+  attribute-detail-page: '&7修改器页面：&f{page}&8/&f{pages}'
+  attribute-detail-close: '&c关闭'
+  attribute-detail-status-enabled: '&a已启用'
+  attribute-detail-status-disabled: '&c已停用'
+  attribute-detail-toggle-enabled: '&a属性已启用'
+  attribute-detail-toggle-disabled: '&c属性已停用'
+  attribute-detail-toggle-description: '&7当前状态：{attribute_status}\n&8停用不会退还属性点或清除等级。'
+  attribute-detail-click-enable: '&e点击启用此属性'
+  attribute-detail-click-disable: '&e点击停用此属性'
+  attribute-detail-effective-level: '&b设置生效等级'
+  attribute-detail-effective-level-description: '&7选择此属性实际生效的等级。'
+  attribute-detail-unlocked-level: '&7已解锁等级：&f{base_value}'
+  attribute-detail-selected-level: '&7当前生效等级：&a{effective_base_value}'
+  attribute-detail-effective-final-value: '&7叠加修改器后：&a{effective_value}'
+  attribute-detail-effective-level-controls: '&e左键 +1，右键 -1\n&eShift+左键设为已解锁等级\n&eShift+右键设为最低等级'
+  skill-mining-name: '&b采矿'
+  skill-mining-description: '&7挖掘天然矿石和石材来提升采矿技能。'
+  skill-combat-name: '&c战斗'
+  skill-combat-description: '&7使用近战攻击敌人来提升战斗技能。'
+  skill-farming-name: '&a耕作'
+  skill-farming-description: '&7收获成熟作物与可再生农产品。'
+  skill-foraging-name: '&2伐木'
+  skill-foraging-description: '&7砍伐天然树木、巨型蘑菇与下界菌木。'
+  skill-excavation-name: '&e挖掘'
+  skill-excavation-description: '&7挖掘泥土、沙砾、黏土与灵魂土。'
+  skill-fishing-name: '&3钓鱼'
+  skill-fishing-description: '&7钓起鱼类、宝藏以及其他收获。'
+  skill-archery-name: '&6箭术'
+  skill-archery-description: '&7使用弓、弩和投掷三叉戟造成伤害。'
+  skill-defense-name: '&9防御'
+  skill-defense-description: '&7承受来自生物或玩家的攻击并存活。'
+  skill-agility-name: '&f敏捷'
+  skill-agility-description: '&7通过冲刺、游泳、跳跃与承受摔落锻炼身体。'
+  skill-alchemy-name: '&d炼金'
+  skill-alchemy-description: '&7饮用药水和稀有炼金食物。'
+  skill-enchanting-name: '&5附魔'
+  skill-enchanting-description: '&7在附魔台为装备、工具与书籍附魔。'
+  skill-source-unit-block: '&7/方块'
+  skill-source-unit-harvest: '&7/次收获'
+  skill-source-unit-catch: '&7/次钓获'
+  skill-source-unit-damage: '&7/点伤害'
+  skill-source-unit-jump: '&7/次跳跃'
+  skill-source-unit-use: '&7/次使用'
+  skill-source-unit-enchant-level: '&7/消耗的附魔等级'
+  skill-source-unit-dodge: '&7/次闪避'
+  skill-source-unit-target: '&7/个目标'
+  skill-source-mining-stone: '&f岩石'
+  skill-source-mining-stone-desc: '&7石头、花岗岩、闪长岩和安山岩。'
+  skill-source-mining-deep-stone: '&8深层岩石'
+  skill-source-mining-deep-stone-desc: '&7深板岩、凝灰岩、方解石与滴水石块。'
+  skill-source-mining-coal: '&8煤矿石'
+  skill-source-mining-coal-desc: '&7开采普通煤矿石。'
+  skill-source-mining-deepslate-coal: '&8深层煤矿石'
+  skill-source-mining-deepslate-coal-desc: '&7开采罕见的深层煤矿石。'
+  skill-source-mining-copper: '&6铜矿石'
+  skill-source-mining-copper-desc: '&7开采普通或深层铜矿石。'
+  skill-source-mining-iron: '&f铁矿石'
+  skill-source-mining-iron-desc: '&7开采普通或深层铁矿石。'
+  skill-source-mining-gold: '&e金矿石'
+  skill-source-mining-gold-desc: '&7开采主世界或下界金矿石。'
+  skill-source-mining-redstone: '&c红石矿石'
+  skill-source-mining-redstone-desc: '&7开采普通或深层红石矿石。'
+  skill-source-mining-lapis: '&9青金石矿石'
+  skill-source-mining-lapis-desc: '&7开采普通或深层青金石矿石。'
+  skill-source-mining-diamond: '&b钻石矿石'
+  skill-source-mining-diamond-desc: '&7开采普通或深层钻石矿石。'
+  skill-source-mining-emerald: '&a绿宝石矿石'
+  skill-source-mining-emerald-desc: '&7开采普通或深层绿宝石矿石。'
+  skill-source-mining-quartz: '&f下界石英矿石'
+  skill-source-mining-quartz-desc: '&7在下界开采石英。'
+  skill-source-mining-debris: '&4远古残骸'
+  skill-source-mining-debris-desc: '&7开采稀有的远古残骸。'
+  skill-source-mining-amethyst: '&d紫水晶簇'
+  skill-source-mining-amethyst-desc: '&7采集完全生长的紫水晶簇。'
+  skill-source-mining-obsidian: '&5黑曜石'
+  skill-source-mining-obsidian-desc: '&7开采黑曜石或哭泣的黑曜石。'
+  skill-source-foraging-logs: '&6主世界原木'
+  skill-source-foraging-logs-desc: '&7砍伐所有原木和木头种类。'
+  skill-source-foraging-stems: '&c下界菌柄'
+  skill-source-foraging-stems-desc: '&7砍伐绯红或诡异菌柄。'
+  skill-source-foraging-mushroom: '&c巨型蘑菇'
+  skill-source-foraging-mushroom-desc: '&7采集巨型蘑菇方块与蘑菇柄。'
+  skill-source-foraging-nether: '&4下界菌木产物'
+  skill-source-foraging-nether-desc: '&7采集菌光体和疣块。'
+  skill-source-foraging-leaves: '&a树叶'
+  skill-source-foraging-leaves-desc: '&7清理天然树叶，只提供少量经验。'
+  skill-source-foraging-cleave: '&c横扫目标'
+  skill-source-foraging-cleave-desc: '&7通过横扫附魔用斧头命中一个额外目标。'
+  skill-source-foraging-sunder: '&6破甲层数'
+  skill-source-foraging-sunder-desc: '&7使用近战武器命中目标并施加一层破甲。'
+  skill-source-farming-crops: '&e成熟作物'
+  skill-source-farming-crops-desc: '&7收获成熟小麦、胡萝卜、马铃薯或甜菜根。'
+  skill-source-farming-wart: '&c成熟下界疣'
+  skill-source-farming-wart-desc: '&7收获完全生长的下界疣。'
+  skill-source-farming-cocoa: '&6成熟可可果'
+  skill-source-farming-cocoa-desc: '&7收获完全生长的可可果。'
+  skill-source-farming-gourds: '&a瓜类'
+  skill-source-farming-gourds-desc: '&7收获西瓜或南瓜。'
+  skill-source-farming-tall: '&2高秆作物'
+  skill-source-farming-tall-desc: '&7收获甘蔗、仙人掌、竹子或海带。'
+  skill-source-farming-ancient: '&d远古植物'
+  skill-source-farming-ancient-desc: '&7收获火把花或瓶子草。'
+  skill-source-excavation-soil: '&6土壤'
+  skill-source-excavation-soil-desc: '&7挖掘各类泥土、菌丝或灰化土。'
+  skill-source-excavation-sand: '&e沙土'
+  skill-source-excavation-sand-desc: '&7挖掘沙子、红沙与可疑的沙子。'
+  skill-source-excavation-gravel: '&7沙砾'
+  skill-source-excavation-gravel-desc: '&7挖掘沙砾与可疑的沙砾。'
+  skill-source-excavation-clay: '&b黏土与泥巴'
+  skill-source-excavation-clay-desc: '&7挖掘黏土、泥巴或沾泥的红树根。'
+  skill-source-excavation-soul: '&8灵魂地面'
+  skill-source-excavation-soul-desc: '&7挖掘灵魂沙或灵魂土。'
+  skill-source-excavation-snow: '&f雪'
+  skill-source-excavation-snow-desc: '&7铲除雪、雪块或细雪。'
+  skill-source-fishing-common: '&f鳕鱼'
+  skill-source-fishing-common-desc: '&7钓起常见鳕鱼。'
+  skill-source-fishing-valuable: '&b珍贵鱼类'
+  skill-source-fishing-valuable-desc: '&7钓起鲑鱼、河豚或热带鱼。'
+  skill-source-fishing-treasure: '&e宝藏'
+  skill-source-fishing-treasure-desc: '&7钓起附魔书、弓、钓鱼竿或命名牌等宝藏。'
+  skill-source-fishing-junk: '&7杂物'
+  skill-source-fishing-junk-desc: '&7钓起常见的废弃物品。'
+  skill-source-fishing-entity: '&c钩住实体'
+  skill-source-fishing-entity-desc: '&7用钓鱼竿成功拉扯一个实体。'
+  skill-source-combat-monster: '&c近战攻击怪物'
+  skill-source-combat-monster-desc: '&7使用近战攻击对敌对生物造成伤害。'
+  skill-source-combat-animal: '&6近战攻击动物'
+  skill-source-combat-animal-desc: '&7攻击动物只提供少量经验。'
+  skill-source-combat-player: '&4近战对战玩家'
+  skill-source-combat-player-desc: '&7在玩家对战中造成近战伤害，带目标冷却。'
+  skill-source-archery-bow: '&6弓箭命中'
+  skill-source-archery-bow-desc: '&7使用弓对敌对生物造成伤害。'
+  skill-source-archery-crossbow: '&6弩箭命中'
+  skill-source-archery-crossbow-desc: '&7使用弩对敌对生物造成伤害。'
+  skill-source-archery-trident: '&b投掷三叉戟'
+  skill-source-archery-trident-desc: '&7使用投掷的三叉戟伤害敌对生物。'
+  skill-source-archery-player: '&c远程对战玩家'
+  skill-source-archery-player-desc: '&7远程伤害玩家，带目标冷却。'
+  skill-source-defense-monster: '&9抵御怪物'
+  skill-source-defense-monster-desc: '&7承受敌对生物的攻击伤害。'
+  skill-source-defense-player: '&c抵御玩家'
+  skill-source-defense-player-desc: '&7承受其他玩家造成的伤害。'
+  skill-source-agility-sprint: '&f冲刺移动'
+  skill-source-agility-sprint-desc: '&7在陆地冲刺移动时获得经验。'
+  skill-source-agility-swim: '&3游泳移动'
+  skill-source-agility-swim-desc: '&7以游泳姿态移动时获得经验。'
+  skill-source-agility-jump: '&a跳跃'
+  skill-source-agility-jump-desc: '&7正常跳跃；该来源仅在 Paper 服务端启用。'
+  skill-source-agility-fall: '&c承受摔落'
+  skill-source-agility-fall-desc: '&7从高处落下并承受摔落伤害。'
+  skill-source-alchemy-potion: '&d饮用药水'
+  skill-source-alchemy-potion-desc: '&7饮用任意可消耗药水。'
+  skill-source-alchemy-golden-apple: '&6金苹果'
+  skill-source-alchemy-golden-apple-desc: '&7食用一个金苹果。'
+  skill-source-alchemy-enchanted-apple: '&d附魔金苹果'
+  skill-source-alchemy-enchanted-apple-desc: '&7食用稀有的附魔金苹果。'
+  skill-source-enchanting-weapon: '&c附魔武器'
+  skill-source-enchanting-weapon-desc: '&7在附魔台为剑或斧附魔。'
+  skill-source-enchanting-armor: '&9附魔护甲'
+  skill-source-enchanting-armor-desc: '&7在附魔台为护甲附魔。'
+  skill-source-enchanting-tool: '&b附魔工具'
+  skill-source-enchanting-tool-desc: '&7在附魔台为镐、锹或锄附魔。'
+  skill-source-enchanting-book: '&d附魔书籍'
+  skill-source-enchanting-book-desc: '&7在附魔台附魔一本书。'
+  skill-source-enchanting-misc: '&e附魔其他装备'
+  skill-source-enchanting-misc-desc: '&7附魔弓、弩、钓鱼竿、三叉戟或特殊装备。'
+  custom-item-night_vision_helmet-name: "&e夜视头盔"
+  custom-item-night_vision_helmet-lore: '&7穿戴后获得夜视效果。'
+  custom-attribute-breathing-name: "&b液面呼吸"
+  custom-attribute-breathing-description: '&8距离水面或岩浆表面不超过 &a{breathing_distance} 格 &8时不会损失氧气。'
+  enchantment-air_dash-name: "空中冲刺"
+  enchantment-air_dash-description: '&8疾跑起跳后，左键空气可向视线水平方向冲刺；冲刺速度为 &a{dash_force_display} 格/秒&8，最高等级每次起跳可使用 &a{max_charges} &8次，每次冲刺消耗护腿 &a1 &8点耐久。每级分别需要 &b10/20/30/40 级敏捷&8，不满足当前等级时会降级生效。'
+  enchantment-air_dash-trigger-message: '[actionbar]&b空中冲刺 &8| &a已向前冲刺[/actionbar]'
+  enchantment-charged_leap-name: "蓄力跃升"
+  enchantment-charged_leap-description: '&8潜行跳跃时可以跃至约 &a{jump_height} &8格高。I–IV 级分别需要 &b10/20/30/40 级敏捷&8，不满足当前等级时会降级生效。'
+  enchantment-charged_leap-trigger-message: '[actionbar]&6蓄力跃升 &8| &a强化跳跃已触发[/actionbar]'
+  custom-attribute-dodge-name: "&b闪避"
+  custom-attribute-dodge-description: '&8拥有对应附魔时，近战闪避概率为 &a{melee_dodge_chance}%&8，投射物闪避概率为 &a{projectile_dodge_chance}%&8。'
+  custom-attribute-endurance-name: "&b耐力"
+  custom-attribute-endurance-description: '&8减少疾跑与疾跑跳跃产生的 &a{exhaustion_reduction} &8疲劳度。'
+  custom-attribute-absorption-name: "&e吸收"
+  custom-attribute-absorption-description: '&8最多容纳 &a{level} &8层伤害吸收；每层提供 &e0.5 颗伤害吸收心&8，满层共计 &e{absorption_hearts} 颗&8。需要附魔等来源触发后才会获得层数。'
+  enchantment-cleave-name: "横扫"
+  enchantment-cleave-description: '&8攻击冷却达到 90% 的斧头攻击，会对前方 &a{arc_degrees}°&8、&a{radius} 格 &8范围内最多 &a{target_cap} &8个额外目标造成主目标伤害的 &a{damage_percentage}&8。'
+  custom-attribute-sunder-name: "&6破甲"
+  custom-attribute-sunder-description: '&8近战武器命中会施加持续 &a{duration_seconds} 秒 &8的破甲，最多叠加 &a{max_stacks} 层&8；每层降低 &c{armor_shred_per_stack} 点护甲 &8和 &c{toughness_shred_per_stack} 点护甲韧性&8。'
+  custom-attribute-potion_mastery-name: "&b药水精通"
+  custom-attribute-potion_mastery-description: '&8获得增益效果时延长 &a{beneficial_extension}% &8持续时间，获得负面效果时缩短 &a{harmful_reduction}% &8持续时间。'
+  custom-attribute-work_speed-name: "&6工作加速"
+  custom-attribute-work_speed-description: '&8每秒为附近 &a{work_radius} 格 &8内正在工作的熔炉、烟熏炉、高炉和酿造台额外推进 &a{extra_ticks} Tick&8。'
+  enchantment-bark_hide-name: "树皮"
+  enchantment-bark_hide-description: '&8使用该斧头砍伐原木时增加 &a1 &8层伤害吸收，上限由吸收属性决定；停止砍伐 &a{grace_seconds} 秒 &8后，每 &a{decay_seconds} 秒 &8消失 1 层。'
+  enchantment-ore_guard-name: "矿铠"
+  enchantment-ore_guard-description: '&8使用该镐挖掘矿石时增加 &a1 &8层伤害吸收，上限由吸收属性决定；停止挖矿 &a{grace_seconds} 秒 &8后，每 &a{decay_seconds} 秒 &8消失 1 层。'
+  skill-source-agility-projectile-dodge: '&b投射物闪避'
+  skill-source-agility-projectile-dodge-desc: '&7疾跑时成功闪避一次投射物攻击。'
+  enchantment-liquid_surface_breathing-name: "液面呼吸"
+  enchantment-liquid_surface_breathing-description: '&8穿戴时增加 &a{breathing_distance} 格 &8液面呼吸距离。'
+  enchantment-lava_grace-name: "熔岩庇护"
+  enchantment-lava_grace-description: '&8进入岩浆后的前 &a{immunity_seconds} 秒 &8免疫岩浆伤害。'
+  enchantment-lingering_affliction-name: "苦痛延续"
+  enchantment-lingering_affliction-description: '&8攻击带有负面药水效果的敌人时，将其现有负面效果的剩余时间延长 &a{duration_increase_percentage}%&8。'
+  enchantment-rotten_flesh_tolerance-name: "腐肉耐受"
+  enchantment-rotten_flesh_tolerance-description: '&8食用腐肉时有 &a{trigger_chance}% &8概率免受饥饿效果。'
+  enchantment-experience_lifeblood-name: "经验命脉"
+  enchantment-experience_lifeblood-description: '&8生命值低于 &a50% &8时，吸收的经验球会自动用于恢复生命；每累计 &a3 &8点经验恢复 &a1 &8点生命，最多恢复至最大生命值的 &a50%&8。'
+  enchantment-threat_limit-name: "仇恨屏障"
+  enchantment-threat_limit-description: '&8最多允许 &a{max_threat_count} &8个怪物同时将你设为攻击目标，除非你主动攻击。'
+  enchantment-foolishness_curse-name: "愚昧诅咒"
+  enchantment-foolishness_curse-description: '&8此诅咒会使物品在铁砧中的经验等级花费翻倍。'
+  enchantment-firework_conservation-name: "烟花节约"
+  enchantment-firework_conservation-description: '&8使用烟花推进鞘翅时有 &a{trigger_chance}% &8几率不消耗烟花。'
+  enchantment-kinetic_protection-name: "动能保护"
+  enchantment-kinetic_protection-description: '&8鞘翅飞行撞击墙面时，减少 &a{damage_reduction}% &8受到的动能伤害。'
+  enchantment-sprint_plating-name: "疾行镀甲"
+  enchantment-sprint_plating-description: '&8疾跑时逐渐获得最多 &a{armor_bonus} &8点护甲；停止疾跑后，护甲会逐渐消退。'
+  enchantment-sprint_plating-charge-message: '[actionbar]&6疾行镀甲 &8| &e护甲正在充能[/actionbar]'
+  enchantment-sprint_plating-charged-message: '[actionbar]&6疾行镀甲 &8| &a护甲充能完毕[/actionbar]'
+  enchantment-sprint_plating-decay-message: '[actionbar]&6疾行镀甲 &8| &c护甲正在消退[/actionbar]'
+  enchantment-sprint_plating-empty-message: '[actionbar]&6疾行镀甲 &8| &7护甲加成已消失[/actionbar]'
+  enchantment-emergency_repair-name: "应急修复"
+  enchantment-emergency_repair-description: '&8物品即将损坏时，自动降低 &a1 &8级该附魔，并恢复 &a{repair_percentage}% &8的最大耐久度。'
+  enchantment-adaptive_resistance-stack-add: '[actionbar]&b抗性层数：&f{stacks}&7/&f{max_stacks} &8| &a本次减伤：&f{percent}%[/actionbar]'
+  enchantment-adaptive_resistance-stack-max: '[actionbar]&3抗性层数已满 &8| &a本次减伤：&f{percent}%[/actionbar]'
+  enchantment-adaptive_resistance-stack-expire: '[actionbar]&7抗性层数已清除[/actionbar]'
+  enchantment-stronghold_locator-found: '&a发现附近的要塞！位于 &e{direction} &a方向，距离约 &e{distance} &a格。'
+  enchantment-stronghold_locator-not-found: '&c在当前搜索范围内没有发现要塞。'
+  enchantment-combo-stack-add: '[actionbar]&e连击层数：&f{stacks}&7/&f{max_stacks} &8| &e下次增伤：&f{percent}%[/actionbar]'
+  enchantment-combo-stack-max: '[actionbar]&6连击层数已满 &8| &e下次增伤：&f{percent}%[/actionbar]'
+  enchantment-combo-stack-expire: '[actionbar]&7连击层数已清除[/actionbar]'
+  enchantment-rage-stack-add: '[actionbar]&c怒气层数：&f{stacks}&7/&f{max_stacks} &8| &e下次增伤：&f{percent}%[/actionbar]'
+  enchantment-rage-stack-max: '[actionbar]&6怒气层数已满 &8| &e下次增伤：&f{percent}%[/actionbar]'
+  enchantment-rage-stack-expire: '[actionbar]&7怒气层数已清除[/actionbar]'
+  enchantment-rage-stack-consume: '[actionbar]&c怒气生效！ &8| &e本次增伤：&f{percent}%[/actionbar]'
+  enchantment-menu-title: "&8附魔图鉴"
+  enchantment-menu-max-level: "&8• &7最高等级 &8» &f{max_level}"
+  enchantment-menu-rarity: "&8• &7稀有度 &8» &f{rarity}"
+  enchantment-menu-weight: "&8• &7出现权重 &8» &f{weight}"
+  enchantment-menu-supported-items: "&8• &7适用物品 &8» &f{supported_items}"
+  enchantment-menu-key: "&l&e附魔信息"
+  enchantment-menu-level-description: "&8[&e等级 {level}&8] &f{description}"
+  enchantment-menu-previous: "&a« 上一页"
+  enchantment-menu-next: "&a下一页 »"
+  enchantment-menu-page: "&7页码 &8» &f{page}&8/&f{pages}"
+  enchantment-menu-info: "&e附魔图鉴"
+  enchantment-menu-amount: "&7已收录 &f{amount} &7个附魔"
+  enchantment-menu-filter-rarity: "&e按稀有度筛选"
+  enchantment-menu-filter-supported-item: "&e按适用物品筛选"
+  enchantment-menu-filter-current: "&7当前筛选 &8» &f{rarity_filter}"
+  enchantment-menu-filter-current-supported-item: "&7当前筛选 &8» &f{supported_item_filter}"
+  enchantment-menu-filter-click: "&8左键：下一个  右键：上一个"
+  enchantment-menu-filter-all: "&f全部"
+  enchantment-menu-close: "&c关闭菜单"
+  attribute-menu-title: "&8自定义属性"
+  attribute-menu-key: "&8• &7ID &8» &f{id}"
+  attribute-menu-base-value: "&8• &7基础值 &8» &f{base_value}"
+  attribute-menu-current-value: "&8• &7当前值 &8» &a{value}"
+  attribute-menu-default-value: "&8• &7默认值 &8» &f{default_value}"
+  attribute-menu-range: "&8• &7范围 &8» &f{minimum_value} &8- &f{maximum_value}"
+  attribute-menu-modifiers: "&e修改器 &7({modifier_count})"
+  attribute-menu-modifier: "&8• &f{modifier} &7{operation} &e{amount}"
+  attribute-menu-no-modifiers: "&8• &7无"
+  attribute-menu-previous: "&a« 上一页"
+  attribute-menu-next: "&a下一页 »"
+  attribute-menu-page: "&7页码 &8» &f{page}&8/&f{pages}"
+  attribute-menu-info: "&e自定义属性"
+  attribute-menu-amount: "&7属性数量 &8» &f{amount}"
+  attribute-menu-close: "&c关闭菜单"
+  rarity-common: "普通"
+  rarity-uncommon: "罕见"
+  rarity-rare: "稀有"
+  rarity-epic: "史诗"
+  rarity-legendary: "传说"
+  rarity-mythic: "神话"
+  rarity-curse: "诅咒"
+  supported-item-sword: "剑"
+  supported-item-axe: "斧"
+  supported-item-pickaxe: "镐"
+  supported-item-shovel: "铲"
+  supported-item-hoe: "锄"
+  supported-item-tool: "工具"
+  supported-item-bow: "弓"
+  supported-item-crossbow: "弩"
+  supported-item-trident: "三叉戟"
+  supported-item-spear: "矛"
+  supported-item-fishing-rod: "钓鱼竿"
+  supported-item-shield: "盾"
+  supported-item-elytra: "鞘翅"
+  supported-item-helmet: "头盔"
+  supported-item-chestplate: "胸甲"
+  supported-item-leggings: "护腿"
+  supported-item-boots: "靴子"
+  enchantment-adaptive_resistance-name: "抗性"
+  enchantment-adaptive_resistance-description: '&a8 &8秒内连续受到同类型伤害每层可以减免 &a3%&8，最多叠加 &a{max_stacks} &8层。'
+  enchantment-auto_feed-name: "自动进食"
+  enchantment-auto_feed-description: '&8饥饿值降至 &a10 &8或以下时自动进食；血量不满时，该阈值提高至 &a18&8。'
+  enchantment-auto_feed-trigger-message: '[actionbar]&6自动进食 &7| &a已自动完成 1 次[/actionbar]'
+  enchantment-auto_purify-name: "自动净化"
+  enchantment-auto_purify-description: '&8每隔 &a{interval} &8秒，清除自身的一个负面药水效果。'
+  enchantment-auto_purify-trigger-message: '[actionbar]&6自动净化 &7| &a已自动完成 1 次[/actionbar]'
+  enchantment-battle_spirit-name: "战斗意志"
+  enchantment-battle_spirit-description: '&8受到攻击时有 &a{trigger_chance}% &8概率获得持续 &a{duration} &8秒的力量 I 效果。'
+  enchantment-biome_regeneration-name: "群系回春"
+  enchantment-biome_regeneration-description: '&8进入新的生物群系时，获得 &a5 &8秒生命恢复 I。'
+  enchantment-double_jump-name: "二段跳"
+  enchantment-double_jump-description: '&8非潜行状态下处于空中时，每隔 &a{cooldown} &8秒可以二段跳。'
+  enchantment-double_jump-cooldown-message: '[actionbar]&c二段跳还有 &4{remaining} &c秒才能再次使用![/actionbar]'
+  enchantment-double_jump-trigger-message: '[actionbar]&6二段跳 &7| &a已触发 1 次[/actionbar]'
+  enchantment-emerald_refund-name: "绿宝石返利"
+  enchantment-emerald_refund-description: '&8与村民完成交易后有 &a{refund_chance}% &8几率返还本次消耗的绿宝石。'
+  enchantment-piglin_barter-name: "猪灵交易"
+  enchantment-piglin_barter-description: '&8与猪灵以物易物时有 &a{extra_chance}% &8几率使猪灵在短暂延迟后额外掉出一份随机物品。'
+  enchantment-piglin_barter-trigger-message: '&a猪灵交易触发：猪灵额外掉出了一份随机物品。'
+  enchantment-end_walker-name: "末地行者"
+  enchantment-end_walker-description: '&8在末地时获得速度 {potion_level_roman} 和跳跃提升 {potion_level_roman}。'
+  enchantment-ender_veil-name: "末影面纱"
+  enchantment-ender_veil-description: '&8防止末影人因你直视它而进入敌对状态。'
+  enchantment-experience_evasion-name: "经验闪避"
+  enchantment-experience_evasion-description: '&8受到实体攻击时有 &a{dodge_chance}% &8几率消耗 &a{experience_cost} &8点经验值，完全闪避本次伤害。'
+  enchantment-experience_refund-name: "经验返还"
+  enchantment-experience_refund-description: '&8附魔物品时有 &a{refund_chance}% &8几率返还本次消耗经验等级的 &a{refund_ratio}%&8，至少返还 1 级。'
+  enchantment-experience_refund-trigger-message: '&a经验返还触发：返还了 &e{refund_amount} &a级经验。'
+  enchantment-melee_dodge-name: "近战闪避"
+  enchantment-melee_dodge-description: '&8允许闪避近战伤害；触发概率和闪身强度由闪避属性决定。'
+  enchantment-projectile_dodge-name: "远程闪避"
+  enchantment-projectile_dodge-description: '&8允许闪避投射物伤害；触发概率和闪身强度由闪避属性决定。'
+  enchantment-farmland_guard-name: "护耕"
+  enchantment-farmland_guard-description: '&8踩踏耕地时不会使其退化为泥土。'
+  enchantment-first_strike_guard-name: "初击缓冲"
+  enchantment-first_strike_guard-description: '&8每个怪物第一次攻击你时，消耗被减免伤害对应的装备耐久，并减少 &a{damage_reduction_percentage}% &8伤害。'
+  enchantment-jump_boost-name: "弹跳强化"
+  enchantment-jump_boost-description: '&8提升 &a{jump_power}% &8跳跃能力。'
+  enchantment-knockback_resistance-name: "坚定"
+  enchantment-knockback_resistance-description: '&8增加 &a{knockback_resistance}% &8击退抗性。'
+  enchantment-lava_walker-name: "熔岩行者"
+  enchantment-lava_walker-description: '&8在地面行走时，将附近 &a{conversion_radius} &8格内的熔岩表面转化为岩浆块，并免疫岩浆块伤害。'
+  enchantment-lapis_refund-name: "青金石返还"
+  enchantment-lapis_refund-description: '&8附魔物品时有 &a{refund_chance}% &8几率返还最多 &a{refund_amount} &8个青金石，不超过本次实际消耗。'
+  enchantment-magic_protection-name: "魔法保护"
+  enchantment-magic_protection-description: '&8减少 &a{damage_reduction}% &8魔法与凋零伤害。'
+  enchantment-magma_response-name: "熔火应激"
+  enchantment-magma_response-description: '&8受到岩浆伤害时获得 &a5 &8秒抗火 III；冷却 &a{cooldown} &8秒。'
+  enchantment-nourishing_armor-name: "营养吸收"
+  enchantment-nourishing_armor-description: '&8食物提供的饱食度提高 &a{increase_percentage}%&8。'
+  enchantment-phantom_guard-name: "幻翼守护"
+  enchantment-phantom_guard-description: '&8佩戴时阻止因自身失眠而生成幻翼。'
+  enchantment-piglin_disguise-name: "猪灵伪装"
+  enchantment-piglin_disguise-description: '&8防止猪灵因为你未穿金质盔甲而敌对；主动攻击或激怒猪灵仍会遭到反击。'
+  enchantment-potion_resistance-name: "药效抵抗"
+  enchantment-potion_resistance-description: '&8负面药水效果生效时，有 &a{trigger_chance}% &8概率抵抗本次效果。'
+  enchantment-quick_reflexes-name: "迅捷反应"
+  enchantment-quick_reflexes-description: '&8受到攻击时有 &a{trigger_chance}% &8概率获得持续 &a{duration} &8秒的速度 I 效果。'
+  enchantment-ranged_retribution-name: "远程反击"
+  enchantment-ranged_retribution-description: '&8受到远程伤害时减少 &a{damage_reduction_percentage}% &8伤害，并将减少的伤害反弹给周围 &a6 &8格内的所有怪物。'
+  enchantment-retaliation-name: "反击"
+  enchantment-retaliation-description: '&8受到实体伤害后，将攻击者标记 &a{retaliation_duration_seconds} &8秒；期间对其造成的近战伤害提高 &a{bonus_damage_percentage}%&8。'
+  enchantment-retaliation-mark-message: '[actionbar]&6反击 &7| &e攻击者已被标记 &f{retaliation_duration_seconds} &e秒[/actionbar]'
+  enchantment-retaliation-trigger-message: '[actionbar]&6反击 &7| &a对标记目标造成的伤害提高 &f{bonus_damage_percentage}%[/actionbar]'
+  enchantment-rebirth-name: "重生"
+  enchantment-rebirth-description: '&8死亡时立即以满生命值复活，获得持续 &a3 &8秒的抗性提升 IV，并消耗此附魔。'
+  enchantment-safe_fall-name: "稳健落地"
+  enchantment-safe_fall-description: '&8增加 &a{safe_distance} &8格无伤坠落距离。'
+  enchantment-shrewd_bargain-name: "精明交易"
+  enchantment-shrewd_bargain-description: '&8与村民交易时，有额外 &a25%&8 的交易次数；有时需要重新打开村民交易页面才能刷新次数。'
+  enchantment-sprint_efficiency-name: "耐力"
+  enchantment-sprint_efficiency-description: '&8疾跑与疾跑跳跃的疲劳度降低 &a{exhaustion_reduction}&8。'
+  enchantment-step_assist-name: "跨越"
+  enchantment-step_assist-description: '&8增加 &a{step_height} &8格自动跨越高度。'
+  enchantment-stronghold_locator-name: "要塞追踪"
+  enchantment-stronghold_locator-description: '&8潜行并右键方块时，探测附近要塞的位置。'
+  enchantment-stronghold_locator-cooldown-message: '&c要塞追踪正在冷却，还需 &e{remaining} &c秒。'
+  enchantment-suffocation_escape-name: "脱困"
+  enchantment-suffocation_escape-description: '&8受到窒息伤害时，自动传送到附近的安全位置，并使此物品损失 &a10 &8点耐久。'
+  enchantment-tempting_presence-name: "诱引气息"
+  enchantment-tempting_presence-description: '&8增加 &a{attraction_distance} &8格生物诱引距离。'
+  enchantment-vitality-name: "生命力"
+  enchantment-vitality-description: '&8增加 &a{bonus_health} &8点最大生命值。'
+  enchantment-void_return-name: "归界"
+  enchantment-void_return-description: '&8触发虚空伤害时返回当前世界出生点，免除本次伤害并消耗此附魔。'
+  enchantment-warden_concealment-name: "幽匿步伐"
+  enchantment-warden_concealment-description: '&8监守者因你产生的怒气增长降低 &a50%&8，使其更晚发现你。'
+  enchantment-silent_step-name: "静谧潜行"
+  enchantment-silent_step-description: '&8在深暗之域有 &a{cancel_chance}% &8概率消除你产生的振动，避免惊动监守者。'
+  enchantment-dictatorship_curse-name: "独裁诅咒"
+  enchantment-dictatorship_curse-description: '&8此诅咒使得其他非诅咒类型的非原版附魔无法生效。'
+  enchantment-fragility_curse-name: "脆裂诅咒"
+  enchantment-fragility_curse-description: '&8此物品每次损失耐久时，有 &c5% &8概率立即损毁。'
+  enchantment-gravity_curse-name: "重力诅咒"
+  enchantment-gravity_curse-description: '&8增加 &c{gravity} &8点重力，使玩家下落得更快。'
+  enchantment-healing_curse-name: "仁慈诅咒"
+  enchantment-healing_curse-description: '&8攻击怪物时不会造成伤害，反而将本应造成的伤害转化为等量治疗。'
+  enchantment-hunger_curse-name: "饥饿诅咒"
+  enchantment-hunger_curse-description: '&8饱食度消耗提高 &c{increase_percentage}%&8。'
+  enchantment-auto_fish-name: "自动钓鱼"
+  enchantment-auto_fish-description: '&8鱼咬钩时自动收杆并重新抛竿。'
+  enchantment-auto_fish-trigger-message: '[actionbar]&6自动钓鱼 &7| &a已自动完成 1 次[/actionbar]'
+  enchantment-grappling_hook-name: "飞钩"
+  enchantment-grappling_hook-description: '&8鱼钩落在水外时，将你拉向鱼钩所在位置。'
+  enchantment-instant_cook-name: "即烹"
+  enchantment-instant_cook-description: '&8钓鱼时，若钓上的是生鱼则直接变为熟鱼。'
+  enchantment-ocean_companion-name: "海洋来客"
+  enchantment-ocean_companion-description: '&8在海洋群系钓到鱼后，有 &a15% &8几率在附近生成一种友好海洋生物。'
+  enchantment-storm_angler-name: "雷暴手"
+  enchantment-storm_angler-description: '&8雷暴天气中，鱼钩勾中生物时召唤闪电并造成 6 点伤害。'
+  enchantment-absorption_harvest-name: "灵魂收割"
+  enchantment-absorption_harvest-description: '&8增加 &a{absorption_limit} &8点最大伤害吸收值；击杀敌人后获得 &a2 &8点伤害吸收黄心。'
+  enchantment-butcher-name: "屠夫"
+  enchantment-butcher-description: '&8对和平动物额外造成 &a{bonus_damage} &8点伤害。'
+  enchantment-combo-name: "连击"
+  enchantment-combo-description: '&a{time} &8秒内连续攻击每层增加伤害 &a8%&8，最多叠加 &a{max_stacks} &8层。'
+  enchantment-end_bane-name: "末地灾星"
+  enchantment-end_bane-description: '&8对末地生物额外造成 &a{bonus_damage} &8点伤害。'
+  enchantment-executioner-name: "处决"
+  enchantment-executioner-description: '&8手持斧攻击时，目标生命值越低伤害越高，目标濒死时最多提高 &a{max_damage_increase_percentage}%&8 伤害。'
+  enchantment-full_health_strike-name: "满血一击"
+  enchantment-full_health_strike-description: '&8攻击接近满血的生物时，造成的伤害提高 &a{damage_increase_percentage}%&8。'
+  enchantment-inventory_shuffle_curse-name: "混乱诅咒"
+  enchantment-inventory_shuffle_curse-description: '&8攻击时有 &c25% &8概率随机打乱背包中的物品。'
+  enchantment-nether_bane-name: "下界克星"
+  enchantment-nether_bane-description: '&8在下界维度额外造成 &a{bonus_damage} &8点伤害。'
+  enchantment-rage-name: "怒气"
+  enchantment-rage-description: '&a10 &8秒内受到伤害可以积攒怒气值，每点怒气值让下一次攻击增加 &a{damage}%&8伤害，最多叠加 &a{max_stacks} &8层。'
+  enchantment-sneak_attack-name: "潜袭"
+  enchantment-sneak_attack-description: '&8潜行时，剑造成的伤害提高 &a{damage_increase_percentage}%&8。'
+  enchantment-spawner_slayer-name: "刷怪笼杀手"
+  enchantment-spawner_slayer-description: '&8对刷怪笼生成的生物额外造成 &a{bonus_damage} &8点伤害。'
+  enchantment-trial_weakness-name: "试炼威压"
+  enchantment-trial_weakness-description: '&8在试炼密室中第一次攻击每个怪物时，使其获得虚弱 I，持续 &a{duration} &8秒。'
+  enchantment-cobweb-name: "蛛网"
+  enchantment-cobweb-description: '&8箭矢命中时有 &a{trigger_chance}% &8概率生成持续 &a{duration} &8秒的蛛网。'
+  enchantment-evoker_fangs-name: "唤魔之牙"
+  enchantment-evoker_fangs-description: '&8箭矢命中生物后，召唤一列唤魔者尖牙攻击目标，每个尖牙造成 &a{fang_damage} &8点伤害。'
+  enchantment-headshot-name: "爆头"
+  enchantment-headshot-description: '&8弹射物命中目标头部时，造成的伤害提高 &a{damage_increase_percentage}%&8。'
+  enchantment-point_blank-name: "近距射击"
+  enchantment-point_blank-description: '&8距离目标不超过 &a{distance}&8 格时，造成的伤害提高 &a{damage_increase_percentage}%&8。'
+  enchantment-ricochet_bolt-name: "跳弹箭"
+  enchantment-ricochet_bolt-description: '&8箭矢撞击方块后最多反弹 &a{maximum_ricochets} &8次，每次反弹后最多飞行 &a{maximum_ricochet_distance} &8格；每次反弹累积 &a{damage_bonus} &8点额外伤害。'
+  enchantment-meteor_cadence-name: "流星节奏"
+  enchantment-meteor_cadence-description: '&8手持此重锤潜行下落时，重力提高 &a{gravity_boost_percentage}%&8，空气阻力降低 &a{drag_reduction_percentage}%&8，且每刻额外增加 &a{downward_acceleration} &8下落速度，最高为每刻 &a{terminal_fall_speed} &8格。'
+  enchantment-impact_coil-name: "冲击蓄簧"
+  enchantment-impact_coil-description: '&8成功完成重锤猛击后，在 &a{rebound_window_seconds} &8秒内获得 &a{bounciness} &8弹性，并减少 &a{fall_damage_reduction_percentage}% &8坠落伤害。'
+  enchantment-gale_impact-name: "烈风震击"
+  enchantment-gale_impact-description: '&8至少坠落 &a{minimum_fall_distance} &8格后完成重锤猛击，将 &a{burst_radius} &8格内最多 16 个附近敌人以 &a{knockback_force} &8力度向外抛开。冷却：&a{cooldown} &8秒。'
+  enchantment-tracking_arrow-name: "追踪箭"
+  enchantment-tracking_arrow-description: '&8射出的箭矢会追踪前方 &a{distance} &8格内的目标。'
+  enchantment-triple_shot-name: "三重射击"
+  enchantment-triple_shot-description: '&8每次射击消耗 &a3 &8支普通箭，同时射出 &a3 &8支箭。'
+  enchantment-triple_shot-no-arrows-message: '[actionbar]&6三重射击 &7| &4箭不足[/actionbar]'
+  enchantment-frost_guard-name: "寒霜反制"
+  enchantment-frost_guard-description: '&8成功格挡后有 &a{trigger_chance}% &8几率给予攻击者缓慢 I，持续 &a{duration} &8秒。'
+  enchantment-instant_shield-name: "瞬间准备"
+  enchantment-instant_shield-description: '&8盾牌失效时冷却时间减少 &a50%&8。'
+  enchantment-shadow_guard-name: "影遁格挡"
+  enchantment-shadow_guard-description: '&8成功格挡后有 &a20% &8几率同时获得速度 II 与隐身，持续 5 秒。'
+  enchantment-shield_might-name: "战意格挡"
+  enchantment-shield_might-description: '&8成功格挡后有 &a{trigger_chance}% &8几率获得力量 I，持续 &a{duration} &8秒。'
+  enchantment-shield_preservation-name: "坚盾"
+  enchantment-shield_preservation-description: '&8盾牌即将失效时，有 &a{trigger_chance}% &8概率阻止盾牌失效。'
+  enchantment-shield_rebound-name: "盾牌反震"
+  enchantment-shield_rebound-description: '&8盾牌失效时，将使盾牌失效的实体向外弹开。'
+  enchantment-shield_reflection-name: "反震盾"
+  enchantment-shield_reflection-description: '&8成功格挡后，将本次被阻挡伤害的 &a{reflection_percentage}% &8反弹给攻击者。'
+  enchantment-mirror_block-name: "镜面格挡"
+  enchantment-mirror_block-description: '&8成功格挡投射物时有 &a{trigger_chance}% &8概率将其反射，并保留 &a{reflected_velocity_percentage}% &8速度与 &a{reflected_damage_percentage}% &8伤害。冷却：&a{reflection_cooldown} 秒&8。'
+  enchantment-perfect_guard-name: "完美格挡"
+  enchantment-perfect_guard-description: '&8完美格挡时有 &a{trigger_chance}% &8概率恢复盾牌最大耐久度的 &a{repair_percentage}%&8。'
+  enchantment-perfect_guard-trigger-message: '[actionbar]&6完美格挡 &7| &a盾牌耐久已恢复 &f{repair_percentage}%[/actionbar]'
+  enchantment-sonic_rebound-name: "音波反震"
+  enchantment-sonic_rebound-description: '&8成功格挡攻击后，有 &a{trigger_chance}% &8几率向攻击者释放音波，造成 &c{sonic_boom_damage} &8点伤害并将其击退。'
+  enchantment-spear_point_blank-name: "贴身突刺"
+  enchantment-spear_point_blank-description: '&8距离目标不超过 3 格时，矛造成的伤害提高 &a{damage_increase_percentage}%&8。'
+  enchantment-sprint_assault-name: "冲锋强袭"
+  enchantment-sprint_assault-description: '&8疾跑时造成的伤害提高 &a{damage_increase_percentage}%&8。'
+  enchantment-skewer_lock-name: "穿刺禁锢"
+  enchantment-skewer_lock-description: '&8长矛在 &a3 &8至 &a{sweet_max_distance} &8格的甜区命中时，给予目标缓慢 &a{slowness_level} &8，持续 &a{slowness_duration_seconds} &8秒。每个目标独立冷却 &a2.5 &8秒。'
+  enchantment-skewer_lock-trigger-message: '[actionbar]&6穿刺禁锢 &7| &a目标已被禁锢 &f{slowness_duration_seconds} &a秒[/actionbar]'
+  enchantment-aqua_oxygen-name: "潜水采掘"
+  enchantment-aqua_oxygen-description: '&8在水下破坏方块后恢复 &a{oxygen} &8秒氧气。'
+  enchantment-auto_pickup-name: "自动拾取"
+  enchantment-auto_pickup-description: '&8使用合适的工具挖掘方块时，掉落物会直接进入背包；背包已满时仍会掉落在原地。'
+  enchantment-mob_pickup-name: "战利品收集"
+  enchantment-mob_pickup-description: '&8击杀怪物后的掉落物会直接进入背包；背包已满时仍会掉落在怪物位置。'
+  enchantment-fishing_pickup-name: "垂钓收纳"
+  enchantment-fishing_pickup-description: '&8钓到的物品会直接进入背包；背包已满时仍会掉落在鱼钩位置。'
+  enchantment-area_tilling-name: "开垦"
+  enchantment-area_tilling-description: '&8用锄右击可耕方块时，将以目标为中心 &a{range}×{range} &8范围内的可耕方块转化为耕地。'
+  enchantment-area_tilling-blocked-message: '[actionbar]&c部分方块上方有其他方块，无法转换为耕地![/actionbar]'
+  enchantment-axe_attack_speed-name: "迅捷挥砍"
+  enchantment-axe_attack_speed-description: '&8手持斧时增加 &a{attack_speed} &8点攻击速度。'
+  enchantment-block_reach-name: "延伸触及"
+  enchantment-block_reach-description: '&8手持工具时增加 &a{block_reach} &8格方块交互距离。'
+  enchantment-block_rotator-name: "转向"
+  enchantment-block_rotator-description: '&8潜行并右击具有朝向的方块时，将其切换到下一个可用方向。每次消耗 &a1 &8点耐久。'
+  enchantment-crop_growth-name: "催生"
+  enchantment-crop_growth-description: '&8右击作物时，消耗一个骨粉，使以目标为中心 &a{range}×{range} &8范围内的作物生长一个阶段。'
+  enchantment-crop_growth-no-bone-meal-message: '[actionbar]&b催生 &7| &4骨粉不足[/actionbar]'
+  enchantment-cube_excavation-name: "立方开采"
+  enchantment-cube_excavation-description: '&8破坏方块时，额外破坏周围立方范围内的同类方块，边长为 &a{side_length}&8；潜行时停用。'
+  enchantment-entity_reach-name: "长臂"
+  enchantment-entity_reach-description: '&8手持工具或剑时增加 &a{entity_reach} &8格实体交互距离。'
+  enchantment-farmland_hydration-name: "润土"
+  enchantment-farmland_hydration-description: '&8用锄右击耕地时，使以目标为中心 &a{range}×{range} &8范围内的耕地达到最大湿度。'
+  enchantment-copper_smelting-name: "炼铜"
+  enchantment-copper_smelting-description: '&8使用镐挖掘铜矿石时，将全部方块掉落物自动熔炼为铜锭。'
+  enchantment-gold_smelting-name: "熔金"
+  enchantment-gold_smelting-description: '&8使用镐挖掘金矿石时，将全部方块掉落物自动熔炼为金锭。'
+  enchantment-iron_smelting-name: "炼铁"
+  enchantment-iron_smelting-description: '&8使用镐挖掘铁矿石时，将全部方块掉落物自动熔炼为铁锭。'
+  enchantment-layer_excavation-name: "层状开采"
+  enchantment-layer_excavation-description: '&8破坏方块时，额外破坏同一水平层内的同类方块，范围为 &a{range}×{range}&8；潜行时停用。'
+  enchantment-mass_harvest-name: "丰收"
+  enchantment-mass_harvest-description: '&8右击作物时，收获以目标为中心 &a{range}×{range} &8范围内的成熟作物。每次扣除 &a1 &8点耐久。'
+  enchantment-miner_rhythm-name: "矿工节律"
+  enchantment-miner_rhythm-description: '&8每挖掘 &a10 &8个方块，随机获得 &a10 &8秒急迫 I 或挖掘疲劳 I。'
+  enchantment-obsidian_haste-name: "黑曜急迫"
+  enchantment-obsidian_haste-description: '&8破坏黑曜石时获得急迫 {haste_level}。'
+  enchantment-plane_excavation-name: "平面开采"
+  enchantment-plane_excavation-description: '&8破坏方块时，额外破坏视线对应平面内的同类方块，范围为 &a{range}×{range}&8；潜行时停用。'
+  enchantment-replant_crops-name: "作物补种"
+  enchantment-replant_crops-description: '&8破坏成熟作物后消耗背包中的对应种子，在原地补种，并消耗 &a1 &8点工具耐久。'
+  enchantment-sphere_excavation-name: "球形开采"
+  enchantment-sphere_excavation-description: '&8破坏方块时，额外破坏周围球形范围内的同类方块，半径为 &a{radius}&8；潜行时停用。'
+  enchantment-stone_refining-name: "石材精炼"
+  enchantment-stone_refining-description: '&8潜行并右键废石时，将其转换为石头并消耗 &a1 &8点耐久。'
+  enchantment-tunnel_excavation-name: "隧道开采"
+  enchantment-tunnel_excavation-description: '&8破坏方块时，沿视线方向额外开凿同类方块，长度为 &a{length}&8、截面边长为 &a{cross_section_size}&8；潜行时停用。'
+  enchantment-vein_excavation-name: "连锁开采"
+  enchantment-vein_excavation-description: '&8破坏方块时，额外破坏最多 &a{amount} &8个相连的同类方块；潜行时停用。'
+  enchantment-axolotl_rescue-name: "美西螈援军"
+  enchantment-axolotl_rescue-description: '&8在水中且生命值不高于 10% 时攻击目标，每 30 秒可在目标附近召唤一只美西螈协助战斗。'
+  enchantment-fatigue_conversion-name: "疲劳转化"
+  enchantment-fatigue_conversion-description: '&8获得挖掘疲劳时，同时获得与其持续时间相同的速度 II 和力量 I。'
+  enchantment-poison_cloud-name: "毒气云"
+  enchantment-poison_cloud-description: '&8三叉戟命中敌人时有 25% 几率在目标附近生成毒气云。'
+  enchantment-storm_burst-name: "雷霆爆发"
+  enchantment-storm_burst-description: '&8攻击命中时有 &a{trigger_chance}% &8几率对目标附近造成 &a{lightning_damage} &8点闪电伤害。'
+  enchantment-tridal_hunter-name: "潮汐猎手"
+  enchantment-tridal_hunter-description: '&8攻击守卫者、远古守卫者，或你位于水中时，额外造成 &a{bonus_damage} &8点伤害。'
+  vanilla-enchantment-aqua_affinity-name: "水下速掘"
+  vanilla-enchantment-aqua_affinity-description: '&8消除水下挖掘速度惩罚。'
+  vanilla-enchantment-bane_of_arthropods-name: "节肢杀手"
+  vanilla-enchantment-bane_of_arthropods-description: '&8对节肢生物额外造成 &a{damage} &8点伤害，并施加 &a1.5-{slowness_duration} &8秒的缓慢 IV。'
+  vanilla-enchantment-binding_curse-name: "绑定诅咒"
+  vanilla-enchantment-binding_curse-description: '&8物品穿戴后无法取下，直至物品损坏或玩家死亡；创造模式不受限制。'
+  vanilla-enchantment-blast_protection-name: "爆炸保护"
+  vanilla-enchantment-blast_protection-description: '&8减少 &a{damage_reduction}% &8爆炸伤害，并提供 &a{knockback_reduction}% &8爆炸击退抗性；附魔保护总上限为 &a80%&8。'
+  vanilla-enchantment-breach-name: "破甲"
+  vanilla-enchantment-breach-description: '&8使用重锤攻击时降低目标 &a{armor_reduction}% &8的护甲防护效果。'
+  vanilla-enchantment-channeling-name: "引雷"
+  vanilla-enchantment-channeling-description: '&8雷暴期间，投掷的三叉戟命中露天实体或避雷针时召唤闪电。'
+  vanilla-enchantment-density-name: "致密"
+  vanilla-enchantment-density-description: '&8使用重锤发动重击时，每下落一格额外增加 &a{damage_per_block} &8点伤害。'
+  vanilla-enchantment-depth_strider-name: "深海探索者"
+  vanilla-enchantment-depth_strider-description: '&8提高 &a{underwater_efficiency}% &8水中移动效率；达到 III 级时消除水流造成的移动减速。'
+  vanilla-enchantment-efficiency-name: "效率"
+  vanilla-enchantment-efficiency-description: '&8使用合适工具挖掘方块时增加 &a{mining_efficiency} &8点挖掘效率。'
+  vanilla-enchantment-feather_falling-name: "摔落缓冲"
+  vanilla-enchantment-feather_falling-description: '&8减少 &a{damage_reduction}% &8摔落伤害；附魔保护总上限为 &a80%&8。'
+  vanilla-enchantment-fire_aspect-name: "火焰附加"
+  vanilla-enchantment-fire_aspect-description: '&8近战命中时使目标燃烧 &a{fire_duration} &8秒。'
+  vanilla-enchantment-fire_protection-name: "火焰保护"
+  vanilla-enchantment-fire_protection-description: '&8减少 &a{damage_reduction}% &8火焰伤害，并缩短 &a{fire_duration_reduction}% &8燃烧时间；附魔保护总上限为 &a80%&8。'
+  vanilla-enchantment-flame-name: "火矢"
+  vanilla-enchantment-flame-description: '&8使射出的箭矢燃烧，可点燃命中的目标及可交互方块。'
+  vanilla-enchantment-fortune-name: "时运"
+  vanilla-enchantment-fortune-description: '&8提高挖掘特定方块时的掉落数量或额外掉落概率，具体增幅由方块战利品表决定。'
+  vanilla-enchantment-frost_walker-name: "冰霜行者"
+  vanilla-enchantment-frost_walker-description: '&8在地面行走时，将脚下半径 &a{freezing_radius} &8格内的水面冻结成霜冰，并免疫岩浆块伤害。'
+  vanilla-enchantment-impaling-name: "穿刺"
+  vanilla-enchantment-impaling-description: '&8三叉戟对水生生物额外造成 &a{damage} &8点伤害。'
+  vanilla-enchantment-infinity-name: "无限"
+  vanilla-enchantment-infinity-description: '&8箭矢命中后有 &a{refund_chance}% &8概率返还一支普通箭。I–IV 级分别需要 &c10/20/30/40 级战斗&8，不满足当前等级时会降级生效。'
+  vanilla-enchantment-knockback-name: "击退"
+  vanilla-enchantment-knockback-description: '&8近战命中时额外增加 &a{level} &8级击退强度。'
+  vanilla-enchantment-looting-name: "抢夺"
+  vanilla-enchantment-looting-description: '&8提高生物常规掉落数量与稀有掉落概率，并使生物装备掉落概率增加 &a{level}%&8。'
+  vanilla-enchantment-loyalty-name: "忠诚"
+  vanilla-enchantment-loyalty-description: '&8使掷出的三叉戟自动返回；等级越高，返回加速度越大。'
+  vanilla-enchantment-luck_of_the_sea-name: "海之眷顾"
+  vanilla-enchantment-luck_of_the_sea-description: '&8钓鱼时增加 &a{level} &8点幸运值，提高宝藏概率并降低垃圾概率。'
+  vanilla-enchantment-lunge-name: "突进"
+  vanilla-enchantment-lunge-description: '&8持长矛突刺时以 &a{thrust} &8冲量向前突进，消耗 &a1 &8点耐久并增加 &a{exhaustion} &8点消耗度；骑乘、鞘翅滑翔、水中或饥饿值低于 7 时无法触发。'
+  vanilla-enchantment-lure-name: "饵钓"
+  vanilla-enchantment-lure-description: '&8每次钓鱼最多缩短 &a{time_reduction} &8秒等待咬钩时间。'
+  vanilla-enchantment-mending-name: "经验修补"
+  vanilla-enchantment-mending-description: '&8拾取经验时，随机选择一件已装备的受损附魔物品，每消耗 &a1 &8点经验修复 &a2 &8点耐久。'
+  vanilla-enchantment-multishot-name: "多重射击"
+  vanilla-enchantment-multishot-description: '&8弩一次向相差 10° 的方向射出 &a3 &8枚投射物，但只消耗 &a1 &8枚弹药。'
+  vanilla-enchantment-piercing-name: "穿透"
+  vanilla-enchantment-piercing-description: '&8弓箭或弩箭可穿透实体与盾牌，最多连续命中 &a{hit_count} &8个实体。'
+  vanilla-enchantment-power-name: "力量"
+  vanilla-enchantment-power-description: '&8使弓射出的箭矢伤害增加 &a{damage} &8点。'
+  vanilla-enchantment-projectile_protection-name: "弹射物保护"
+  vanilla-enchantment-projectile_protection-description: '&8减少 &a{damage_reduction}% &8弹射物伤害；附魔保护总上限为 &a80%&8。'
+  vanilla-enchantment-protection-name: "保护"
+  vanilla-enchantment-protection-description: '&8受到攻击减免 &a{damage} &8点伤害，最高减免 &a50%&8。'
+  vanilla-enchantment-punch-name: "冲击"
+  vanilla-enchantment-punch-description: '&8使弓射出的箭矢额外增加 &a{level} &8级击退强度。'
+  vanilla-enchantment-quick_charge-name: "快速装填"
+  vanilla-enchantment-quick_charge-description: '&8将弩的装填时间缩短至 &a{charge_time} &8秒。'
+  vanilla-enchantment-respiration-name: "水下呼吸"
+  vanilla-enchantment-respiration-description: '&8每次耗氧有 &a{oxygen_conservation_chance}% &8概率保留空气，使平均水下呼吸时间延长至 &a{duration_multiplier} &8倍。'
+  vanilla-enchantment-riptide-name: "激流"
+  vanilla-enchantment-riptide-description: '&8在水中或雨中使用三叉戟时，携带玩家旋转冲刺，并增加 &a{riptide_strength} &8点冲刺强度。'
+  vanilla-enchantment-sharpness-name: "锋利"
+  vanilla-enchantment-sharpness-description: '&8使近战攻击伤害增加 &a{damage} &8点。'
+  vanilla-enchantment-silk_touch-name: "精准采集"
+  vanilla-enchantment-silk_touch-description: '&8使适用方块掉落其本体，并阻止这些方块掉落经验。'
+  vanilla-enchantment-smite-name: "亡灵杀手"
+  vanilla-enchantment-smite-description: '&8对亡灵生物额外造成 &a{damage} &8点伤害。'
+  vanilla-enchantment-soul_speed-name: "灵魂疾行"
+  vanilla-enchantment-soul_speed-description: '&8在灵魂沙或灵魂土上移动时消除减速并提高 &a{speed_increase}% &8移动速度；每移动一格有 &a{durability_loss_chance}% &8概率损失 1 点耐久。'
+  vanilla-enchantment-sweeping_edge-name: "横扫之刃"
+  vanilla-enchantment-sweeping_edge-description: '&8使横扫攻击对附近目标造成主目标伤害的 &a{sweep_damage}%&8。'
+  vanilla-enchantment-swift_sneak-name: "迅捷潜行"
+  vanilla-enchantment-swift_sneak-description: '&8使潜行速度提高至正常行走速度的 &a{sneak_speed}%&8。'
+  vanilla-enchantment-thorns-name: "荆棘"
+  vanilla-enchantment-thorns-description: '&8受到攻击时有 &a{trigger_chance}% &8概率反弹 1-5 点伤害；触发时附魔物品额外损失 2 点耐久。'
+  vanilla-enchantment-unbreaking-name: "耐久"
+  vanilla-enchantment-unbreaking-description: '&8非盔甲物品有 &a{tool_durability_conservation}% &8概率不损失耐久，平均寿命为原来的 &a{durability_multiplier} &8倍；盔甲免耗概率为 &a{armor_durability_conservation}%&8。'
+  vanilla-enchantment-vanishing_curse-name: "消失诅咒"
+  vanilla-enchantment-vanishing_curse-description: '&8玩家死亡时物品不会掉落，而会直接消失；开启保留物品栏时不触发。'
+  vanilla-enchantment-wind_burst-name: "风爆"
+  vanilla-enchantment-wind_burst-description: '&8从至少 1.5 格高度发动重锤重击后产生风爆，以 &a{knock_up_strength} &8击退倍率将攻击者向上弹起。'

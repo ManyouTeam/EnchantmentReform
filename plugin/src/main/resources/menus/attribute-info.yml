@@ -1,0 +1,77 @@
+title: '{lang:attribute-menu-title} &8• &7{page}/{pages}'
+layout:
+  - 'FFFFFFFFF'
+  - 'FAAAAAAAF'
+  - 'FAAAAAAAF'
+  - 'FAAAAAAAF'
+  - 'FAAAAAAAF'
+  - 'PFFFIHFFN'
+
+contents:
+  A:
+    type: attributes
+    mode: information
+    item:
+      material: AMETHYST_SHARD
+      name: '&d&l{name} &8• &f{value}'
+      lore:
+        - '&8属性概览'
+        - ' '
+        - '&f当前效果'
+        - '&7{current_description}'
+        - ' '
+        - '&f下一级效果'
+        - '&7{next_description}'
+        - ' '
+        - '&7基础值：&f{base_value}'
+        - '&7最终值：&a{value}'
+        - '&7修改器：&f{modifier_count} 个'
+        - ' '
+        - '&e▶ 点击查看全部修改器与升级信息'
+    click-actions:
+      LEFT:
+        open:
+          type: open_attribute
+
+items:
+  F:
+    item:
+      material: PURPLE_STAINED_GLASS_PANE
+      name: ' '
+  P:
+    hide-on-first-page: true
+    item:
+      material: ARROW
+      name: '&a上一页'
+    hidden-item:
+      material: PURPLE_STAINED_GLASS_PANE
+      name: ' '
+    actions:
+      page:
+        type: previous_page
+  I:
+    item:
+      material: BOOK
+      name: '&d&l属性总览'
+      lore:
+        - '&7点击属性进入独立详情菜单。'
+        - '&7详情页会列出基础值、最终值和全部修改器。'
+  H:
+    item:
+      material: COMPASS
+      name: '&b返回主菜单'
+    actions:
+      open:
+        type: open_menu
+        menu: main
+  N:
+    hide-on-last-page: true
+    item:
+      material: ARROW
+      name: '&a下一页'
+    hidden-item:
+      material: PURPLE_STAINED_GLASS_PANE
+      name: ' '
+    actions:
+      page:
+        type: next_page

@@ -1,0 +1,10 @@
+enabled: true
+key: minecraft:channeling
+name: '{lang:vanilla-enchantment-channeling-name}'
+description: '{lang:vanilla-enchantment-channeling-description}'
+
+exclusive-with:
+  - enchantmentreform:storm_burst
+  - minecraft:riptide
+
+rarity: EPIC

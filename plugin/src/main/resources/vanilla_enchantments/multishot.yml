@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:multishot
+name: '{lang:vanilla-enchantment-multishot-name}'
+description: '{lang:vanilla-enchantment-multishot-description}'
+
+rarity: RARE

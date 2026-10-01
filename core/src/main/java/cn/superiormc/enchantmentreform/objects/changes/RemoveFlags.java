@@ -1,0 +1,33 @@
+package cn.superiormc.enchantmentreform.objects.changes;
+
+import cn.superiormc.enchantmentreform.objects.ObjectSingleChange;
+import com.google.common.base.Enums;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class RemoveFlags extends AbstractChangesRule {
+
+    public RemoveFlags() {
+        super();
+    }
+
+    @Override
+    public ItemStack setChange(ObjectSingleChange singleChange) {
+        ItemMeta meta = singleChange.getItemMeta();
+        for (String flag : singleChange.getStringList("remove-flags")) {
+            flag = flag.toUpperCase();
+            ItemFlag itemFlag = Enums.getIfPresent(ItemFlag.class, flag).orNull();
+            if (itemFlag != null) {
+                meta.removeItemFlags(itemFlag);
+            }
+        }
+        return singleChange.setItemMeta(meta);
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return section.getStringList("remove-flags").isEmpty();
+    }
+}

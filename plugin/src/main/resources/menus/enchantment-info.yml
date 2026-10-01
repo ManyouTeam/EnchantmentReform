@@ -1,0 +1,88 @@
+title: '{lang:enchantment-menu-title}'
+size: 54
+enchantment-symbol: E
+rarity-sort-rule:
+  - COMMON
+  - UNCOMMON
+  - RARE
+  - EPIC
+  - MYTHIC
+  - LEGENDARY
+  - CURSE
+layout:
+  - 'FFFFFFFFF'
+  - 'FEEEEEEEF'
+  - 'FEEEEEEEF'
+  - 'FEEEEEEEF'
+  - 'FEEEEEEEF'
+  - 'PRFISFFNC'
+
+enchantment-item:
+  material: ENCHANTED_BOOK
+  name: '{name}'
+  lore:
+    - '{level-descriptions}'
+    - ' '
+    - '{lang:enchantment-menu-key}'
+    - '{lang:enchantment-menu-max-level}'
+    - '{lang:enchantment-menu-rarity}'
+    - '{lang:enchantment-menu-weight}'
+    - '{lang:enchantment-menu-supported-items}'
+
+buttons:
+  F:
+    material: BLACK_STAINED_GLASS_PANE
+    name: ' '
+  P:
+    material: ARROW
+    name: '{lang:enchantment-menu-previous}'
+    lore:
+      - '{lang:enchantment-menu-page}'
+    actions:
+      previous-page:
+        type: previous_page
+    hide-on-first-page: true
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+  N:
+    material: ARROW
+    name: '{lang:enchantment-menu-next}'
+    lore:
+      - '{lang:enchantment-menu-page}'
+    actions:
+      next-page:
+        type: next_page
+    hide-on-last-page: true
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+  I:
+    material: BOOK
+    name: '{lang:enchantment-menu-info}'
+    lore:
+      - '{lang:enchantment-menu-amount}'
+      - '{lang:enchantment-menu-page}'
+    actions:
+      refresh:
+        type: refresh
+  R:
+    material: NETHER_STAR
+    name: '{lang:enchantment-menu-filter-rarity}'
+    lore:
+      - '{lang:enchantment-menu-filter-current}'
+      - '{lang:enchantment-menu-filter-click}'
+    filter-type: RARITY
+  S:
+    material: HOPPER
+    name: '{lang:enchantment-menu-filter-supported-item}'
+    lore:
+      - '{lang:enchantment-menu-filter-current-supported-item}'
+      - '{lang:enchantment-menu-filter-click}'
+    filter-type: SUPPORTED_ITEM
+  C:
+    material: BARRIER
+    name: '{lang:enchantment-menu-close}'
+    actions:
+      close:
+        type: close

@@ -1,0 +1,10 @@
+enabled: true
+key: minecraft:blast_protection
+name: '{lang:vanilla-enchantment-blast_protection-name}'
+description: '{lang:vanilla-enchantment-blast_protection-description}'
+
+rarity: RARE
+
+variables:
+  'damage_reduction': '{level} * 8'
+  'knockback_reduction': '{level} * 15'

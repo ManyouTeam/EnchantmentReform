@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:loyalty
+name: '{lang:vanilla-enchantment-loyalty-name}'
+description: '{lang:vanilla-enchantment-loyalty-description}'
+
+rarity: UNCOMMON

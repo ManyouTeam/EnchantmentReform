@@ -1,0 +1,81 @@
+name: EnchantmentReform
+version: '${revision}'
+main: cn.superiormc.enchantmentreform.EnchantmentReform
+load: STARTUP
+api-version: '26.1'
+folia-supported: true
+authors:
+  - PQguanfang
+softdepend:
+  - MythicChanger
+  - PlaceholderAPI
+  - NBTAPI
+  - MythicMobs
+  - packetevents
+  - Vault
+  - PlayerPoints
+  - CoinsEngine
+  - ExcellentEconomy
+  - UltraEconomy
+  - EcoBits
+  - PEconomy
+  - RedisEconomy
+  - RoyaleEconomy
+  - VotingPlugin
+  - ItemsAdder
+  - Oraxen
+  - MMOItems
+  - EcoItems
+  - EcoArmor
+  - eco
+  - NeigeItems
+  - ExecutableItems
+  - Nexo
+  - CraftEngine
+  - WorldGuard
+  - Residence
+  - GriefPrevention
+  - Lands
+  - HuskTowns
+  - HuskClaims
+  - PlotSquared
+  - Towny
+  - BentoBox
+  - Dominion
+  - SuperiorSkyblock2
+  - EnchantmentSlots
+commands:
+  enchantmentreform:
+    description: Open the enchantment catalogue or reload runtime files.
+    aliases:
+      - er
+      - enchants
+permissions:
+  enchantmentreform.menu:
+    default: true
+  enchantmentreform.reload:
+    default: op
+  enchantmentreform.setattribute:
+    default: op
+  enchantmentreform.addattribute:
+    default: op
+  enchantmentreform.addattributemodifier:
+    default: op
+  enchantmentreform.setattributemodifier:
+    default: op
+  enchantmentreform.setskillmultiplier:
+    default: op
+  enchantmentreform.setskillxp:
+    default: op
+  enchantmentreform.addskillxp:
+    default: op
+  enchantmentreform.setskilllevel:
+    default: op
+  enchantmentreform.addskilllevel:
+    default: op
+  enchantmentreform.generateitemformat:
+    default: op
+  enchantmentreform.bypass.protection:
+    default: op
+  enchantmentreform.bypass.economy:
+    default: op

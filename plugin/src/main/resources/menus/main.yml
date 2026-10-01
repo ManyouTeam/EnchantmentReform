@@ -1,0 +1,75 @@
+title: '&8EnchantmentReform'
+layout:
+  - 'FFFFFFFFF'
+  - 'FSAU.C.EF'
+  - 'FFFFFFFFF'
+
+items:
+  F:
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: ' '
+  S:
+    item:
+      material: EXPERIENCE_BOTTLE
+      name: '&a&l技能'
+      lore:
+        - '&8角色成长'
+        - ' '
+        - '&7查看经验来源、技能等级和等级奖励。'
+        - ' '
+        - '&e▶ 点击打开'
+    actions:
+      open:
+        type: open_menu
+        menu: skill-info
+  A:
+    item:
+      material: AMETHYST_SHARD
+      name: '&d&l属性'
+      lore:
+        - '&8详细数值'
+        - ' '
+        - '&7查看当前属性、最终值和全部修改器。'
+        - ' '
+        - '&e▶ 点击打开'
+    actions:
+      open:
+        type: open_menu
+        menu: attribute-info
+  U:
+    item:
+      material: NETHER_STAR
+      name: '&e&l属性加点'
+      lore:
+        - '&8能力提升'
+        - ' '
+        - '&7预览升级前后效果并消耗属性点升级。'
+        - '&7当前拥有：&e{points} 属性点'
+        - ' '
+        - '&e▶ 点击打开'
+    actions:
+      open:
+        type: open_menu
+        menu: attribute-allocation
+  E:
+    item:
+      material: ENCHANTED_BOOK
+      name: '&b&l附魔图鉴'
+      lore:
+        - '&8附魔资料'
+        - ' '
+        - '&7浏览全部附魔及其等级效果。'
+        - ' '
+        - '&e▶ 点击打开'
+    actions:
+      open:
+        type: open_menu
+        menu: enchantment-info
+  C:
+    item:
+      material: BARRIER
+      name: '&c关闭菜单'
+    actions:
+      close:
+        type: close

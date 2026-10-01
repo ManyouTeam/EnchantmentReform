@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:vanishing_curse
+name: '{lang:vanilla-enchantment-vanishing_curse-name}'
+description: '{lang:vanilla-enchantment-vanishing_curse-description}'
+
+rarity: CURSE

@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:swift_sneak
+name: '{lang:vanilla-enchantment-swift_sneak-name}'
+description: '{lang:vanilla-enchantment-swift_sneak-description}'
+
+rarity: LEGENDARY
+
+variables:
+  'sneak_speed': '30 + {level} * 15'

@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:power
+name: '{lang:vanilla-enchantment-power-name}'
+description: '{lang:vanilla-enchantment-power-description}'
+
+rarity: COMMON
+
+variables:
+  'damage': '{level} * 0.5 + 0.5'

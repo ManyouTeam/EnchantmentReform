@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:fortune
+name: '{lang:vanilla-enchantment-fortune-name}'
+description: '{lang:vanilla-enchantment-fortune-description}'
+
+rarity: RARE

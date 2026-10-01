@@ -1,0 +1,12 @@
+enabled: true
+key: minecraft:wind_burst
+name: '{lang:vanilla-enchantment-wind_burst-name}'
+description: '{lang:vanilla-enchantment-wind_burst-description}'
+
+rarity: LEGENDARY
+
+variables:
+  'knock_up_strength':
+    '1': 1.2
+    '2': 1.75
+    '>=3': 2.2

@@ -1,0 +1,37 @@
+package cn.superiormc.enchantmentreform.objects.changes;
+
+import cn.superiormc.enchantmentreform.EnchantmentReform;
+import cn.superiormc.enchantmentreform.objects.ObjectSingleChange;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
+
+public class ParsePAPILore extends AbstractChangesRule {
+
+    public ParsePAPILore() {
+        super();
+    }
+
+    @Override
+    public ItemStack setChange(ObjectSingleChange singleChange) {
+        if (!singleChange.getBoolean("parse-papi-lore")) {
+            return singleChange.getItem();
+        }
+        ItemMeta meta = singleChange.getItemMeta();
+        if (!meta.hasLore()) {
+            return singleChange.getItem();
+        }
+        List<String> lore = EnchantmentReform.methodUtil.getItemLore(meta);
+        EnchantmentReform.methodUtil.setItemLore(meta,
+                singleChange.parsePlaceholder(lore),
+                singleChange.getPlayer());
+        return singleChange.setItemMeta(meta);
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return !section.contains("parse-papi-lore");
+    }
+}

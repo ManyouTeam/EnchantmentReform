@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:mending
+name: '{lang:vanilla-enchantment-mending-name}'
+description: '{lang:vanilla-enchantment-mending-description}'
+
+rarity: LEGENDARY

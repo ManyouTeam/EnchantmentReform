@@ -1,0 +1,31 @@
+package cn.superiormc.enchantmentreform.objects.changes;
+
+import cn.superiormc.enchantmentreform.objects.ObjectSingleChange;
+import cn.superiormc.enchantmentreform.utils.CommonUtil;
+import com.google.common.collect.MultimapBuilder;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class FixHideAttributes extends AbstractChangesRule {
+
+    public FixHideAttributes() {
+        super();
+    }
+
+    @Override
+    public ItemStack setChange(ObjectSingleChange singleChange) {
+        ItemMeta meta = singleChange.getItemMeta();
+        if (CommonUtil.getMinorVersion(20, 6) && meta.getItemFlags().contains(ItemFlag.HIDE_ATTRIBUTES)
+                && meta.getAttributeModifiers() == null) {
+            meta.setAttributeModifiers(MultimapBuilder.hashKeys().hashSetValues().build());
+        }
+        return singleChange.setItemMeta(meta);
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return !section.getBoolean("fix-hide-attributes");
+    }
+}

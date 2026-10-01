@@ -1,0 +1,10 @@
+enabled: true
+key: minecraft:soul_speed
+name: '{lang:vanilla-enchantment-soul_speed-name}'
+description: '{lang:vanilla-enchantment-soul_speed-description}'
+
+rarity: LEGENDARY
+
+variables:
+  'speed_increase': '30 + {level} * 10.5'
+  'durability_loss_chance': '{level} * 4'

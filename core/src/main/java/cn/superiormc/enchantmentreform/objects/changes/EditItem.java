@@ -1,0 +1,28 @@
+package cn.superiormc.enchantmentreform.objects.changes;
+
+import cn.superiormc.enchantmentreform.methods.BuildItem;
+import cn.superiormc.enchantmentreform.objects.ObjectSingleChange;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+
+public class EditItem extends AbstractChangesRule {
+
+    public EditItem() {
+        super();
+    }
+
+    @Override
+    public ItemStack setChange(ObjectSingleChange singleChange) {
+        if (singleChange.getBoolean("edit-item.replace-item", false)) {
+            singleChange.setNeedRewriteItem();
+        }
+        return BuildItem.editItemStack(singleChange.getItem(),
+                singleChange.getPlayer(),
+                singleChange.getConfigurationSection("edit-item"));
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return section.getConfigurationSection("edit-item") == null;
+    }
+}

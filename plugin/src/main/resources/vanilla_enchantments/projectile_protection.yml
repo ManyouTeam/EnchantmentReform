@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:projectile_protection
+name: '{lang:vanilla-enchantment-projectile_protection-name}'
+description: '{lang:vanilla-enchantment-projectile_protection-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'damage_reduction': '{level} * 8'

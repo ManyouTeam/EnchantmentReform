@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:sweeping_edge
+name: '{lang:vanilla-enchantment-sweeping_edge-name}'
+description: '{lang:vanilla-enchantment-sweeping_edge-description}'
+
+rarity: RARE
+
+variables:
+  'sweep_damage': '100 * {level} / ({level} + 1)'

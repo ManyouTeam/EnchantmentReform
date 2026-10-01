@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:quick_charge
+name: '{lang:vanilla-enchantment-quick_charge-name}'
+description: '{lang:vanilla-enchantment-quick_charge-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'charge_time': '1.25 - {level} * 0.25'

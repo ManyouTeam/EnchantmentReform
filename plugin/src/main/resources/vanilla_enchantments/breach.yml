@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:breach
+name: '{lang:vanilla-enchantment-breach-name}'
+description: '{lang:vanilla-enchantment-breach-description}'
+
+rarity: RARE
+
+variables:
+  'armor_reduction': '{level} * 15'

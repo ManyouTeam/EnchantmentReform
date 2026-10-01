@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:lure
+name: '{lang:vanilla-enchantment-lure-name}'
+description: '{lang:vanilla-enchantment-lure-description}'
+
+rarity: RARE
+
+variables:
+  'time_reduction': '{level} * 5'

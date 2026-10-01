@@ -1,0 +1,453 @@
+# EnchantmentReform by @PQguanfang
+#
+# Read the Wiki here: https://enchantedmobs.superiormc.cn/for-enchantmentreform
+
+config-files:
+  language: en_US
+  per-player-language: true
+  force-parse-mini-message: false
+
+math:
+  enabled: true
+  enable-function: true
+
+debug: false
+
+modules:
+  # Enables skill definitions, progression, XP sources, rewards, and skill menus.
+  # When disabled, every skill_level power/allocation condition is treated as met.
+  skills: false
+
+hook-item-method: DEFAULT
+
+enchantment-description:
+  # Maximum visible characters per enchantment-description line.
+  wrap-length: 30
+  # Adds enchantment descriptions to client-side item copies through PacketEvents.
+  # The real server-side ItemStack is never modified. Creative mode is left unchanged.
+  item-display:
+    enabled: true
+    # When EnchantmentSlots is installed, Item Display is disabled to avoid duplicate lore.
+    # Set true only when you intentionally want both display paths enabled.
+    force-enabled: false
+    # Marks generated client lore so repeated packet transformations do not duplicate it.
+    lore-prefix: "§y"
+    remove-lore-first: true
+    black-creative: true
+    # MatchItemFormat rules can be used here to exclude items.
+    black-item: []
+    # PacketEvents listener priority: LOWEST, LOW, NORMAL, HIGH, HIGHEST, or MONITOR.
+    packet-listener-priority: LOWEST
+    # false appends the generated block; true prepends it.
+    at-first-or-last: false
+    display-value:
+      - '{enchants}'
+    placeholder:
+      auto-parse: true
+      enchants:
+        format: '&a{enchant_name}{enchant_level_roman}'
+        auto-add-space: true
+        level-hide-one: true
+        description:
+          format: '&7  {enchant_description}'
+
+# Overrides the minecraft:enchantable component when matching items enter a player inventory.
+# Material names may be Bukkit names such as SHIELD or namespaced keys such as minecraft:shield.
+item-enchantability-overrides:
+  enabled: false
+  # NEVER DISABLE THIS OPTION PLEASE, UNLESS I ASK YOU DO THIS.
+  ignore-equipment-when-open-other-invenotry: true
+
+  # Each value must be a positive integer. Higher values allow stronger enchanting-table results.
+  materials:
+    SHIELD: 10
+
+enchant-randomly-overrides:
+  # Replaces minecraft:enchant_randomly at runtime with the level-based
+  # enchanting algorithm used by minecraft:enchant_with_levels. Eligible
+  # enchantments are selected using their configured weight values.
+  # Items without an ENCHANTABLE component use a book as the selection carrier.
+  enabled: false
+
+  # These values are enchanting costs/power, not final enchantment levels.
+  # Equal values use a fixed cost; a range chooses an inclusive random cost.
+  minimum-cost: 10
+  maximum-cost: 30
+
+anvil:
+  # Paper only. Allows the anvil to apply enchantments above Enchantment#getMaxLevel().
+  # This preserves over-levelled enchanted books and allows equal over-levelled inputs to combine.
+  bypass-enchantment-level-limit: false
+  no-max-repair-cost: false
+
+# Controls both the vanilla client tooltip order and EnchantmentSlots lore order.
+# Rarities are displayed from top to bottom. Rarities omitted from this list are
+# placed after configured rarities. Enchantments with the same rarity are sorted
+# by weight, then by namespaced key.
+# Enchantment descriptions can be displayed by the built-in client renderer or EnchantmentSlots.
+tooltip-order:
+  enabled: true
+  rarity-sort-rule:
+    - MYTHIC
+    - LEGENDARY
+    - EPIC
+    - RARE
+    - UNCOMMON
+    - COMMON
+    - CURSE
+  weight-order: DESCENDING
+
+# Enchantments inherit these registry values from their rarity when the same
+# option is omitted from the individual enchantment file.
+#
+# weight:
+#   Relative selection weight after the enchantment enters the candidate pool.
+#
+# minimum-cost / maximum-cost:
+#   Determines the enchantment power range in which each enchantment level
+#   can be selected.
+#
+# anvil-cost:
+#   Base anvil cost multiplier. The final cost is also affected by the
+#   enchantment level.
+
+rarity:
+  COMMON:
+    display-name: '&<#E5E7EB>{lang:rarity-common}&<#9CA3AF>'
+    color-prefix: '&<#E5E7EB>'
+    color-suffix: '&<#9CA3AF>'
+    weight: 25
+    anvil-cost: 2
+    minimum-cost:
+      base: 1
+      per-level: 8
+    maximum-cost:
+      base: 21
+      per-level: 8
+
+  UNCOMMON:
+    display-name: '&<#86EFAC>{lang:rarity-uncommon}&<#22C55E>'
+    color-prefix: '&<#86EFAC>'
+    color-suffix: '&<#22C55E>'
+    weight: 15
+    anvil-cost: 3
+    minimum-cost:
+      base: 5
+      per-level: 9
+    maximum-cost:
+      base: 25
+      per-level: 9
+
+  RARE:
+    display-name: '&<#60A5FA>{lang:rarity-rare}&<#22D3EE>'
+    color-prefix: '&<#60A5FA>'
+    color-suffix: '&<#22D3EE>'
+    weight: 8
+    anvil-cost: 4
+    minimum-cost:
+      base: 8
+      per-level: 10
+    maximum-cost:
+      base: 28
+      per-level: 10
+
+  EPIC:
+    display-name: '&<#A78BFA>{lang:rarity-epic}&<#F472B6>'
+    color-prefix: '&<#A78BFA>'
+    color-suffix: '&<#F472B6>'
+    weight: 4
+    anvil-cost: 6
+    minimum-cost:
+      base: 12
+      per-level: 12
+    maximum-cost:
+      base: 32
+      per-level: 12
+
+  LEGENDARY:
+    display-name: '&<#F59E0B>{lang:rarity-legendary}&<#FDE047>'
+    color-prefix: '&<#F59E0B>'
+    color-suffix: '&<#FDE047>'
+    weight: 2
+    anvil-cost: 8
+    minimum-cost:
+      base: 16
+      per-level: 15
+    maximum-cost:
+      base: 31
+      per-level: 15
+
+  MYTHIC:
+    display-name: '&<#F43F5E>{lang:rarity-mythic}&<#C084FC>'
+    color-prefix: '&<#F43F5E>'
+    color-suffix: '&<#C084FC>'
+    weight: 1
+    anvil-cost: 12
+    double-trade-multiplier: true
+    minimum-cost:
+      base: 20
+      per-level: 18
+    maximum-cost:
+      base: 32
+      per-level: 18
+
+  CURSE:
+    display-name: '&<#7F1D1D>{lang:rarity-curse}&<#EF4444>'
+    color-prefix: '&<#7F1D1D>'
+    color-suffix: '&<#EF4444>'
+    weight: 4
+    anvil-cost: 4
+    curse: true
+    minimum-cost:
+      base: 8
+      per-level: 10
+    maximum-cost:
+      base: 28
+      per-level: 10
+
+# Paper registers the tags below during bootstrap. Values accept item keys or
+# another item tag prefixed with #. The GUI also resolves these definitions on
+# Spigot, where modifying the item-tag registry is not supported safely.
+supported-items:
+  tags:
+    SWORD:
+      key: enchantmentreform:sword
+      values:
+        - '#minecraft:swords'
+    MELEE_WEAPON:
+      key: enchantmentreform:melee_weapon
+      values:
+        - '#minecraft:swords'
+        - '#minecraft:spears'
+    AXE:
+      key: enchantmentreform:axe
+      values:
+        - '#minecraft:axes'
+    PICKAXE:
+      key: enchantmentreform:pickaxe
+      values:
+        - '#minecraft:pickaxes'
+    SHOVEL:
+      key: enchantmentreform:shovel
+      values:
+        - '#minecraft:shovels'
+    HOE:
+      key: enchantmentreform:hoe
+      values:
+        - '#minecraft:hoes'
+    TOOLS:
+      key: enchantmentreform:tools
+      values:
+        - '#enchantmentreform:axe'
+        - '#enchantmentreform:pickaxe'
+        - '#enchantmentreform:shovel'
+        - '#enchantmentreform:hoe'
+    TOOLS_AND_SWORD:
+      key: enchantmentreform:tools_and_sword
+      values:
+        - '#enchantmentreform:tools'
+        - '#enchantmentreform:sword'
+    BOW:
+      key: enchantmentreform:bow
+      values:
+        - minecraft:bow
+    CROSSBOW:
+      key: enchantmentreform:crossbow
+      values:
+        - minecraft:crossbow
+    BOW_AND_CROSSBOW:
+      key: enchantmentreform:bow_and_crossbow
+      values:
+        - '#enchantmentreform:bow'
+        - '#enchantmentreform:crossbow'
+    TRIDENT:
+      key: enchantmentreform:trident
+      values:
+        - minecraft:trident
+    BOW_CROSSBOW_TRIDENT:
+      key: bow_crossbow_trident
+      values:
+        - '#enchantmentreform:bow'
+        - '#enchantmentreform:crossbow'
+        - '#enchantmentreform:trident'
+    SHARP_WEAPON_AND_TRIDENT:
+      key: enchantmentreform:sharp_weapon_and_trident
+      values:
+        - '#minecraft:enchantable/sharp_weapon'
+        - '#enchantmentreform:trident'
+    MELEE_WEAPON_AND_TRIDENT:
+      key: enchantmentreform:melee_weapon_and_trident
+      values:
+        - '#enchantmentreform:melee_weapon'
+        - '#enchantmentreform:trident'
+    SPEAR:
+      key: enchantmentreform:spear
+      values:
+        - '#minecraft:spears'
+    ABSORPTION_WEAPON:
+      key: enchantmentreform:absorption_weapon
+      values:
+        - '#enchantmentreform:sword'
+        - '#enchantmentreform:spear'
+        - '#enchantmentreform:trident'
+        - '#enchantmentreform:bow'
+    ALL_WEAPONS:
+      key: enchantmentreform:all_weapons
+      values:
+        - '#minecraft:enchantable/weapon'
+        - '#enchantmentreform:melee_weapon'
+        - '#enchantmentreform:bow_and_crossbow'
+        - '#enchantmentreform:trident'
+    FISHING_ROD:
+      key: enchantmentreform:fishing_rod
+      values:
+        - minecraft:fishing_rod
+    SHIELD:
+      key: enchantmentreform:shield
+      values:
+        - minecraft:shield
+    ELYTRA:
+      key: enchantmentreform:elytra
+      values:
+        - minecraft:elytra
+    HELMET:
+      key: enchantmentreform:helmet
+      values:
+        - '#minecraft:head_armor'
+    CHESTPLATE:
+      key: enchantmentreform:chestplate
+      values:
+        - '#minecraft:chest_armor'
+    LEGGINGS:
+      key: enchantmentreform:leggings
+      values:
+        - '#minecraft:leg_armor'
+    BOOTS:
+      key: enchantmentreform:boots
+      values:
+        - '#minecraft:foot_armor'
+
+  # A filter matches when an enchantment supports at least one item contained
+  # by any listed tag. Add multiple tags to combine categories in one filter.
+  filters:
+    SWORD:
+      display-name: '{lang:supported-item-sword}'
+      tags: [enchantmentreform:sword]
+    AXE:
+      display-name: '{lang:supported-item-axe}'
+      tags: [enchantmentreform:axe]
+    PICKAXE:
+      display-name: '{lang:supported-item-pickaxe}'
+      tags: [enchantmentreform:pickaxe]
+    SHOVEL:
+      display-name: '{lang:supported-item-shovel}'
+      tags: [enchantmentreform:shovel]
+    HOE:
+      display-name: '{lang:supported-item-hoe}'
+      tags: [enchantmentreform:hoe]
+    BOW:
+      display-name: '{lang:supported-item-bow}'
+      tags: [enchantmentreform:bow]
+    CROSSBOW:
+      display-name: '{lang:supported-item-crossbow}'
+      tags: [enchantmentreform:crossbow]
+    TRIDENT:
+      display-name: '{lang:supported-item-trident}'
+      tags: [enchantmentreform:trident]
+    SPEAR:
+      display-name: '{lang:supported-item-spear}'
+      tags: [enchantmentreform:spear]
+    FISHING_ROD:
+      display-name: '{lang:supported-item-fishing-rod}'
+      tags: [enchantmentreform:fishing_rod]
+    SHIELD:
+      display-name: '{lang:supported-item-shield}'
+      tags: [enchantmentreform:shield]
+    ELYTRA:
+      display-name: '{lang:supported-item-elytra}'
+      tags: [enchantmentreform:elytra]
+    HELMET:
+      display-name: '{lang:supported-item-helmet}'
+      tags: [enchantmentreform:helmet]
+    CHESTPLATE:
+      display-name: '{lang:supported-item-chestplate}'
+      tags: [enchantmentreform:chestplate]
+    LEGGINGS:
+      display-name: '{lang:supported-item-leggings}'
+      tags: [enchantmentreform:leggings]
+    BOOTS:
+      display-name: '{lang:supported-item-boots}'
+      tags: [enchantmentreform:boots]
+
+powers:
+  # SCAN checks every equipment slot for each trigger.
+  # CACHE stores active equipment enchantments and updates them through Paper's
+  # EntityEquipmentChangedEvent. CACHE falls back to SCAN when running on Spigot.
+  active-enchantment-mode: SCAN
+  strict-active-slot-check: true
+  break-block:
+    # Hard safety cap shared by every break_blocks ability.
+    max-blocks-per-activation: 512
+  # Restore blocks formed by configured minecraft:location_changed effects.
+  location-changed-effect:
+    auto-remove:
+      enabled: true
+      duration: 80~120
+  temp-block-crack-animation:
+    enabled: true
+    start-at: 0.5
+    update-interval: 5
+    view-distance: 64
+  cost-price:
+    shulker-box-check: false
+    # Support Value: Bukkit, ItemFormat.
+    check-method: Bukkit
+    item-format:
+      ignore-key:
+        - 'lore'
+        - 'damage'
+        - 'tool.damage-per-block'
+
+# Skill definitions and XP sources are loaded from plugins/EnchantmentReform/skills/*.yml.
+skills:
+  experience-multipliers:
+    # Every matching entry is multiplied together. Use '*' or 'all' to target all skills.
+    # Player multipliers set by /enchantmentreform setskillmultiplier are multiplied afterwards.
+    permissions:
+      # vip:
+      #   permission: 'enchantmentreform.skill-multiplier.vip'
+      #   skills: ['*']
+      #   multiplier: 1.5
+      # mining-event:
+      #   permission: 'enchantmentreform.skill-multiplier.mining-event'
+      #   skills: [mining]
+      #   multiplier: 2.0
+  level-up-message: '{lang:skill-level-up}'
+  feedback:
+    experience:
+      enabled: true
+      # Prevents movement and rapid block breaks from producing feedback every tick.
+      cooldown-ticks: 5
+      # Supported modes: BOSS_BAR, ACTION_BAR, BOTH.
+      display: BOSS_BAR
+      actionbar: '[actionbar]{lang:skill-xp-gain}[/actionbar]'
+      bossbar:
+        title: '{lang:skill-xp-gain}'
+        color: BLUE
+        style: SOLID
+      sound:
+        name: 'minecraft:entity.experience_orb.pickup'
+        volume: 0.25
+        pitch: 1.35
+    level-up:
+      title: '[title=10,50,20]{lang:skill-level-up-title};;{lang:skill-level-up-subtitle}[/title]'
+      sound:
+        name: 'minecraft:ui.toast.challenge_complete'
+        volume: 0.7
+        pitch: 1.0
+  allocation-messages:
+    success: '{lang:skill-allocation-success}'
+    not-enough-points: '{lang:skill-allocation-not-enough}'
+    maximum-reached: '{lang:skill-allocation-maximum}'
+    condition-not-met: '{lang:skill-allocation-condition-not-met}'
+    invalid: '{lang:skill-allocation-invalid}'

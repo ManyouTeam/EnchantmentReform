@@ -1,0 +1,38 @@
+# License Agreement
+
+## 1. Definitions
+- **“License”** means the terms and conditions set forth in this Agreement regarding use, reproduction, and distribution of the Package.
+- **“Package”** means the software files and materials distributed by the Author, unless otherwise specified.
+- **“You”** (or **“Your”**) means an individual or legal entity exercising permissions granted by this License.
+
+## 2. Grant of License
+Subject to the terms of this License, You are granted a limited, non-exclusive, non-transferable right to use the Package solely for Your own servers.
+
+## 3. Refund Policy
+All payments are considered voluntary contributions to support the ongoing development of the Package.
+**No refunds** will be issued under any circumstances.
+
+## 4. Modifications
+You may modify the Package only for **personal, non-commercial use**.
+Any modifications intended for distribution, resale, or public availability require the **prior written consent** of the Author.
+
+## 5. Redistribution Restrictions
+- The Package may only be used on **Your own servers**.
+- Redistribution, resale, or sharing of the Package, in whole or in part (including modified versions), is **strictly prohibited** without explicit permission from the Author.
+- Reposting the Package on any platform, marketplace, or website without authorization is **not permitted**.
+
+## 6. Disclaimer of Warranty
+The Package is provided on an **“AS IS”** basis, without warranties or conditions of any kind, either express or implied, including, without limitation, warranties of merchantability, fitness for a particular purpose, or non-infringement.
+
+## 7. Limitation of Liability
+In no event shall the Author or copyright holder
+be liable for any claim, damages, or other liability,
+whether in an action of contract, tort, or otherwise,
+arising from, out of, or in connection with the Package
+or the use or other dealings in the Package.
+
+## 8. Effective Date
+This License shall become effective starting from the commit in which this file is generated, and shall remain applicable to all subsequent uses.
+
+## 9. Purchase Requirement for Public Servers
+Users who have not purchased a copy of EnchantmentReform may use the Package only for testing in a non-public environment. Use of the Package on any publicly accessible server requires a purchased copy.

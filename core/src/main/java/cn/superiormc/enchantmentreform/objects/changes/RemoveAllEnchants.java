@@ -1,0 +1,31 @@
+package cn.superiormc.enchantmentreform.objects.changes;
+
+import cn.superiormc.enchantmentreform.objects.ObjectSingleChange;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class RemoveAllEnchants extends AbstractChangesRule {
+
+    public RemoveAllEnchants() {
+        super();
+    }
+
+    @Override
+    public ItemStack setChange(ObjectSingleChange singleChange) {
+        if (!singleChange.getBoolean("remove-all-enchants")) {
+            return singleChange.getItem();
+        }
+        ItemMeta meta = singleChange.getItemMeta();
+        for (Enchantment enchant : singleChange.getItem().getEnchantments().keySet()) {
+            meta.removeEnchant(enchant);
+        }
+        return singleChange.setItemMeta(meta);
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return !section.contains("remove-all-enchants");
+    }
+}

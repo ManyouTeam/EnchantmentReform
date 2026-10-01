@@ -1,0 +1,6 @@
+enabled: true
+key: minecraft:looting
+name: '{lang:vanilla-enchantment-looting-name}'
+description: '{lang:vanilla-enchantment-looting-description}'
+
+rarity: RARE

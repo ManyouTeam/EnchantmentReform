@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:efficiency
+name: '{lang:vanilla-enchantment-efficiency-name}'
+description: '{lang:vanilla-enchantment-efficiency-description}'
+
+rarity: COMMON
+
+variables:
+  'mining_efficiency': '{level} * {level} + 1'

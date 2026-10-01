@@ -1,0 +1,9 @@
+enabled: true
+key: minecraft:smite
+name: '{lang:vanilla-enchantment-smite-name}'
+description: '{lang:vanilla-enchantment-smite-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'damage': '{level} * 2.5'

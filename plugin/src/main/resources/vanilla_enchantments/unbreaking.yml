@@ -1,0 +1,11 @@
+enabled: true
+key: minecraft:unbreaking
+name: '{lang:vanilla-enchantment-unbreaking-name}'
+description: '{lang:vanilla-enchantment-unbreaking-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'tool_durability_conservation': '100 * {level} / ({level} + 1)'
+  'durability_multiplier': '{level} + 1'
+  'armor_durability_conservation': '200 * {level} / (5 * {level} + 5)'

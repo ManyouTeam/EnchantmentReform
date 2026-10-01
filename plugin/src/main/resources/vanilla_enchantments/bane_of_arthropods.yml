@@ -1,0 +1,10 @@
+enabled: true
+key: minecraft:bane_of_arthropods
+name: '{lang:vanilla-enchantment-bane_of_arthropods-name}'
+description: '{lang:vanilla-enchantment-bane_of_arthropods-description}'
+
+rarity: UNCOMMON
+
+variables:
+  'damage': '{level} * 2.5'
+  'slowness_duration': '1 + {level} * 0.5'

@@ -1,0 +1,147 @@
+title: '&8{attribute_name}'
+size: 54
+modifier-symbol: M
+back-symbol: B
+upgrade-symbol: U
+enable-symbol: E
+effective-level-symbol: L
+layout:
+  - 'FFFFFFFFF'
+  - 'FFFFIFFFF'
+  - 'FFFFFFFFF'
+  - 'FMMMMMMMF'
+  - 'FMMMMMMMF'
+  - 'BEFPUNFLC'
+
+upgrade-clicks:
+  LEFT:
+    add: 1
+
+effective-level-clicks:
+  LEFT:
+    add: 1
+  RIGHT:
+    add: -1
+  SHIFT_LEFT:
+    set-to: maximum
+  SHIFT_RIGHT:
+    set-to: minimum
+
+modifier-item:
+  material: PAPER
+  name: '&f{modifier}'
+  lore:
+    - '{lang:attribute-detail-modifier-label}'
+    - ' '
+    - '{lang:attribute-detail-modifier-operation}'
+    - '{lang:attribute-detail-modifier-amount}'
+
+no-modifiers-item:
+  material: GRAY_DYE
+  name: '{lang:attribute-detail-no-modifiers}'
+  lore:
+    - '{lang:attribute-detail-no-modifiers-lore}'
+
+buttons:
+  F:
+    material: BLACK_STAINED_GLASS_PANE
+    name: ' '
+  I:
+    material: NETHER_STAR
+    name: '&a{attribute_name}'
+    lore:
+      - '&8{attribute_id}'
+      - ' '
+      - '&7{attribute_description}'
+      - ' '
+      - '{lang:attribute-detail-values-header}'
+      - '{lang:attribute-detail-base-value}'
+      - '{lang:attribute-detail-final-value}'
+      - '{lang:attribute-detail-default-value}'
+      - '{lang:attribute-detail-range}'
+      - ' '
+      - '{lang:attribute-detail-modifier-count}'
+  U:
+    material: LIME_DYE
+    name: '{lang:attribute-detail-upgrade}'
+    lore:
+      - '{lang:attribute-detail-upgrade-description}'
+      - ' '
+      - '&f当前效果'
+      - '&7{current_description}'
+      - ' '
+      - '&f升级后效果'
+      - '&7{next_description}'
+      - ' '
+      - '{lang:attribute-detail-level-change}'
+      - '{lang:attribute-detail-value-change}'
+      - '{lang:attribute-detail-upgrade-cost}'
+      - '{lang:attribute-detail-points-owned}'
+      - '{requirement}'
+      - ' '
+      - '{lang:attribute-detail-click-upgrade}'
+    maximum-item:
+      material: GRAY_DYE
+      name: '{lang:attribute-detail-maximum}'
+      lore:
+        - '{lang:attribute-detail-current-level}'
+        - '{lang:attribute-detail-final-value}'
+  E:
+    enabled-item:
+      material: LIME_DYE
+      name: '{lang:attribute-detail-toggle-enabled}'
+      lore:
+        - '{lang:attribute-detail-toggle-description}'
+        - ' '
+        - '{lang:attribute-detail-click-disable}'
+    disabled-item:
+      material: GRAY_DYE
+      name: '{lang:attribute-detail-toggle-disabled}'
+      lore:
+        - '{lang:attribute-detail-toggle-description}'
+        - ' '
+        - '{lang:attribute-detail-click-enable}'
+  L:
+    material: COMPARATOR
+    name: '{lang:attribute-detail-effective-level}'
+    lore:
+      - '{lang:attribute-detail-effective-level-description}'
+      - ' '
+      - '{lang:attribute-detail-unlocked-level}'
+      - '{lang:attribute-detail-selected-level}'
+      - '{lang:attribute-detail-effective-final-value}'
+      - ' '
+      - '{lang:attribute-detail-effective-level-controls}'
+  B:
+    material: ARROW
+    name: '{lang:attribute-detail-back}'
+  P:
+    material: ARROW
+    name: '{lang:attribute-detail-previous}'
+    lore:
+      - '{lang:attribute-detail-page}'
+    actions:
+      previous-page:
+        type: previous_page
+    hide-on-first-page: true
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+  N:
+    material: ARROW
+    name: '{lang:attribute-detail-next}'
+    lore:
+      - '{lang:attribute-detail-page}'
+    actions:
+      next-page:
+        type: next_page
+    hide-on-last-page: true
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+  C:
+    material: BARRIER
+    name: '{lang:attribute-detail-close}'
+    actions:
+      close:
+        type: close
