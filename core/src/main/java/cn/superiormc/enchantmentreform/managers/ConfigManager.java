@@ -96,7 +96,9 @@ public class ConfigManager extends AbstractManager {
     }
 
     public ConfigurationSection getMenu(String id) {
-        if (id == null) return new MemoryConfiguration();
+        if (id == null) {
+            return new MemoryConfiguration();
+        }
         ConfigurationSection section = menuConfig.getConfigurationSection(
                 id.toLowerCase(Locale.ROOT));
         return section == null ? new MemoryConfiguration() : section;

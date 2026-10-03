@@ -1,4 +1,8 @@
-title: '&8EnchantmentReform'
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
+title: '{lang:main-menu-title}'
 layout:
   - 'FFFFFFFFF'
   - 'FSAU.C.EF'
@@ -12,13 +16,13 @@ items:
   S:
     item:
       material: EXPERIENCE_BOTTLE
-      name: '&a&l技能'
+      name: '{lang:main-menu-skills-name}'
       lore:
-        - '&8角色成长'
+        - '{lang:main-menu-skills-category}'
         - ' '
-        - '&7查看经验来源、技能等级和等级奖励。'
+        - '{lang:main-menu-skills-description}'
         - ' '
-        - '&e▶ 点击打开'
+        - '{lang:main-menu-click}'
     actions:
       open:
         type: open_menu
@@ -26,13 +30,13 @@ items:
   A:
     item:
       material: AMETHYST_SHARD
-      name: '&d&l属性'
+      name: '{lang:main-menu-attributes-name}'
       lore:
-        - '&8详细数值'
+        - '{lang:main-menu-attributes-category}'
         - ' '
-        - '&7查看当前属性、最终值和全部修改器。'
+        - '{lang:main-menu-attributes-description}'
         - ' '
-        - '&e▶ 点击打开'
+        - '{lang:main-menu-click}'
     actions:
       open:
         type: open_menu
@@ -40,14 +44,14 @@ items:
   U:
     item:
       material: NETHER_STAR
-      name: '&e&l属性加点'
+      name: '{lang:main-menu-allocation-name}'
       lore:
-        - '&8能力提升'
+        - '{lang:main-menu-allocation-category}'
         - ' '
-        - '&7预览升级前后效果并消耗属性点升级。'
-        - '&7当前拥有：&e{points} 属性点'
+        - '{lang:main-menu-allocation-description}'
+        - '{lang:main-menu-allocation-points}'
         - ' '
-        - '&e▶ 点击打开'
+        - '{lang:main-menu-click}'
     actions:
       open:
         type: open_menu
@@ -55,13 +59,13 @@ items:
   E:
     item:
       material: ENCHANTED_BOOK
-      name: '&b&l附魔图鉴'
+      name: '{lang:main-menu-enchantments-name}'
       lore:
-        - '&8附魔资料'
+        - '{lang:main-menu-enchantments-category}'
         - ' '
-        - '&7浏览全部附魔及其等级效果。'
+        - '{lang:main-menu-enchantments-description}'
         - ' '
-        - '&e▶ 点击打开'
+        - '{lang:main-menu-click}'
     actions:
       open:
         type: open_menu
@@ -69,7 +73,7 @@ items:
   C:
     item:
       material: BARRIER
-      name: '&c关闭菜单'
+      name: '{lang:main-menu-close}'
     actions:
       close:
         type: close

@@ -1,3 +1,7 @@
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
 title: '{lang:enchantment-menu-title}'
 size: 54
 enchantment-symbol: E

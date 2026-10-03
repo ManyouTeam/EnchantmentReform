@@ -1,3 +1,7 @@
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
 title: '{lang:skill-menu-title} &8• &7{page}/{pages}'
 layout:
   - 'FFFFFFFFF'
@@ -14,15 +18,15 @@ contents:
     item:
       name: '&a&l{name} &8• &7Lv.{level}'
       lore:
-        - '&8技能进度'
+        - '{lang:skill-menu-category}'
         - ' '
         - '&7{description}'
         - ' '
-        - '&7经验：&f{experience}&8/&f{required_experience}'
-        - '&7进度：{progress_bar} &a{progress}%'
-        - '&7经验来源：&f{source_count}'
+        - '{lang:skill-menu-experience-overview}'
+        - '{lang:skill-menu-progress-overview}'
+        - '{lang:skill-menu-sources-overview}'
         - ' '
-        - '&e▶ 点击查看经验来源与等级奖励'
+        - '{lang:skill-menu-click-overview}'
     click-actions:
       LEFT:
         open:
@@ -37,7 +41,7 @@ items:
     hide-on-first-page: true
     item:
       material: ARROW
-      name: '&a上一页'
+      name: '{lang:attribute-detail-previous}'
     hidden-item:
       material: BLACK_STAINED_GLASS_PANE
       name: ' '
@@ -47,14 +51,14 @@ items:
   I:
     item:
       material: BOOK
-      name: '&b&l技能总览'
+      name: '{lang:skill-menu-overview}'
       lore:
-        - '&7选择技能查看完整成长路线。'
-        - '&7当前属性点：&e{points}'
+        - '{lang:skill-menu-overview-description}'
+        - '{lang:skill-menu-current-points}'
   H:
     item:
       material: COMPASS
-      name: '&b返回主菜单'
+      name: '{lang:menu-back-main}'
     actions:
       open:
         type: open_menu
@@ -63,7 +67,7 @@ items:
     hide-on-last-page: true
     item:
       material: ARROW
-      name: '&a下一页'
+      name: '{lang:attribute-detail-next}'
     hidden-item:
       material: BLACK_STAINED_GLASS_PANE
       name: ' '

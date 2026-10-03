@@ -1,3 +1,7 @@
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
 title: '&8{attribute_name}'
 size: 54
 modifier-symbol: M
@@ -67,10 +71,10 @@ buttons:
     lore:
       - '{lang:attribute-detail-upgrade-description}'
       - ' '
-      - '&f当前效果'
+      - '{lang:attribute-current-effect}'
       - '&7{current_description}'
       - ' '
-      - '&f升级后效果'
+      - '{lang:attribute-upgraded-effect}'
       - '&7{next_description}'
       - ' '
       - '{lang:attribute-detail-level-change}'

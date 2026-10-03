@@ -6,11 +6,13 @@ import cn.superiormc.enchantmentreform.gui.inv.EnchantmentInfoGUI;
 import cn.superiormc.enchantmentreform.gui.inv.SkillDetailGUI;
 import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import cn.superiormc.enchantmentreform.managers.LanguageManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -20,10 +22,28 @@ import java.util.Locale;
 public final class SubMenu extends AbstractCommand {
 
     public SubMenu() {
-        id = "menu";
-        requiredPermission = "enchantmentreform.menu";
-        onlyInGame = true;
-        requiredArgLength = new Integer[]{2, 3};
+        this.id = "menu";
+        this.requiredPermission = "enchantmentreform.menu";
+        this.onlyInGame = false;
+        this.requiredArgLength = new Integer[]{2, 3};
+        this.requiredConsoleArgLength = new Integer[]{3, 4};
+    }
+
+    @Override
+    public void executeCommandInConsole(String[] args) {
+        if (args.length != 3 && args.length != 4) {
+            LanguageManager.languageManager.sendStringText("error.args");
+            return;
+        }
+        Player target = Bukkit.getPlayerExact(args[2]);
+        if (target == null) {
+            LanguageManager.languageManager.sendStringText("error.player-not-found", "player", args[2]);
+            return;
+        }
+        String[] menuArgs = args.length == 4
+                ? new String[]{args[0], args[1], args[3]}
+                : new String[]{args[0], args[1]};
+        executeCommandInGame(menuArgs, target);
     }
 
     @Override
@@ -65,7 +85,13 @@ public final class SubMenu extends AbstractCommand {
     @Override
     protected List<String> getTabResult(String[] args, Player player) {
         if (args.length == 2) {
-            return new ArrayList<>(ConfigManager.configManager.getMenuIds());
+            List<String> menus = new ArrayList<>(ConfigManager.configManager.getMenuIds());
+            menus.removeIf(menu -> !ConfigManager.configManager.getMenu(menu).getBoolean("enabled", true));
+            return menus;
+        }
+        if (args.length >= 3
+                && !ConfigManager.configManager.getMenu(args[1]).getBoolean("enabled", true)) {
+            return new ArrayList<>();
         }
         if (args.length == 3 && args[1].equalsIgnoreCase("skill-detail")
                 && SkillManager.skillManager != null) {
@@ -76,6 +102,24 @@ public final class SubMenu extends AbstractCommand {
                 && AttributeManager.attributeManager != null) {
             return AttributeManager.attributeManager.getAttributes().stream()
                     .map(ObjectCustomAttribute::getId).sorted().toList();
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    protected List<String> getConsoleTabResult(String[] args) {
+        if (args.length == 2) {
+            return getTabResult(args, null);
+        }
+        if (args.length < 3 || !ConfigManager.configManager.hasMenu(args[1])
+                || !ConfigManager.configManager.getMenu(args[1]).getBoolean("enabled", true)) {
+            return new ArrayList<>();
+        }
+        if (args.length == 3) {
+            return Bukkit.getOnlinePlayers().stream().map(Player::getName).sorted().toList();
+        }
+        if (args.length == 4) {
+            return getTabResult(new String[]{args[0], args[1], args[3]}, null);
         }
         return new ArrayList<>();
     }

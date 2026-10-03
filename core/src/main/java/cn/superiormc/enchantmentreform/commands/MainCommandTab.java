@@ -31,8 +31,14 @@ public final class MainCommandTab implements TabCompleter {
         AbstractCommand object = CommandManager.commandManager.getSubCommandsMap()
                 .get(args[0].toLowerCase(Locale.ROOT));
         if (object != null && (object.getRequiredPermission() == null
-                || sender.hasPermission(object.getRequiredPermission())) && sender instanceof Player player) {
-            return object.filterTabResult(args, player);
+                || object.getRequiredPermission().isEmpty()
+                || sender.hasPermission(object.getRequiredPermission()))) {
+            if (sender instanceof Player player) {
+                return object.filterTabResult(args, player);
+            }
+            if (!object.getOnlyInGame()) {
+                return object.filterConsoleTabResult(args);
+            }
         }
         return result;
     }

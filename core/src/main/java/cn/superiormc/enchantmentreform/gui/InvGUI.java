@@ -1,7 +1,9 @@
 package cn.superiormc.enchantmentreform.gui;
 
 import cn.superiormc.enchantmentreform.methods.Dupe;
+import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
+import cn.superiormc.enchantmentreform.utils.TextUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -32,6 +34,18 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
     @Override
     public void openGUI() {
+        ConfigurationSection section = getSection();
+        if (section != null) {
+            if (!section.getBoolean("enabled", true)) {
+                TextUtil.sendMessage(player, CommonUtil.parseLang(player, "{lang:menu-disabled}"));
+                return;
+            }
+            String permission = section.getString("permission", "").strip();
+            if (!permission.isEmpty() && !player.hasPermission(permission)) {
+                TextUtil.sendMessage(player, CommonUtil.parseLang(player, "{lang:menu-no-permission}"));
+                return;
+            }
+        }
         constructGUI();
         if (inv != null) {
             SchedulerUtil.runSync(player, () -> player.openInventory(inv));

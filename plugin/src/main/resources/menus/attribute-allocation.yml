@@ -1,3 +1,7 @@
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
 title: '{lang:skill-allocation-title} &8• &7{page}/{pages}'
 layout:
   - 'FFFFFFFFF'
@@ -15,20 +19,20 @@ contents:
       material: NETHER_STAR
       name: '&a&l{name} &8• &7{base_value}/{maximum_value}'
       lore:
-        - '&8可升级属性'
+        - '{lang:skill-allocation-category}'
         - ' '
-        - '&f当前效果'
+        - '{lang:attribute-current-effect}'
         - '&7{current_description}'
         - ' '
-        - '&f升级后效果'
+        - '{lang:attribute-upgraded-effect}'
         - '&7{next_description}'
         - ' '
-        - '&7等级变化：&f{base_value} &8→ &a{next_base}'
-        - '&7最终值变化：&f{value} &8→ &a{next_value}'
-        - '&7升级需要：&e{next_price} 属性点'
+        - '{lang:attribute-detail-level-change}'
+        - '{lang:attribute-detail-value-change}'
+        - '{lang:skill-allocation-upgrade-cost}'
         - '{requirement}'
         - ' '
-        - '&e▶ 点击进入升级与属性详情'
+        - '{lang:skill-allocation-click-details}'
     click-actions:
       LEFT:
         open:
@@ -43,7 +47,7 @@ items:
     hide-on-first-page: true
     item:
       material: ARROW
-      name: '&a上一页'
+      name: '{lang:attribute-detail-previous}'
     hidden-item:
       material: GREEN_STAINED_GLASS_PANE
       name: ' '
@@ -53,16 +57,16 @@ items:
   I:
     item:
       material: SUNFLOWER
-      name: '&e&l属性加点'
+      name: '{lang:main-menu-allocation-name}'
       lore:
-        - '&7点击属性进入详情页面后升级。'
-        - '&7价格按目标等级计算。'
+        - '{lang:skill-allocation-info-description}'
+        - '{lang:skill-allocation-info-price}'
         - ' '
         - '{lang:skill-menu-points}'
   H:
     item:
       material: COMPASS
-      name: '&b返回主菜单'
+      name: '{lang:menu-back-main}'
     actions:
       open:
         type: open_menu
@@ -71,7 +75,7 @@ items:
     hide-on-last-page: true
     item:
       material: ARROW
-      name: '&a下一页'
+      name: '{lang:attribute-detail-next}'
     hidden-item:
       material: GREEN_STAINED_GLASS_PANE
       name: ' '

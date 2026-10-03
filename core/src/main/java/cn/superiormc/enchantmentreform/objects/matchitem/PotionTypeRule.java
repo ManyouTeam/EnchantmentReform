@@ -8,12 +8,13 @@ import org.bukkit.potion.PotionType;
 
 import java.util.Set;
 
-/** Matches the base type of potion, splash-potion, and lingering-potion items. */
 public final class PotionTypeRule extends AbstractMatchItemRule {
 
     @Override
     public boolean getMatch(ObjectSingleMatchItem match) {
-        if (!(match.getItemMeta() instanceof PotionMeta potionMeta)) return false;
+        if (!(match.getItemMeta() instanceof PotionMeta potionMeta)) {
+            return false;
+        }
         PotionType type = potionMeta.getBasePotionType();
         String name = type == null ? "" : type.name();
         ConfigurationSection section = match.getSection();

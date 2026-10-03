@@ -1,3 +1,7 @@
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
 source-title: '{lang:skill-detail-source-title}'
 reward-title: '{lang:skill-detail-reward-title}'
 size: 54

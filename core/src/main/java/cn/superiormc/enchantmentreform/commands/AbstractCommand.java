@@ -57,7 +57,19 @@ public abstract class AbstractCommand {
     }
 
     public List<String> filterTabResult(String[] args, Player player) {
-        List<String> results = getTabResult(args, player);
+        return filterSuggestions(args, getTabResult(args, player));
+    }
+
+    protected List<String> getConsoleTabResult(String[] args) {
+        return new ArrayList<>();
+    }
+
+    public List<String> filterConsoleTabResult(String[] args) {
+        return filterSuggestions(args, getConsoleTabResult(args));
+    }
+
+    private List<String> filterSuggestions(String[] args, List<String> suggestions) {
+        List<String> results = new ArrayList<>(suggestions);
         if (args.length == 0) {
             return results;
         }

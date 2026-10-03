@@ -1,3 +1,7 @@
+enabled: true
+# Leave empty to allow opening without an additional permission.
+permission: ''
+
 title: '{lang:attribute-menu-title} &8• &7{page}/{pages}'
 layout:
   - 'FFFFFFFFF'
@@ -15,19 +19,19 @@ contents:
       material: AMETHYST_SHARD
       name: '&d&l{name} &8• &f{value}'
       lore:
-        - '&8属性概览'
+        - '{lang:attribute-menu-category}'
         - ' '
-        - '&f当前效果'
+        - '{lang:attribute-current-effect}'
         - '&7{current_description}'
         - ' '
-        - '&f下一级效果'
+        - '{lang:attribute-next-effect}'
         - '&7{next_description}'
         - ' '
-        - '&7基础值：&f{base_value}'
-        - '&7最终值：&a{value}'
-        - '&7修改器：&f{modifier_count} 个'
+        - '{lang:attribute-detail-base-value}'
+        - '{lang:attribute-detail-final-value}'
+        - '{lang:attribute-menu-modifier-count}'
         - ' '
-        - '&e▶ 点击查看全部修改器与升级信息'
+        - '{lang:attribute-menu-click}'
     click-actions:
       LEFT:
         open:
@@ -42,7 +46,7 @@ items:
     hide-on-first-page: true
     item:
       material: ARROW
-      name: '&a上一页'
+      name: '{lang:attribute-detail-previous}'
     hidden-item:
       material: PURPLE_STAINED_GLASS_PANE
       name: ' '
@@ -52,14 +56,14 @@ items:
   I:
     item:
       material: BOOK
-      name: '&d&l属性总览'
+      name: '{lang:attribute-menu-overview}'
       lore:
-        - '&7点击属性进入独立详情菜单。'
-        - '&7详情页会列出基础值、最终值和全部修改器。'
+        - '{lang:attribute-menu-overview-description}'
+        - '{lang:attribute-menu-overview-values}'
   H:
     item:
       material: COMPASS
-      name: '&b返回主菜单'
+      name: '{lang:menu-back-main}'
     actions:
       open:
         type: open_menu
@@ -68,7 +72,7 @@ items:
     hide-on-last-page: true
     item:
       material: ARROW
-      name: '&a下一页'
+      name: '{lang:attribute-detail-next}'
     hidden-item:
       material: PURPLE_STAINED_GLASS_PANE
       name: ' '
