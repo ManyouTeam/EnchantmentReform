@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Bridges Paper's pre-reset attack strength event to the subsequent damage trigger. */
-public final class AttackCooldownTracker {
+public final class AttackCooldownUtil {
 
     private static final long MAX_AGE_MILLIS = 1_000L;
+
     private static final Map<Key, Entry> VALUES = new ConcurrentHashMap<>();
 
-    private AttackCooldownTracker() {
+    private AttackCooldownUtil() {
     }
 
     public static void record(Player player, Entity target, float strength) {

@@ -1,11 +1,11 @@
 package cn.superiormc.enchantmentreform.objects.abilities;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
-import cn.superiormc.enchantmentreform.api.nms.UseOnNmsBridge;
 import cn.superiormc.enchantmentreform.api.trigger.EntitySelector;
 import cn.superiormc.enchantmentreform.managers.AbilityManager;
 import cn.superiormc.enchantmentreform.managers.MatchItemManager;
 import cn.superiormc.enchantmentreform.nms.NmsBridge;
+import cn.superiormc.enchantmentreform.nms.NmsCapability;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -45,14 +45,13 @@ public final class UseOnAbility extends AbstractAbility {
 
         boolean successful = false;
         if (player != null && hand != null && block != null && face != null
-                && nmsBridge instanceof UseOnNmsBridge useOnBridge) {
+                && nmsBridge.supports(NmsCapability.USE_ON)) {
             Vector hitPosition = resolveHitPosition(context, block);
             ConfigurationSection inventoryItems = inventoryItems();
             successful = inventoryItems == null
-                    ? useOnBridge.useOn(player, hand, block, face, hitPosition,
-                    section.getBoolean("inside", false))
+                    ? invokeUseOn(player, hand, block, face, hitPosition)
                     : useMatchedInventoryItem(context, player, hand, block, face,
-                    hitPosition, inventoryItems, useOnBridge);
+                    hitPosition, inventoryItems);
         }
 
         ConfigurationSection abilities = section.getConfigurationSection(
@@ -67,8 +66,7 @@ public final class UseOnAbility extends AbstractAbility {
                                             Block block,
                                             BlockFace face,
                                             Vector hitPosition,
-                                            ConfigurationSection rules,
-                                            UseOnNmsBridge useOnBridge) {
+                                            ConfigurationSection rules) {
         MatchItemManager manager = MatchItemManager.matchItemManager;
         if (manager == null) {
             return false;
@@ -76,8 +74,7 @@ public final class UseOnAbility extends AbstractAbility {
 
         ItemStack currentHand = handItem(player, hand);
         if (manager.getMatch(rules, player, currentHand, context)) {
-            return useOnBridge.useOn(player, hand, block, face, hitPosition,
-                    section.getBoolean("inside", false));
+            return invokeUseOn(player, hand, block, face, hitPosition);
         }
 
         PlayerInventory inventory = player.getInventory();
@@ -92,7 +89,7 @@ public final class UseOnAbility extends AbstractAbility {
                 continue;
             }
             return useInventorySlot(player, hand, slot, candidate, block, face,
-                    hitPosition, useOnBridge);
+                    hitPosition);
         }
         return false;
     }
@@ -103,22 +100,26 @@ public final class UseOnAbility extends AbstractAbility {
                                      ItemStack candidate,
                                      Block block,
                                      BlockFace face,
-                                     Vector hitPosition,
-                                     UseOnNmsBridge useOnBridge) {
+                                     Vector hitPosition) {
         PlayerInventory inventory = player.getInventory();
         ItemStack originalHand = copy(handItem(player, hand));
         inventory.setItem(inventorySlot, null);
         setHandItem(player, hand, candidate.clone());
 
         try {
-            return useOnBridge.useOn(player, hand, block, face, hitPosition,
-                    section.getBoolean("inside", false));
+            return invokeUseOn(player, hand, block, face, hitPosition);
         } finally {
             ItemStack remaining = copy(handItem(player, hand));
             setHandItem(player, hand, originalHand);
             inventory.setItem(inventorySlot, remaining);
             player.updateInventory();
         }
+    }
+
+    private boolean invokeUseOn(Player player, EquipmentSlot hand, Block block,
+                                BlockFace face, Vector hitPosition) {
+        return nmsBridge.useOn(player, hand, block, face, hitPosition,
+                section.getBoolean("inside", false)).successful();
     }
 
     private ConfigurationSection inventoryItems() {

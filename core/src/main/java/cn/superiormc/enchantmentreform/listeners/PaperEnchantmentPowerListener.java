@@ -2,10 +2,9 @@ package cn.superiormc.enchantmentreform.listeners;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.managers.TriggerManager;
-import cn.superiormc.enchantmentreform.power.AttackCooldownTracker;
+import cn.superiormc.enchantmentreform.power.AttackCooldownUtil;
 import com.destroystokyo.paper.event.entity.EndermanAttackPlayerEvent;
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
-import com.destroystokyo.paper.event.player.PlayerAttackEntityCooldownResetEvent;
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
@@ -47,10 +46,14 @@ public class PaperEnchantmentPowerListener extends EnchantmentPowerListener {
         dispatch(PlayerJumpEvent.class, event);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onAttackCooldownReset(PlayerAttackEntityCooldownResetEvent event) {
-        AttackCooldownTracker.record(event.getPlayer(), event.getAttackedEntity(),
-                event.getCooledAttackStrength());
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPreAttack(PrePlayerAttackEntityEvent event) {
+        if (!event.willAttack()) {
+            return;
+        }
+        // Capture the strength before the attack resets it and damage triggers run.
+        AttackCooldownUtil.record(event.getPlayer(), event.getAttacked(),
+                event.getPlayer().getAttackCooldown());
     }
 
     @EventHandler(ignoreCancelled = true)

@@ -1,5 +1,7 @@
 package cn.superiormc.enchantmentreform.nms.named;
 
+import cn.superiormc.enchantmentreform.nms.NmsStatus;
+import cn.superiormc.enchantmentreform.nms.UseOnResult;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,22 +31,22 @@ final class UseOnNmsOperation {
         this.logger = logger;
     }
 
-    boolean useOn(Player player,
-                  EquipmentSlot hand,
-                  Block clickedBlock,
-                  BlockFace clickedFace,
-                  Vector hitPosition,
-                  boolean inside) {
+    UseOnResult useOn(Player player,
+                      EquipmentSlot hand,
+                      Block clickedBlock,
+                      BlockFace clickedFace,
+                      Vector hitPosition,
+                      boolean inside) {
         if (player == null || clickedBlock == null || clickedFace == null || hitPosition == null
                 || hand != EquipmentSlot.HAND && hand != EquipmentSlot.OFF_HAND) {
-            return false;
+            return new UseOnResult(NmsStatus.INVALID_ARGUMENT);
         }
 
         ItemStack bukkitItem = hand == EquipmentSlot.HAND
                 ? player.getInventory().getItemInMainHand()
                 : player.getInventory().getItemInOffHand();
         if (bukkitItem.getType() == Material.AIR || bukkitItem.getAmount() <= 0) {
-            return false;
+            return new UseOnResult(NmsStatus.INVALID_STATE);
         }
 
         try {
@@ -53,7 +55,7 @@ final class UseOnNmsOperation {
             Object nmsHand = hand == EquipmentSlot.HAND ? useOn.mainHand() : useOn.offHand();
             Object direction = direction(clickedFace);
             if (direction == null) {
-                return false;
+                return new UseOnResult(NmsStatus.INVALID_ARGUMENT);
             }
 
             Object nmsItem = useOn.getItemInHand().invoke(serverPlayer, nmsHand);
@@ -69,10 +71,10 @@ final class UseOnNmsOperation {
                     : useOn.useOnContextConstructor().invoke(
                             serverPlayer, nmsHand, hitResult);
             Object result = useOn.useOnItem().invoke(nmsItem, context);
-            return successful(result);
+            return new UseOnResult(successful(result) ? NmsStatus.SUCCESS : NmsStatus.FAILED);
         } catch (Throwable throwable) {
             logOnce("Native ItemStack#useOn invocation failed; UseOnAbility is disabled for this call.", throwable);
-            return false;
+            return new UseOnResult(NmsStatus.FAILED);
         }
     }
 

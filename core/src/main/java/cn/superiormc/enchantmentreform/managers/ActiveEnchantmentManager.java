@@ -1,18 +1,14 @@
-package cn.superiormc.enchantmentreform.power;
+package cn.superiormc.enchantmentreform.managers;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
-import cn.superiormc.enchantmentreform.managers.AbilityManager;
-import cn.superiormc.enchantmentreform.managers.AttributeManager;
-import cn.superiormc.enchantmentreform.managers.ConfigManager;
-import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
-import cn.superiormc.enchantmentreform.managers.ItemManager;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomItem;
 import cn.superiormc.enchantmentreform.objects.PowerEnchantmentDefinition;
 import cn.superiormc.enchantmentreform.objects.PowerSourceDefinition;
 import cn.superiormc.enchantmentreform.objects.abilities.DisableEnchantmentsAbility;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
+import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;

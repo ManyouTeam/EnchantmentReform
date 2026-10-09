@@ -19,8 +19,7 @@ abstract class AbstractAttributeCommand extends AbstractCommand {
         this.supportsIgnoreLimits = supportsIgnoreLimits;
         this.requiredPermission = "enchantmentreform." + id;
         this.onlyInGame = false;
-        this.requiredArgLength = supportsIgnoreLimits
-                ? new Integer[]{4, 5} : new Integer[]{4};
+        this.requiredArgLength = supportsIgnoreLimits ? new Integer[]{4, 5} : new Integer[]{4};
     }
 
     @Override

@@ -12,7 +12,6 @@ import cn.superiormc.enchantmentreform.objects.PowerSourceDefinition;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
 import cn.superiormc.enchantmentreform.objects.triggers.*;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
-import cn.superiormc.enchantmentreform.power.ActiveEnchantmentManager;
 import cn.superiormc.enchantmentreform.power.PowerExecutionResult;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;

@@ -26,7 +26,6 @@ public class MathUtil {
         }
     }
 
-    /** Attempts numeric evaluation without reporting an error for legitimate text values. */
     public static OptionalDouble tryCalculate(String mathStr) {
         try {
             return OptionalDouble.of(calculate(mathStr));

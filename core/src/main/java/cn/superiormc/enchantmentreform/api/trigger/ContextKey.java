@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public record ContextKey<T>(NamespacedKey key, Class<T> type) {
 
-    public ContextKey {
+    public ContextKey{
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(type, "type");
     }

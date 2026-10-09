@@ -11,10 +11,8 @@ import org.bukkit.persistence.PersistentDataType;
 public class AbilityDamageUtil {
 
     private static final NamespacedKey DAMAGE = new NamespacedKey(EnchantmentReform.instance, "ability_damage");
-    private static final NamespacedKey DAMAGE_MULTIPLIER = new NamespacedKey(
-            EnchantmentReform.instance, "ability_damage_multiplier");
-    private static final NamespacedKey DAMAGE_BONUS = new NamespacedKey(
-            EnchantmentReform.instance, "ability_damage_bonus");
+    private static final NamespacedKey DAMAGE_MULTIPLIER = new NamespacedKey(EnchantmentReform.instance, "ability_damage_multiplier");
+    private static final NamespacedKey DAMAGE_BONUS = new NamespacedKey(EnchantmentReform.instance, "ability_damage_bonus");
     private static final NamespacedKey INVULNERABLE_UNTIL = new NamespacedKey(EnchantmentReform.instance, "ability_invulnerable_until");
 
     private static final ThreadLocal<Integer> APPLYING_DIRECT_DAMAGE = ThreadLocal.withInitial(() -> 0);

@@ -47,7 +47,7 @@ public final class NamedNmsBootstrap {
 
         NamedNmsBridge bridge = new NamedNmsBridge(food, fishing, useOn);
         logger.info("Named NMS bridge for Minecraft " + version + " enabled capabilities: "
-                + bridge.capabilities() + ", useOn=" + (useOn != null));
+                + bridge.capabilities());
         return bridge;
     }
 }

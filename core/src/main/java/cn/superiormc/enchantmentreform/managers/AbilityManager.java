@@ -46,6 +46,7 @@ public class AbilityManager extends AbstractManager {
         register("delay", DelayAbility::new);
         register("place_block", PlaceBlockAbility::new);
         register("place_temp_block", PlaceTempBlockAbility::new);
+        register("prevent_block_break", PreventBlockBreakAbility::new);
         register("explosion", ExplosionAbility::new);
         register("remove", RemoveAbility::new);
         register("cancel_event", CancelEventAbility::new);;

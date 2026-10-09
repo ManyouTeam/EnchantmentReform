@@ -61,9 +61,7 @@ Desktop.ini
 /.buildtools/
 /.workbuddy/
 
-# Publish only source code and necessary build files
+# Local-only tests and maintenance artifacts
 **/src/test/
-/docs/
-/cn_docs/
 /MODIFICATION_REPORT.md
 /tools/

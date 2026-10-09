@@ -5,7 +5,8 @@ import cn.superiormc.enchantmentreform.managers.ErrorManager;
 import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import cn.superiormc.enchantmentreform.objects.triggers.TriggerRuntime;
 import cn.superiormc.enchantmentreform.power.AbilityDamageUtil;
-import cn.superiormc.enchantmentreform.power.AttackCooldownTracker;
+import cn.superiormc.enchantmentreform.power.AttackCooldownUtil;
+import cn.superiormc.enchantmentreform.power.BlockBreakProtectionUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -66,6 +67,7 @@ public class EnchantmentPowerListener implements Listener {
     }
 
     private void schedulePlayerTicks() {
+        BlockBreakProtectionUtil.advanceTick();
         long tick = triggerManager.runtime().nextTick();
         for (Player player : Bukkit.getOnlinePlayers()) {
             SchedulerUtil.runSync(player, () -> triggerManager.dispatch(
@@ -163,12 +165,19 @@ public class EnchantmentPowerListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         triggerManager.runtime().playerQuit(event.getPlayer());
-        AttackCooldownTracker.clear(event.getPlayer().getUniqueId());
+        AttackCooldownUtil.clear(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
         triggerManager.unregisterAll(event.getPlugin());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onProtectedBlockBreak(BlockBreakEvent event) {
+        if (BlockBreakProtectionUtil.shouldCancel(event.getPlayer().getUniqueId(), event.getBlock())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -303,6 +312,7 @@ public class EnchantmentPowerListener implements Listener {
 
     public void close() {
         tickTask.cancel();
+        BlockBreakProtectionUtil.clearProtection();
     }
 
     protected void registerOptionalListener(String eventClassName, String listenerClassName) {

@@ -22,7 +22,9 @@ public final class InitManager extends AbstractManager {
     public static InitManager initManager;
 
     private final Path dataDirectory;
+
     private final BiConsumer<String, Throwable> errorLogger;
+
     private boolean firstLoad;
 
     public InitManager() {

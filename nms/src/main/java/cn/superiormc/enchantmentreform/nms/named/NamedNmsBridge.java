@@ -1,6 +1,5 @@
 package cn.superiormc.enchantmentreform.nms.named;
 
-import cn.superiormc.enchantmentreform.api.nms.UseOnNmsBridge;
 import cn.superiormc.enchantmentreform.nms.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,7 +12,7 @@ import org.bukkit.util.Vector;
 import java.util.EnumSet;
 import java.util.Set;
 
-final class NamedNmsBridge implements NmsBridge, UseOnNmsBridge {
+final class NamedNmsBridge implements NmsBridge {
 
     private final FoodNmsOperation food;
     private final FishingNmsOperation fishing;
@@ -32,6 +31,9 @@ final class NamedNmsBridge implements NmsBridge, UseOnNmsBridge {
         }
         if (fishing != null) {
             available.add(NmsCapability.FISHING_ROD_USE);
+        }
+        if (useOn != null) {
+            available.add(NmsCapability.USE_ON);
         }
         this.capabilities = Set.copyOf(available);
     }
@@ -63,13 +65,14 @@ final class NamedNmsBridge implements NmsBridge, UseOnNmsBridge {
     }
 
     @Override
-    public boolean useOn(Player player,
-                         EquipmentSlot hand,
-                         Block clickedBlock,
-                         BlockFace clickedFace,
-                         Vector hitPosition,
-                         boolean inside) {
-        return useOn != null && useOn.useOn(
-                player, hand, clickedBlock, clickedFace, hitPosition, inside);
+    public UseOnResult useOn(Player player,
+                             EquipmentSlot hand,
+                             Block clickedBlock,
+                             BlockFace clickedFace,
+                             Vector hitPosition,
+                             boolean inside) {
+        return useOn == null
+                ? new UseOnResult(NmsStatus.UNSUPPORTED)
+                : useOn.useOn(player, hand, clickedBlock, clickedFace, hitPosition, inside);
     }
 }

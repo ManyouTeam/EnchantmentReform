@@ -259,7 +259,11 @@ public final class TriggerRuntime {
     }
 
     public void close() {
-        projectiles.values().forEach(projectile -> projectile.task().cancel());
+        // Avoid linking a lambda to TrackedProjectile for the first time during shutdown.
+        // An empty runtime should not need to load that class to clear its state.
+        for (TrackedProjectile projectile : projectiles.values()) {
+            projectile.task().cancel();
+        }
         projectiles.clear();
         pendingProjectileSources.clear();
         mobTargets.clear();

@@ -1,6 +1,5 @@
 package cn.superiormc.enchantmentreform.managers;
 
-import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.commands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;

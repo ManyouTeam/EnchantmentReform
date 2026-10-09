@@ -3,7 +3,7 @@ package cn.superiormc.enchantmentreform.listeners;
 import cn.superiormc.enchantmentreform.managers.AbilityManager;
 import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
-import cn.superiormc.enchantmentreform.power.ActiveEnchantmentManager;
+import cn.superiormc.enchantmentreform.managers.ActiveEnchantmentManager;
 import cn.superiormc.enchantmentreform.objects.triggers.TriggerRuntime;
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent;
 import org.bukkit.entity.Player;

@@ -5,7 +5,6 @@ import cn.superiormc.enchantmentreform.objects.PowerSourceDefinition;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-/** Immutable-at-capture-time input for triggers that outlive their equipment event. */
 public record TrackedPowerSource(
         PowerSourceDefinition source,
         ObjectPower power,

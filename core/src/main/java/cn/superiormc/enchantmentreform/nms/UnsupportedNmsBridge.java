@@ -1,9 +1,12 @@
 package cn.superiormc.enchantmentreform.nms;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.Set;
 
@@ -37,5 +40,15 @@ public final class UnsupportedNmsBridge implements NmsBridge {
     @Override
     public FishingUseResult castFishingRod(Player player, EquipmentSlot hand) {
         return new FishingUseResult(NmsStatus.UNSUPPORTED);
+    }
+
+    @Override
+    public UseOnResult useOn(Player player,
+                             EquipmentSlot hand,
+                             Block clickedBlock,
+                             BlockFace clickedFace,
+                             Vector hitPosition,
+                             boolean inside) {
+        return new UseOnResult(NmsStatus.UNSUPPORTED);
     }
 }
