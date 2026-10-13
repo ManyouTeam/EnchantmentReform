@@ -38,7 +38,8 @@ public final class LocationChangedEffectTempBlockListener implements Listener {
         if (!trackedEnchantments.isEmpty()) {
             EnchantmentReform.instance.getLogger().info(
                     "Location-changed effect auto-remove is tracking "
-                            + trackedEnchantments.size() + " enchantment(s).");
+                            + trackedEnchantments.size()
+                            + (trackedEnchantments.size() == 1 ? " enchantment." : " enchantments."));
         }
     }
 

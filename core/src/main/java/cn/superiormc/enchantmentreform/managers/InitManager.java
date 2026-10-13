@@ -62,6 +62,7 @@ public final class InitManager extends AbstractManager {
         resourceOutput("enchantments/armor/piglin_disguise.yml", true);
         resourceOutput("enchantments/armor/projectile_dodge.yml", true);
         resourceOutput("enchantments/melee/cleave.yml", true);
+        resourceOutput("enchantments/ranged/aquatic_arrow.yml", true);
         resourceOutput("enchantments/tools/bark_hide.yml", true);
         resourceOutput("enchantments/tools/ore_guard.yml", true);
     }

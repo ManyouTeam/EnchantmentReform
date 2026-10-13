@@ -1,5 +1,7 @@
 package cn.superiormc.enchantmentreform.nms.named;
 
+import cn.superiormc.enchantmentreform.nms.NmsLog;
+
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
@@ -9,7 +11,6 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -63,9 +64,8 @@ public final class LootEnchantFunctionPatch {
         setProperties(minimum, maximum, debug);
 
         if (transformer != null) {
-            logger.info("Updated EnchantRandomly replacement cost to "
-                    + minimum + "-" + maximum + ". Debug: " + debug
-                    + ". ABI: " + activeAbi + '.');
+            NmsLog.info(logger, NmsLog.LOOT_ENCHANTING, "updated (cost: " + minimum + "-" + maximum + ").");
+            NmsLog.debug(logger, NmsLog.LOOT_ENCHANTING, "ABI: " + activeAbi + "; debug: " + debug + ".");
             return true;
         }
 
@@ -86,23 +86,15 @@ public final class LootEnchantFunctionPatch {
                     .installOn(instrumentation);
             activeAbi = selection.id();
 
-            logger.info("Replaced EnchantRandomlyFunction with a single-result "
-                    + "EnchantWithLevels selection. Cost: "
-                    + minimum + "-" + maximum + ". Debug: " + debug
-                    + ". ABI: " + activeAbi + '.');
+            NmsLog.info(logger, NmsLog.LOOT_ENCHANTING, "enabled (cost: " + minimum + "-" + maximum + ").");
+            NmsLog.debug(logger, NmsLog.LOOT_ENCHANTING, "ABI: " + activeAbi + "; debug: " + debug + ".");
             return true;
         } catch (Throwable throwable) {
             clearProperties();
             instrumentation = null;
             transformer = null;
             activeAbi = null;
-            logger.log(
-                    Level.WARNING,
-                    "Could not patch EnchantRandomlyFunction. No compatible named NMS "
-                            + "advice module was found, the ABI probe failed, or dynamic "
-                            + "agent loading is disabled.",
-                    throwable
-            );
+            NmsLog.warning(logger, NmsLog.LOOT_ENCHANTING, "unavailable; patch installation failed.", throwable);
             return false;
         }
     }
@@ -125,16 +117,12 @@ public final class LootEnchantFunctionPatch {
                     AgentBuilder.RedefinitionStrategy.RETRANSFORMATION
             );
             if (restored) {
-                logger.info("Restored the original EnchantRandomlyFunction.");
+                NmsLog.info(logger, NmsLog.LOOT_ENCHANTING, "restored vanilla behavior.");
             } else {
-                logger.warning("Could not restore the original EnchantRandomlyFunction.");
+                NmsLog.warning(logger, NmsLog.LOOT_ENCHANTING, "restoration failed.");
             }
         } catch (Throwable throwable) {
-            logger.log(
-                    Level.WARNING,
-                    "An error occurred while restoring EnchantRandomlyFunction.",
-                    throwable
-            );
+            NmsLog.warning(logger, NmsLog.LOOT_ENCHANTING, "restoration failed.", throwable);
         }
     }
 

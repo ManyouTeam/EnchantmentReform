@@ -12,6 +12,10 @@ import java.util.Set;
 
 public interface NmsBridge {
 
+    default boolean setIgnoreWaterResistance(org.bukkit.entity.AbstractArrow arrow, boolean enabled) {
+        return false;
+    }
+
     Set<NmsCapability> capabilities();
 
     default boolean supports(NmsCapability capability) {

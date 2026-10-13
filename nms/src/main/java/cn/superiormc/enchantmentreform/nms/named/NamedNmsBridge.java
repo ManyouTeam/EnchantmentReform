@@ -44,6 +44,11 @@ final class NamedNmsBridge implements NmsBridge {
     }
 
     @Override
+    public boolean setIgnoreWaterResistance(org.bukkit.entity.AbstractArrow arrow, boolean enabled) {
+        return ArrowWaterResistancePatch.setEnabled(arrow, enabled);
+    }
+
+    @Override
     public FoodUseResult finishUsingItem(Player player, ItemStack item) {
         return food == null
                 ? new FoodUseResult(NmsStatus.UNSUPPORTED, null)

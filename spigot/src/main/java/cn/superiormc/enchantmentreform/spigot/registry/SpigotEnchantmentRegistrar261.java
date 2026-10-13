@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.spigot.registry;
 
 import cn.superiormc.enchantmentreform.objects.ObjectCustomEnchantment;
+import cn.superiormc.enchantmentreform.nms.NmsLog;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -107,7 +108,7 @@ public final class SpigotEnchantmentRegistrar261 {
                     Object existingHolder = getOptional(enchantmentRegistry, key);
                     if (existingHolder != null) {
                         holders.put(id, existingHolder);
-                        logger.info("Spigot enchantment already exists, keeping registry entry: " + id);
+                        NmsLog.info(logger, NmsLog.ENCHANTMENT_REGISTRY, "retained existing entry: " + id + ".");
                         continue;
                     }
                     Object holder = invokeCompatible(registrationLookup, "getOrThrow", key);
@@ -397,8 +398,7 @@ public final class SpigotEnchantmentRegistrar261 {
             Object named = getOptional(registry, tagKey);
             if (named == null) {
                 if (warnWhenMissing) {
-                    logger.warning("Missing Spigot enchantment tag " + tagId
-                            + "; the related obtaining source was skipped.");
+                    NmsLog.warning(logger, NmsLog.ENCHANTMENT_REGISTRY, "skipped obtaining source; missing tag: " + tagId + ".");
                 }
                 return;
             }
@@ -436,8 +436,7 @@ public final class SpigotEnchantmentRegistrar261 {
                 try {
                     slots.add(staticField(slotGroupClass, name));
                 } catch (ReflectiveOperationException ignored) {
-                    logger.warning("Unknown active slot group '" + raw
-                            + "'; it was skipped for native Spigot registration.");
+                    NmsLog.warning(logger, NmsLog.ENCHANTMENT_REGISTRY, "skipped unknown active slot group: " + raw + ".");
                 }
             }
             if (slots.isEmpty()) {
@@ -505,7 +504,7 @@ public final class SpigotEnchantmentRegistrar261 {
                 Object lookup = construct(lookupType, byIdField.get(registry));
                 lookupField.set(registry, lookup);
             } catch (ReflectiveOperationException | RuntimeException exception) {
-                logger.fine("Could not refresh Spigot 26.2 registry component lookup: "
+                NmsLog.debug(logger, NmsLog.ENCHANTMENT_REGISTRY, "component lookup refresh failed: "
                         + exception.getMessage());
             }
         }
@@ -520,7 +519,7 @@ public final class SpigotEnchantmentRegistrar261 {
                         "minecraftToBukkit",
                         enchantment);
             } catch (ReflectiveOperationException | RuntimeException exception) {
-                logger.fine("Could not eagerly create Bukkit enchantment mirror: "
+                NmsLog.debug(logger, NmsLog.ENCHANTMENT_REGISTRY, "Bukkit mirror creation failed: "
                         + exception.getMessage());
             }
         }

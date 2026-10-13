@@ -78,10 +78,13 @@ public final class EnchantmentConfigManager extends AbstractManager {
             rejectedDefinitions += validateDefinitions();
             if (rejectedDefinitions > 0) {
                 infoLogger.accept("Skipped " + rejectedDefinitions
-                        + " invalid enchantment definition(s); see the errors above.");
+                        + " invalid enchantment " + (rejectedDefinitions == 1 ? "definition" : "definitions")
+                        + "; see the errors above.");
             }
-            infoLogger.accept("Loaded " + enchantments.size() + " enchantments.");
-            infoLogger.accept("Loaded " + vanillaEnchantments.size() + " vanilla enchantment overrides.");
+            infoLogger.accept("Loaded " + enchantments.size()
+                    + (enchantments.size() == 1 ? " enchantment." : " enchantments."));
+            infoLogger.accept("Loaded " + vanillaEnchantments.size() + " vanilla enchantment "
+                    + (vanillaEnchantments.size() == 1 ? "override." : "overrides."));
         } catch (Throwable throwable) {
             enchantments.clear();
             vanillaEnchantments.clear();
@@ -112,7 +115,8 @@ public final class EnchantmentConfigManager extends AbstractManager {
                 vanillaPowerCount++;
             }
         }
-        infoLogger.accept("Initialized powers for " + vanillaPowerCount + " vanilla enchantments.");
+        infoLogger.accept("Initialized powers for " + vanillaPowerCount
+                + (vanillaPowerCount == 1 ? " vanilla enchantment." : " vanilla enchantments."));
     }
 
     private void loadEnchantment(Path file, ConfigurationSection raritySettings) throws Exception {

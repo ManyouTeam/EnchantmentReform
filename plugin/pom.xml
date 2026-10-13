@@ -18,6 +18,9 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/.gitkeep</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>
@@ -44,6 +47,7 @@
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
+                                <exclude>**/.gitkeep</exclude>
                                 <exclude>META-INF/MANIFEST.MF</exclude>
                                 <exclude>module-info.class</exclude>
                                 <exclude>META-INF/versions/*/module-info.class</exclude>

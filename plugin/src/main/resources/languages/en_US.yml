@@ -609,6 +609,8 @@ override-lang:
   enchantment-impact_coil-description: '&8After a successful smash attack, gain &a{bounciness} &8bounciness and reduce fall damage by &a{fall_damage_reduction_percentage}% &8for &a{rebound_window_seconds} &8seconds.'
   enchantment-gale_impact-name: "Gale Impact"
   enchantment-gale_impact-description: '&8Smash after falling at least &a{minimum_fall_distance} &8blocks to hurl up to 16 nearby enemies within &a{burst_radius} &8blocks away with &a{knockback_force} &8force. Cooldown: &a{cooldown} &8seconds.'
+  enchantment-aquatic_arrow-name: "Aquatic Arrow"
+  enchantment-aquatic_arrow-description: '&8Fired arrows retain their normal air drag and trajectory underwater.'
   enchantment-tracking_arrow-name: "Tracking Arrow"
   enchantment-tracking_arrow-description: '&8Fired arrows track targets within &a{distance} &8blocks ahead.'
   enchantment-triple_shot-name: "Triple Shot"

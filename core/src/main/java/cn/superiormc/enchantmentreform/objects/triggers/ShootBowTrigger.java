@@ -3,6 +3,7 @@ package cn.superiormc.enchantmentreform.objects.triggers;
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerResult;
+import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -39,7 +40,7 @@ public final class ShootBowTrigger extends EventTrigger<EntityShootBowEvent> {
         Entity effectiveProjectile = result.skillEntity() == null
                 ? event.getProjectile() : result.skillEntity();
         if (effectiveProjectile instanceof Projectile projectile) {
-            Set<cn.superiormc.enchantmentreform.power.TrackedPowerSource> sources = new LinkedHashSet<>(
+            Set<TrackedPowerSource> sources = new LinkedHashSet<>(
                     event.getProjectile() instanceof Projectile original
                             ? runtime.takeProjectileSources(original) : Set.of());
             sources.addAll(runtime.captureProjectileSources(triggerData));

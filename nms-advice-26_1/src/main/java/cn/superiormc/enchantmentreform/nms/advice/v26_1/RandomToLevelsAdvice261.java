@@ -471,11 +471,11 @@ public final class RandomToLevelsAdvice261 {
                 } catch (Throwable ignored) {
                 }
                 Logger.getLogger("EnchantmentReform").info(
-                        "[Debug] Applied enchant_randomly replacement: item="
+                        "[NMS] Loot enchanting: debug (item="
                                 + resultItem
                                 + ", cost=" + enchantmentCost
                                 + ", enchantment=" + enchantmentName
-                                + ", level=" + enchantmentLevel
+                                + ", level=" + enchantmentLevel + ")."
                 );
             }
 

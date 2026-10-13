@@ -1,5 +1,7 @@
 package cn.superiormc.enchantmentreform.spigot.nms.v1_21_11;
 
+import cn.superiormc.enchantmentreform.nms.NmsLog;
+
 import cn.superiormc.enchantmentreform.objects.ObjectCustomEnchantment;
 import com.mojang.serialization.JavaOps;
 import net.minecraft.core.Holder;
@@ -95,8 +97,8 @@ public final class SpigotEnchantmentRegistrar12111 {
                 Holder.Reference<Enchantment> existing = ENCHANTMENTS.get(key).orElse(null);
                 if (existing != null) {
                     registered.put(definition.getKey().asString(), existing);
-                    logger.info("Spigot enchantment already exists, keeping registry entry: "
-                            + definition.getKey().asString());
+                    NmsLog.info(logger, NmsLog.ENCHANTMENT_REGISTRY, "retained existing entry: "
+                            + definition.getKey().asString() + ".");
                     continue;
                 }
 
@@ -182,8 +184,8 @@ public final class SpigotEnchantmentRegistrar12111 {
                     org.bukkit.inventory.EquipmentSlotGroup.getByName(
                             configured.toLowerCase(Locale.ROOT));
             if (bukkitGroup == null) {
-                logger.warning(definition.getFileName() + ".yml: unknown active slot group '"
-                        + configured + "'");
+                NmsLog.warning(logger, NmsLog.ENCHANTMENT_REGISTRY, "skipped unknown active slot group: "
+                        + configured + " (" + definition.getFileName() + ".yml).");
                 continue;
             }
             slots.add(CraftEquipmentSlot.getNMSGroup(bukkitGroup));
@@ -297,8 +299,8 @@ public final class SpigotEnchantmentRegistrar12111 {
                 default -> null;
             };
             if (tag == null) {
-                logger.warning(definition.getFileName()
-                        + ".yml: unknown obtaining source '" + source + "'");
+                NmsLog.warning(logger, NmsLog.ENCHANTMENT_REGISTRY, "skipped unknown obtaining source: "
+                        + source + " (" + definition.getFileName() + ".yml).");
                 continue;
             }
             addToTag(ENCHANTMENTS, tag, holder);

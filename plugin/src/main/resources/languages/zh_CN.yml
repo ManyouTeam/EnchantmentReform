@@ -609,6 +609,8 @@ override-lang:
   enchantment-impact_coil-description: '&8成功完成重锤猛击后，在 &a{rebound_window_seconds} &8秒内获得 &a{bounciness} &8弹性，并减少 &a{fall_damage_reduction_percentage}% &8坠落伤害。'
   enchantment-gale_impact-name: "烈风震击"
   enchantment-gale_impact-description: '&8至少坠落 &a{minimum_fall_distance} &8格后完成重锤猛击，将 &a{burst_radius} &8格内最多 16 个附近敌人以 &a{knockback_force} &8力度向外抛开。冷却：&a{cooldown} &8秒。'
+  enchantment-aquatic_arrow-name: "水行箭"
+  enchantment-aquatic_arrow-description: '&8射出的箭矢在水中保持与空中相同的速度衰减和抛物线轨迹。'
   enchantment-tracking_arrow-name: "追踪箭"
   enchantment-tracking_arrow-description: '&8射出的箭矢会追踪前方 &a{distance} &8格内的目标。'
   enchantment-triple_shot-name: "三重射击"

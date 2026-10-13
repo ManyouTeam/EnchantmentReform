@@ -2,12 +2,12 @@ package cn.superiormc.enchantmentreform.nms.named;
 
 import cn.superiormc.enchantmentreform.nms.FoodUseResult;
 import cn.superiormc.enchantmentreform.nms.NmsStatus;
+import cn.superiormc.enchantmentreform.nms.NmsLog;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 final class FoodNmsOperation {
@@ -41,14 +41,14 @@ final class FoodNmsOperation {
             }
             return new FoodUseResult(NmsStatus.SUCCESS, remainder);
         } catch (Throwable throwable) {
-            logOnce("Native finishUsingItem invocation failed; AutoFeed NMS mode is disabled for this call.", throwable);
+            logOnce("execution failed (finish using item).", throwable);
             return new FoodUseResult(NmsStatus.FAILED, null);
         }
     }
 
     private void logOnce(String message, Throwable throwable) {
         if (failureLogged.compareAndSet(false, true)) {
-            logger.log(Level.WARNING, message, throwable);
+            NmsLog.warning(logger, NmsLog.FOOD_USE, message, throwable);
         }
     }
 }

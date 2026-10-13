@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.powermodifiers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.AbstractArrow;
@@ -60,6 +61,10 @@ public final class PowerModifierModifyProjectile extends AbstractPowerModifier {
                     getInt("fire-ticks", 0, context)));
         }
         if (projectile instanceof AbstractArrow arrow) {
+            if (section.contains("ignore-water-resistance") && !(arrow instanceof org.bukkit.entity.Trident)) {
+                EnchantmentReform.instance.getNmsBridge().setIgnoreWaterResistance(
+                        arrow, section.getBoolean("ignore-water-resistance"));
+            }
             double damageMultiplier = getDouble("damage-multiplier", 1.0D, context);
             arrow.setDamage(Math.max(0.0D, arrow.getDamage() * damageMultiplier));
             arrow.setCritical(section.getBoolean("critical", arrow.isCritical()));

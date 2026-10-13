@@ -3,6 +3,7 @@ package cn.superiormc.enchantmentreform;
 import cn.superiormc.enchantmentreform.listeners.EnchantmentPowerListener;
 import cn.superiormc.enchantmentreform.managers.*;
 import cn.superiormc.enchantmentreform.nms.NmsBridge;
+import cn.superiormc.enchantmentreform.nms.NmsLog;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerStateStore;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
@@ -13,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,13 +68,11 @@ public final class EnchantmentReform extends JavaPlugin {
                             manager.getSupportedItemsConfiguration(),
                             getLogger());
             spigotRegistryReady = true;
-            getLogger().info("Registered " + registered + " native custom enchantments for Spigot during STARTUP.");
+            NmsLog.info(getLogger(), NmsLog.ENCHANTMENT_REGISTRY, "enabled (Spigot; registered: " + registered + ").");
         } catch (Throwable throwable) {
             spigotRegistryReady = false;
-            getLogger().log(
-                    Level.SEVERE,
-                    "Could not register native custom enchantments on this version of Spigot, plugin will disable after server enable.",
-                    unwrapReflectionFailure(throwable));
+            NmsLog.error(getLogger(), NmsLog.ENCHANTMENT_REGISTRY,
+                    "unavailable; registration failed. The plugin will be disabled.", throwable);
         }
     }
 
@@ -110,7 +108,6 @@ public final class EnchantmentReform extends JavaPlugin {
                 Class<?> spigotClass = Class.forName("cn.superiormc.enchantmentreform.spigot.SpigotMethodUtil");
                 methodUtil = (SpecialMethodUtil) spigotClass.getDeclaredConstructor().newInstance();
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fSpigot is found, entering Spigot plugin mode...");
-                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fNative custom enchantments were registered during server startup.");
             } catch (Throwable throwable) {
                 Bukkit.getConsoleSender().sendMessage(TextUtil.pluginPrefix() + " §cError: The plugin seems break, please download it again from site.");
                 Bukkit.getPluginManager().disablePlugin(this);
@@ -176,15 +173,6 @@ public final class EnchantmentReform extends JavaPlugin {
                 || CommonUtil.getClass("com.destroystokyo.paper.PaperConfig");
     }
 
-    private Throwable unwrapReflectionFailure(Throwable throwable) {
-        Throwable current = throwable;
-        while (current instanceof InvocationTargetException
-                && current.getCause() != null) {
-            current = current.getCause();
-        }
-        return current;
-    }
-
     private void installLootEnchantFunctionPatch() {
         if (!ConfigManager.configManager.getBoolean(
                 "enchant-randomly-overrides.enabled",
@@ -192,7 +180,6 @@ public final class EnchantmentReform extends JavaPlugin {
         )) {
             return;
         }
-        TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fApplying loot enchant function patch to NMS...");
         int minimumCost = ConfigManager.configManager.getInt(
                 "enchant-randomly-overrides.minimum-cost",
                 10
@@ -223,8 +210,7 @@ public final class EnchantmentReform extends JavaPlugin {
                             maximumCost
                     );
         } catch (Throwable throwable) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not initialize the loot enchantment function patch.");
-            throwable.printStackTrace();
+            NmsLog.warning(getLogger(), NmsLog.LOOT_ENCHANTING, "unavailable; patch initialization failed.", throwable);
             lootEnchantFunctionPatchInstalled = false;
         }
     }
@@ -249,30 +235,29 @@ public final class EnchantmentReform extends JavaPlugin {
                     )
                     .invoke(null, getLogger());
         } catch (Throwable throwable) {
-            getLogger().log(
-                    java.util.logging.Level.WARNING,
-                    "Could not uninstall the loot enchantment function patch.",
-                    throwable
-            );
+            NmsLog.warning(getLogger(), NmsLog.LOOT_ENCHANTING, "restoration failed.", throwable);
         }
     }
 
     private NmsBridge createNmsBridge() {
         try {
-            TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fTrying create NMS Bridge...");
             Class<?> bootstrap = Class.forName("cn.superiormc.enchantmentreform.nms.named.NamedNmsBootstrap");
             return (NmsBridge) bootstrap.getMethod("create", java.util.logging.Logger.class)
                     .invoke(null, getLogger());
         } catch (Throwable throwable) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: NMS Bridge can not be created! Maybe your server software is modified NMS codes, " +
-                    "your server version is too new or too old. Some features that use NMS will no longer work.");
-            throwable.printStackTrace();
+            NmsLog.warning(getLogger(), NmsLog.BRIDGE, "unavailable; initialization failed.", throwable);
             return new UnsupportedNmsBridge("Named NMS bridge could not be loaded");
         }
     }
 
     @Override
     public void onDisable() {
+        try {
+            Class.forName("cn.superiormc.enchantmentreform.nms.named.ArrowWaterResistancePatch")
+                    .getMethod("uninstall", java.util.logging.Logger.class).invoke(null, getLogger());
+        } catch (Throwable throwable) {
+            NmsLog.warning(getLogger(), NmsLog.AQUATIC_ARROW, "restoration failed.", throwable);
+        }
         uninstallLootEnchantFunctionPatch();
         if (methodUtil != null) {
             Bukkit.getOnlinePlayers().forEach(methodUtil::clearBossBars);

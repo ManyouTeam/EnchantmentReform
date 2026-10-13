@@ -2,12 +2,12 @@ package cn.superiormc.enchantmentreform.nms.named;
 
 import cn.superiormc.enchantmentreform.nms.FishingUseResult;
 import cn.superiormc.enchantmentreform.nms.NmsStatus;
+import cn.superiormc.enchantmentreform.nms.NmsLog;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 final class FishingNmsOperation {
@@ -40,7 +40,7 @@ final class FishingNmsOperation {
         } catch (IllegalArgumentException exception) {
             return new FishingUseResult(NmsStatus.INVALID_ARGUMENT);
         } catch (Throwable throwable) {
-            logOnce("Native fishing rod retrieval failed; AutoFishing NMS mode is disabled for this call.", throwable);
+            logOnce("execution failed (retrieve).", throwable);
             return new FishingUseResult(NmsStatus.FAILED);
         }
     }
@@ -60,7 +60,7 @@ final class FishingNmsOperation {
         } catch (IllegalArgumentException exception) {
             return new FishingUseResult(NmsStatus.INVALID_ARGUMENT);
         } catch (Throwable throwable) {
-            logOnce("Native fishing rod cast failed; AutoFishing NMS mode is disabled for this call.", throwable);
+            logOnce("execution failed (cast).", throwable);
             return new FishingUseResult(NmsStatus.FAILED);
         }
     }
@@ -78,7 +78,7 @@ final class FishingNmsOperation {
 
     private void logOnce(String message, Throwable throwable) {
         if (failureLogged.compareAndSet(false, true)) {
-            logger.log(Level.WARNING, message, throwable);
+            NmsLog.warning(logger, NmsLog.FISHING_ROD, message, throwable);
         }
     }
 }

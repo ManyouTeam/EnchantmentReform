@@ -24,6 +24,7 @@ Every modifier on this page is documented independently. All entries also suppor
 | `spread-degrees` | unset | Random X/Y angular spread. |
 | `accuracy` | unset | Blends direction toward source living entity look direction; clamped `0..1`. |
 | `gravity` | unchanged | Enable or disable gravity. |
+| `ignore-water-resistance` | unchanged | Arrows and spectral arrows use vanilla air flight underwater, preserving air drag timing and gravity. Requires the named NMS flight patch; excludes tridents and fireworks. |
 | `fire-ticks` | unchanged | Set projectile fire ticks, minimum 0. |
 | `damage-multiplier` | `1` | Multiplies `AbstractArrow` base damage. |
 | `critical` | current | Sets arrow critical state. |
@@ -44,6 +45,8 @@ pierce-level: 2
 
 * Absent options leave their property unchanged, except neutral speed/damage multipliers.
 * `accuracy` aims along the shooter's look direction, not directly at `TARGET`.
+* `ignore-water-resistance` is normally set once on `on-shoot-bow`. The marker persists on the arrow; water bubble particles are skipped. If server instrumentation or the named arrow ABI is unavailable, the server logs a warning and vanilla flight is retained.
+* The flight and tracking patches are installed during plugin startup. Flying marked arrows receive absolute position and velocity updates immediately on water entry and exit, and every 2 tracker ticks while underwater. Airborne arrows outside water and grounded arrows retain normal tracking; underwater visuals may show slight prediction corrections between updates.
 
 ---
 

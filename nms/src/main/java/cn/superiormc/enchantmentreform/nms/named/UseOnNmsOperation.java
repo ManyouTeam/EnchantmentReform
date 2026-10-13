@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.nms.named;
 
 import cn.superiormc.enchantmentreform.nms.NmsStatus;
+import cn.superiormc.enchantmentreform.nms.NmsLog;
 import cn.superiormc.enchantmentreform.nms.UseOnResult;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,7 +14,6 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 final class UseOnNmsOperation {
@@ -73,7 +73,7 @@ final class UseOnNmsOperation {
             Object result = useOn.useOnItem().invoke(nmsItem, context);
             return new UseOnResult(successful(result) ? NmsStatus.SUCCESS : NmsStatus.FAILED);
         } catch (Throwable throwable) {
-            logOnce("Native ItemStack#useOn invocation failed; UseOnAbility is disabled for this call.", throwable);
+            logOnce("execution failed (use item on block).", throwable);
             return new UseOnResult(NmsStatus.FAILED);
         }
     }
@@ -124,7 +124,7 @@ final class UseOnNmsOperation {
 
     private void logOnce(String message, Throwable throwable) {
         if (failureLogged.compareAndSet(false, true)) {
-            logger.log(Level.WARNING, message, throwable);
+            NmsLog.warning(logger, NmsLog.ITEM_USE, message, throwable);
         }
     }
 }
