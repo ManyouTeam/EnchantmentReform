@@ -112,5 +112,35 @@
             <artifactId>paper</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>cn.superiormc.enchantmentreform</groupId>
+            <artifactId>paper-adapts-1-21-5</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.superiormc.enchantmentreform</groupId>
+            <artifactId>paper-adapts-1-21-6</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.superiormc.enchantmentreform</groupId>
+            <artifactId>paper-adapts-1-21-11</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.superiormc.enchantmentreform</groupId>
+            <artifactId>paper-adapts-26-1</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.superiormc.enchantmentreform</groupId>
+            <artifactId>paper-adapts-26-2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.superiormc.enchantmentreform</groupId>
+            <artifactId>paper-adapts-26-3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

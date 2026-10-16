@@ -15,13 +15,19 @@
         <module>nms-advice-26_1</module>
         <module>paper</module>
         <module>spigot</module>
+        <module>paper/adapts/v1_21_5</module>
+        <module>paper/adapts/v1_21_6</module>
+        <module>paper/adapts/v1_21_11</module>
+        <module>paper/adapts/v26_1</module>
+        <module>paper/adapts/v26_2</module>
+        <module>paper/adapts/v26_3</module>
         <module>plugin</module>
     </modules>
 
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <revision>1.3.4</revision>
+        <revision>1.3.5</revision>
         <name>EnchantmentReform</name>
     </properties>
 

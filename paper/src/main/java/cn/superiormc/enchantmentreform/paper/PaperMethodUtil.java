@@ -4,9 +4,9 @@ import cn.superiormc.enchantmentreform.listeners.EnchantmentPowerListener;
 import cn.superiormc.enchantmentreform.listeners.PaperEnchantmentPowerListener;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.TriggerManager;
+import cn.superiormc.enchantmentreform.paper.listeners.PaperTempBlockListener;
 import cn.superiormc.enchantmentreform.paper.methods.BuildItemPaper;
 import cn.superiormc.enchantmentreform.paper.methods.DebuildItemPaper;
-import cn.superiormc.enchantmentreform.paper.listeners.PaperTempBlockListener;
 import cn.superiormc.enchantmentreform.paper.utils.PaperTextUtil;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
@@ -14,6 +14,13 @@ import cn.superiormc.enchantmentreform.utils.SpecialMethodUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -25,16 +32,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.EvokerFangs;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LightningStrike;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.projectiles.ProjectileSource;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PaperMethodUtil implements SpecialMethodUtil {
 
@@ -360,7 +375,7 @@ public class PaperMethodUtil implements SpecialMethodUtil {
 
     @Override
     public ItemStack editItemStack(ItemStack item, Player player, ConfigurationSection section, int amount, String... args) {
-        if (!CommonUtil.getMinorVersion(21, 6)) {
+        if (!CommonUtil.getMinorVersion(21, 5)) {
             return item;
         }
         return BuildItemPaper.editItemStack(item, player, section, amount, args);
@@ -368,7 +383,7 @@ public class PaperMethodUtil implements SpecialMethodUtil {
 
     @Override
     public ConfigurationSection serializeItemStack(ItemStack item) {
-        if (!CommonUtil.getMinorVersion(21, 6)) {
+        if (!CommonUtil.getMinorVersion(21, 5)) {
             return null;
         }
         return DebuildItemPaper.serializeItemStack(item);
