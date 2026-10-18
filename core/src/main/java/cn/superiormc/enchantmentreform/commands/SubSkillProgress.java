@@ -3,17 +3,15 @@ package cn.superiormc.enchantmentreform.commands;
 import cn.superiormc.enchantmentreform.managers.LanguageManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
+import cn.superiormc.enchantmentreform.utils.MathUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class SubSkillProgress extends AbstractCommand {
-
-    private static final DecimalFormat NUMBER = new DecimalFormat("0.##");
 
     private final Operation operation;
 
@@ -113,8 +111,9 @@ public final class SubSkillProgress extends AbstractCommand {
                 "skill", skill.name(target),
                 "level", String.valueOf(manager.getLevel(target, skill)),
                 "maximum_level", String.valueOf(skill.maximumLevel()),
-                "experience", NUMBER.format(manager.getExperience(target, skill)),
-                "required_experience", NUMBER.format(manager.getRequiredExperience(target, skill)));
+                "experience", MathUtil.formatNumber(manager.getExperience(target, skill)),
+                "required_experience", MathUtil.formatNumber(
+                        manager.getRequiredExperience(target, skill)));
     }
 
     @Override

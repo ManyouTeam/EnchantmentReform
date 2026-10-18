@@ -8,7 +8,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,17 +68,10 @@ public class SendMessageAbility extends AbstractAbility {
             OptionalDouble calculated = MathUtil.tryCalculate(value);
             replacements.add(entry.getKey());
             replacements.add(calculated.isPresent()
-                    ? formatNumber(calculated.getAsDouble())
+                    ? MathUtil.formatNumber(calculated.getAsDouble())
                     : value);
         }
         return replacements.toArray(String[]::new);
-    }
-
-    private String formatNumber(double value) {
-        if (!Double.isFinite(value)) {
-            return String.valueOf(value);
-        }
-        return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
     }
 
     private List<Player> collectPlayers(Entity source, Player hateTarget, PowerContext context) {

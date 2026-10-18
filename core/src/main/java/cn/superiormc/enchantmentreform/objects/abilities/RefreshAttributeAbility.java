@@ -29,15 +29,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class RefreshAttributeAbility extends AbstractAbility {
 
-    private static final Map<String, ActiveAttribute> ACTIVE = new ConcurrentHashMap<>();
+    private final Map<String, ActiveAttribute> activeAttributes = new ConcurrentHashMap<>();
 
-    private static final Map<String, ActiveCustomAttribute> ACTIVE_CUSTOM =
+    private final Map<String, ActiveCustomAttribute> activeCustomAttributes =
             new ConcurrentHashMap<>();
 
-    private static final Map<String, TransitionAttribute> TRANSITION_ACTIVE =
+    private final Map<String, TransitionAttribute> transitionAttributes =
             new ConcurrentHashMap<>();
 
-    private static final Map<String, TransitionCustomAttribute> TRANSITION_CUSTOM =
+    private final Map<String, TransitionCustomAttribute> transitionCustomAttributes =
             new ConcurrentHashMap<>();
 
     private static final double MODIFIER_EPSILON = 1.0E-4D;
@@ -77,7 +77,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
                 .findFirst().ifPresent(instance::removeModifier);
         instance.addModifier(new AttributeModifier(modifierId, context.power().getId(), amount, operation));
 
-        ActiveAttribute active = ACTIVE.compute(identity, (ignored, previous) -> new ActiveAttribute(
+        ActiveAttribute active = activeAttributes.compute(identity, (ignored, previous) -> new ActiveAttribute(
                 previous == null ? 1L : previous.generation + 1L,
                 living.getUniqueId(), new WeakReference<>(living), attribute, modifierId,
                 sourceBinding(context)));
@@ -110,11 +110,11 @@ public final class RefreshAttributeAbility extends AbstractAbility {
 
         String identity = identity("transition-vanilla", living.getUniqueId(),
                 context, attributeName);
-        TransitionAttribute state = TRANSITION_ACTIVE.get(identity);
+        TransitionAttribute state = transitionAttributes.get(identity);
         if (living.isDead()) {
             if (state != null) {
                 removeTransitionModifier(state);
-                TRANSITION_ACTIVE.remove(identity, state);
+                transitionAttributes.remove(identity, state);
             }
             return false;
         }
@@ -125,7 +125,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             UUID modifierId = UUID.nameUUIDFromBytes(identity.getBytes(StandardCharsets.UTF_8));
             state = new TransitionAttribute(living.getUniqueId(), new WeakReference<>(living),
                     attribute, modifierId, sourceBinding(context));
-            TransitionAttribute previous = TRANSITION_ACTIVE.putIfAbsent(identity, state);
+            TransitionAttribute previous = transitionAttributes.putIfAbsent(identity, state);
             if (previous != null) {
                 state = previous;
             }
@@ -143,7 +143,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
         runTransitionCallbacks(state, previousProgress, progress, active, context);
         if (!active && progress <= 0.0D) {
             removeTransitionModifier(state);
-            TRANSITION_ACTIVE.remove(identity, state);
+            transitionAttributes.remove(identity, state);
             return false;
         }
 
@@ -161,11 +161,11 @@ public final class RefreshAttributeAbility extends AbstractAbility {
                                                  String attributeName, boolean active) {
         String identity = identity("transition-custom", player.getUniqueId(),
                 context, attributeName);
-        TransitionCustomAttribute state = TRANSITION_CUSTOM.get(identity);
+        TransitionCustomAttribute state = transitionCustomAttributes.get(identity);
         if (player.isDead()) {
             if (state != null) {
                 removeTransitionCustomModifier(state);
-                TRANSITION_CUSTOM.remove(identity, state);
+                transitionCustomAttributes.remove(identity, state);
             }
             return;
         }
@@ -178,7 +178,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             ObjectCustomAttributeModifier original = attribute.getTransientModifier(player, modifierId);
             state = new TransitionCustomAttribute(player.getUniqueId(), new WeakReference<>(player),
                     attribute, modifierId, original, sourceBinding(context));
-            TransitionCustomAttribute previous = TRANSITION_CUSTOM.putIfAbsent(identity, state);
+            TransitionCustomAttribute previous = transitionCustomAttributes.putIfAbsent(identity, state);
             if (previous != null) {
                 state = previous;
             }
@@ -196,7 +196,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
         runTransitionCallbacks(state, previousProgress, progress, active, context);
         if (!active && progress <= 0.0D) {
             removeTransitionCustomModifier(state);
-            TRANSITION_CUSTOM.remove(identity, state);
+            transitionCustomAttributes.remove(identity, state);
             return;
         }
 
@@ -271,7 +271,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
 
     @Override
     public void onPowerSourceDeactivate(Player player, ActivePowerSource source) {
-        ACTIVE.entrySet().removeIf(entry -> {
+        activeAttributes.entrySet().removeIf(entry -> {
             ActiveAttribute active = entry.getValue();
             if (!matches(active.sourceBinding, player, source)) {
                 return false;
@@ -279,7 +279,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             removeModifier(active);
             return true;
         });
-        ACTIVE_CUSTOM.entrySet().removeIf(entry -> {
+        activeCustomAttributes.entrySet().removeIf(entry -> {
             ActiveCustomAttribute active = entry.getValue();
             if (!matches(active.sourceBinding, player, source)) {
                 return false;
@@ -287,7 +287,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             removeCustomModifier(active);
             return true;
         });
-        TRANSITION_ACTIVE.entrySet().removeIf(entry -> {
+        transitionAttributes.entrySet().removeIf(entry -> {
             TransitionAttribute active = entry.getValue();
             if (!matches(active.sourceBinding, player, source)) {
                 return false;
@@ -295,7 +295,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             removeTransitionModifier(active);
             return true;
         });
-        TRANSITION_CUSTOM.entrySet().removeIf(entry -> {
+        transitionCustomAttributes.entrySet().removeIf(entry -> {
             TransitionCustomAttribute active = entry.getValue();
             if (!matches(active.sourceBinding, player, source)) {
                 return false;
@@ -310,7 +310,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
         if (entityId == null) {
             return;
         }
-        ACTIVE.entrySet().removeIf(entry -> {
+        activeAttributes.entrySet().removeIf(entry -> {
             ActiveAttribute active = entry.getValue();
             if (!entityId.equals(active.entityId) && !isOwner(entityId, active.sourceBinding)) {
                 return false;
@@ -318,7 +318,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             removeModifier(active);
             return true;
         });
-        ACTIVE_CUSTOM.entrySet().removeIf(entry -> {
+        activeCustomAttributes.entrySet().removeIf(entry -> {
             ActiveCustomAttribute active = entry.getValue();
             if (!entityId.equals(active.entityId) && !isOwner(entityId, active.sourceBinding)) {
                 return false;
@@ -326,7 +326,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             removeCustomModifier(active);
             return true;
         });
-        TRANSITION_ACTIVE.entrySet().removeIf(entry -> {
+        transitionAttributes.entrySet().removeIf(entry -> {
             TransitionAttribute active = entry.getValue();
             if (!entityId.equals(active.entityId) && !isOwner(entityId, active.sourceBinding)) {
                 return false;
@@ -334,7 +334,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
             removeTransitionModifier(active);
             return true;
         });
-        TRANSITION_CUSTOM.entrySet().removeIf(entry -> {
+        transitionCustomAttributes.entrySet().removeIf(entry -> {
             TransitionCustomAttribute active = entry.getValue();
             if (!entityId.equals(active.entityId) && !isOwner(entityId, active.sourceBinding)) {
                 return false;
@@ -346,15 +346,15 @@ public final class RefreshAttributeAbility extends AbstractAbility {
 
     @Override
     public void onUnload() {
-        ACTIVE.values().forEach(RefreshAttributeAbility::removeModifier);
-        ACTIVE.clear();
-        ACTIVE_CUSTOM.values().forEach(RefreshAttributeAbility::removeCustomModifier);
-        ACTIVE_CUSTOM.clear();
-        TRANSITION_ACTIVE.values().forEach(RefreshAttributeAbility::removeTransitionModifier);
-        TRANSITION_ACTIVE.clear();
-        TRANSITION_CUSTOM.values().forEach(
+        activeAttributes.values().forEach(RefreshAttributeAbility::removeModifier);
+        activeAttributes.clear();
+        activeCustomAttributes.values().forEach(RefreshAttributeAbility::removeCustomModifier);
+        activeCustomAttributes.clear();
+        transitionAttributes.values().forEach(RefreshAttributeAbility::removeTransitionModifier);
+        transitionAttributes.clear();
+        transitionCustomAttributes.values().forEach(
                 RefreshAttributeAbility::removeTransitionCustomModifier);
-        TRANSITION_CUSTOM.clear();
+        transitionCustomAttributes.clear();
     }
 
     private void refreshCustomAttribute(PowerContext context,
@@ -362,7 +362,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
                                         ObjectCustomAttribute attribute,
                                         String attributeName) {
         String identity = identity("custom", player.getUniqueId(), context, attributeName);
-        ActiveCustomAttribute previous = ACTIVE_CUSTOM.get(identity);
+        ActiveCustomAttribute previous = activeCustomAttributes.get(identity);
         String modifierId = "enchantmentreform:refresh_attribute/"
                 + UUID.nameUUIDFromBytes(identity.getBytes(StandardCharsets.UTF_8));
         ObjectCustomAttributeModifier current = attribute.getTransientModifier(
@@ -374,7 +374,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
         ObjectCustomAttributeModifier applied = new ObjectCustomAttributeModifier(
                 modifierId, amount, customOperation());
         attribute.setTransientModifier(player, applied);
-        ActiveCustomAttribute active = ACTIVE_CUSTOM.compute(identity,
+        ActiveCustomAttribute active = activeCustomAttributes.compute(identity,
                 (ignored, old) -> new ActiveCustomAttribute(
                         old == null ? 1L : old.generation + 1L,
                         player.getUniqueId(), new WeakReference<>(player), attribute,
@@ -390,12 +390,12 @@ public final class RefreshAttributeAbility extends AbstractAbility {
         long generation = active.generation;
         long duration = Math.max(2L, getInt("duration", 30, context));
         SchedulerUtil.runTaskLater(living, () -> {
-            ActiveAttribute current = ACTIVE.get(identity);
+            ActiveAttribute current = activeAttributes.get(identity);
             if (current == null || current.generation != generation) {
                 return;
             }
             removeModifier(current);
-            ACTIVE.remove(identity, current);
+            activeAttributes.remove(identity, current);
         }, duration);
     }
 
@@ -407,12 +407,12 @@ public final class RefreshAttributeAbility extends AbstractAbility {
         long generation = active.generation;
         long duration = Math.max(2L, getInt("duration", 30, context));
         SchedulerUtil.runTaskLater(player, () -> {
-            ActiveCustomAttribute scheduled = ACTIVE_CUSTOM.get(identity);
+            ActiveCustomAttribute scheduled = activeCustomAttributes.get(identity);
             if (scheduled == null || scheduled.generation != generation) {
                 return;
             }
             removeCustomModifier(scheduled);
-            ACTIVE_CUSTOM.remove(identity, scheduled);
+            activeCustomAttributes.remove(identity, scheduled);
         }, duration);
     }
 
@@ -480,7 +480,9 @@ public final class RefreshAttributeAbility extends AbstractAbility {
 
     private static void removeModifier(ActiveAttribute active) {
         LivingEntity living = active.entity.get();
-        if (living == null) return;
+        if (living == null) {
+            return;
+        }
         AttributeInstance instance = living.getAttribute(active.attribute);
         if (instance != null) {
             instance.getModifiers().stream()
@@ -496,7 +498,7 @@ public final class RefreshAttributeAbility extends AbstractAbility {
 
     private static void removeCustomModifier(ActiveCustomAttribute active) {
         Player player = active.player.get();
-        if (player == null || !java.util.Objects.equals(
+        if (player == null || !Objects.equals(
                 active.attribute.getTransientModifier(player, active.appliedModifier.id()),
                 active.appliedModifier)) {
             return;

@@ -2,16 +2,15 @@ package cn.superiormc.enchantmentreform.objects;
 
 import cn.superiormc.enchantmentreform.utils.MathUtil;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
+import java.util.OptionalDouble;
 import java.util.regex.Pattern;
 
 public final class EnchantmentDescription {
 
     private static final Pattern LEVEL_PATTERN = Pattern.compile("\\{level}|(?<![A-Za-z0-9_])level(?![A-Za-z0-9_])");
 
-    private EnchantmentDescription() {}
+    private EnchantmentDescription() {
+    }
 
     public static String render(String description, PowerVariables variables, int level) {
         if (description == null) {
@@ -29,12 +28,11 @@ public final class EnchantmentDescription {
         if (resolvedFormula.contains("~")) {
             return percent ? resolvedFormula + "%" : resolvedFormula;
         }
-        java.util.OptionalDouble calculated = MathUtil.tryCalculate(resolvedFormula);
+        OptionalDouble calculated = MathUtil.tryCalculate(resolvedFormula);
         if (calculated.isEmpty()) {
             String literal = source.replace("{level}", String.valueOf(level));
             return percent ? literal + "%" : literal;
         }
-        DecimalFormat format = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.ROOT));
-        return format.format(calculated.getAsDouble()) + (percent ? "%" : "");
+        return MathUtil.formatNumber(calculated.getAsDouble()) + (percent ? "%" : "");
     }
 }

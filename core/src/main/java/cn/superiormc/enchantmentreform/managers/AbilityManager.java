@@ -7,7 +7,96 @@ import cn.superiormc.enchantmentreform.nms.NmsBridge;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;
 import cn.superiormc.enchantmentreform.objects.ObjectAction;
 import cn.superiormc.enchantmentreform.objects.ObjectSingleAction;
-import cn.superiormc.enchantmentreform.objects.abilities.*;
+import cn.superiormc.enchantmentreform.objects.abilities.AbstractAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AccelerateCropsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AccelerateWorkBlocksAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AnyOfAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ArrowRainAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AttributeLayerAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AutoFeedAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AutoFishingAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.BreakBlockAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.BreakBlocksAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.CancelEventAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ChangeBlockFaceAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ChangeItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ConditionalAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ConsumeFoodAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.CostPriceAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.CreeperStatsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.DamageEntityAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.DamageItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.DelayAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.DisableEnchantmentsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.DropItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.EnhanceEquipmentAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.EnhanceHeldItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.EvokerFangsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ExecuteActionAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ExecuteCommandAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ExperienceAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ExplosionAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ExtendPotionEffectsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.FireAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.FreezeAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.GiveItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.GiveLootTableItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.GrowCropAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.GuardianBeamAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.HomingProjectileAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.LaunchProjectileAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.LightningAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.LimitAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.LocateBiomeAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.LocateStructureAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.MarkAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ModifyRepairCostAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.MythicSkillAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.NearbyBlockAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.NearbyEntitiesAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ParticleAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PlaceBlockAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PlaceTempBlockAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PotionCloudAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PotionEffectAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
+import cn.superiormc.enchantmentreform.objects.abilities.PreserveExperienceAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PreserveInventoryAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PreserveItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PreventBlockBreakAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PullLocationAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.PullTargetAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ReflectProjectileAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.RefreshAttributeAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.RemoveAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.RemovePotionEffectAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.RepeatAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ReplaceBlockAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ReplaceItemAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.RicochetProjectileAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ScanBlocksAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SendMessageAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetAbsorptionAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetAirAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetAttributeAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetFoodAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetHealthAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetInvulnerableAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetItemCooldownAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SetVelocityAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.ShuffleInventoryAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SkillExperienceAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SonicBoomAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SoundAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.StateAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SummonAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SwapHealthAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SwapLocationsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.SwapPotionEffectsAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.TeleportAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.TeleportNearTargetAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.UseOnAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.VanillaAnimationAbility;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,6 +104,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,7 +114,10 @@ public class AbilityManager extends AbstractManager {
 
     private final KeyedRegistry<String, AbilityFactory> abilities = KeyedRegistry.stringTypes();
 
-    private final Map<Class<? extends AbstractAbility>, AbstractAbility> lifecycleTypes = new ConcurrentHashMap<>();
+    private final Map<ConfigurationSection, AbstractAbility> abilityInstances =
+            new ConcurrentHashMap<>();
+
+    private final Set<AbstractAbility> lifecycleInstances = ConcurrentHashMap.newKeySet();
 
     private final ActionManager<ObjectSingleAction, PowerContext> actionManager;
 
@@ -49,7 +142,7 @@ public class AbilityManager extends AbstractManager {
         register("prevent_block_break", PreventBlockBreakAbility::new);
         register("explosion", ExplosionAbility::new);
         register("remove", RemoveAbility::new);
-        register("cancel_event", CancelEventAbility::new);;
+        register("cancel_event", CancelEventAbility::new);
         register("disable_enchantments", DisableEnchantmentsAbility::new);
         register("modify_repair_cost", ModifyRepairCostAbility::new);
         register("lightning", LightningAbility::new);
@@ -138,21 +231,22 @@ public class AbilityManager extends AbstractManager {
     }
 
     public void onUnload() {
-        List<AbstractAbility> types = List.copyOf(lifecycleTypes.values());
-        lifecycleTypes.clear();
-        types.forEach(AbstractAbility::onUnload);
+        List<AbstractAbility> instances = List.copyOf(lifecycleInstances);
+        abilityInstances.clear();
+        lifecycleInstances.clear();
+        instances.forEach(AbstractAbility::onUnload);
     }
 
     public void onEntityUnload(UUID entityId) {
         if (entityId != null) {
-            lifecycleTypes.values().forEach(type -> type.onEntityUnload(entityId));
+            lifecycleInstances.forEach(instance -> instance.onEntityUnload(entityId));
         }
     }
 
     public void onPowerSourceDeactivate(Player player, ActivePowerSource source) {
         if (player != null && source != null) {
-            lifecycleTypes.values().forEach(type ->
-                    type.onPowerSourceDeactivate(player, source));
+            lifecycleInstances.forEach(instance ->
+                    instance.onPowerSourceDeactivate(player, source));
         }
     }
 
@@ -241,9 +335,11 @@ public class AbilityManager extends AbstractManager {
     }
 
     private AbstractAbility toAction(ConfigurationSection section) {
-        String type = section.getString("type", "");
-        AbstractAbility ability = abilities.getRequired(type).create(section);
-        lifecycleTypes.putIfAbsent(ability.getClass(), ability);
-        return ability;
+        return abilityInstances.computeIfAbsent(section, current -> {
+            String type = current.getString("type", "");
+            AbstractAbility created = abilities.getRequired(type).create(current);
+            lifecycleInstances.add(created);
+            return created;
+        });
     }
 }

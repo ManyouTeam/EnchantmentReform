@@ -3,11 +3,41 @@ package cn.superiormc.enchantmentreform.managers;
 import cn.superiormc.enchantmentreform.api.registry.KeyedRegistry;
 import cn.superiormc.enchantmentreform.api.registry.ModifierFactory;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
-import cn.superiormc.enchantmentreform.objects.powermodifiers.*;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.AbstractPowerModifier;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierAir;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierArmorPierce;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierCooldownTime;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierDamage;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierDuration;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierElytraBoostNotConsume;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierExhaustion;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierExperience;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierFishCatch;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierFishExtraCatch;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierFishHookTiming;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierFishReplaceCatch;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierFishSmeltCatch;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierFood;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierHeal;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierItemDamage;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierLungePower;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierMissingHealthDamage;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierModifyDrops;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierModifyProjectile;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierRadius;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierReplaceProjectile;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierRevive;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierStackDamageModifier;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierTradeEmeraldReturn;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierTradeUsesReturn;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierVibrationReduce;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierWardenAnger;
+import cn.superiormc.enchantmentreform.objects.powermodifiers.PowerModifierYield;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,8 +47,10 @@ public final class PowerModifiersManager extends AbstractManager {
 
     private final KeyedRegistry<String, ModifierFactory> modifiers = KeyedRegistry.stringTypes();
 
-    private final Map<Class<? extends AbstractPowerModifier>, AbstractPowerModifier> lifecycleTypes =
+    private final Map<ConfigurationSection, AbstractPowerModifier> modifierInstances =
             new ConcurrentHashMap<>();
+
+    private final Set<AbstractPowerModifier> lifecycleInstances = ConcurrentHashMap.newKeySet();
 
     public PowerModifiersManager() {
         powerModifiers = this;
@@ -62,14 +94,15 @@ public final class PowerModifiersManager extends AbstractManager {
     }
 
     public void onUnload() {
-        List<AbstractPowerModifier> types = List.copyOf(lifecycleTypes.values());
-        lifecycleTypes.clear();
-        types.forEach(AbstractPowerModifier::onUnload);
+        List<AbstractPowerModifier> instances = List.copyOf(lifecycleInstances);
+        modifierInstances.clear();
+        lifecycleInstances.clear();
+        instances.forEach(AbstractPowerModifier::onUnload);
     }
 
     public void onEntityUnload(UUID entityId) {
         if (entityId != null) {
-            lifecycleTypes.values().forEach(type -> type.onEntityUnload(entityId));
+            lifecycleInstances.forEach(instance -> instance.onEntityUnload(entityId));
         }
     }
 
@@ -82,10 +115,16 @@ public final class PowerModifiersManager extends AbstractManager {
             if (section == null) {
                 continue;
             }
-            ModifierFactory factory = modifiers.getRequired(section.getString("type", ""));
-            AbstractPowerModifier modifier = factory.create(section);
-            lifecycleTypes.putIfAbsent(modifier.getClass(), modifier);
-            modifier.apply(context);
+            getModifier(section).apply(context);
         }
+    }
+
+    private AbstractPowerModifier getModifier(ConfigurationSection section) {
+        return modifierInstances.computeIfAbsent(section, current -> {
+            ModifierFactory factory = modifiers.getRequired(current.getString("type", ""));
+            AbstractPowerModifier created = factory.create(current);
+            lifecycleInstances.add(created);
+            return created;
+        });
     }
 }

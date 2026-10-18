@@ -86,6 +86,8 @@ public final class LaunchRingAbility extends AbstractAbility {
 
 返回 `true` 会请求取消当前可取消的触发器事件。基类会处理通用条件、概率、冷却、使用次数、动态数值、选择器和位置辅助方法。
 
+每个 `ConfigurationSection` 只会调用一次工厂，生成的能力实例会复用到插件重载或关闭。实现类应将单次执行数据保存在 `execute` 的局部变量中；共享可变状态必须保证线程安全。每个缓存实例都会收到一次对应的生命周期回调。
+
 位置可以使用 `location: SOURCE`，也可以使用包含 `location.target` 和 `location.distance` 的配置节。前者使用顶层 `offset.x/y/z`，后者使用 `location.offset.x/y/z`。旧的 `location.offset-x/y/z` 仍然兼容，新写法在各坐标轴上优先。能力冷却和次数限制仍按来源实体记录。
 
 ## 自定义能力条件
@@ -165,6 +167,8 @@ public final class MinimumDamageModifier extends AbstractPowerModifier {
 ```
 
 修改器基类会在调用 `onApply` 前检查通用条件、随机概率和冷却。
+
+修改器工厂采用相同生命周期：每个 `ConfigurationSection` 缓存一个实例，直到插件重载或关闭。单次执行数据应保存在 `onApply` 的局部变量中，共享可变状态必须保证线程安全。
 
 ## 自定义匹配规则
 

@@ -21,7 +21,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -31,13 +30,13 @@ import java.util.Map;
 
 public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController {
 
-    private static final DecimalFormat NUMBER = new DecimalFormat("0.##");
-
     private record MenuEntry(SkillDefinition skill, ObjectCustomAttribute attribute,
-                             ConfigurationSection content) {}
+                             ConfigurationSection content) {
+    }
 
     private record MenuContent(ConfigurationSection section, List<Integer> slots,
-                               List<MenuEntry> entries) {}
+                               List<MenuEntry> entries) {
+    }
 
     private final String menuId;
 
@@ -86,7 +85,9 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         shownEntries.clear();
         shownStaticItems.clear();
         renderStaticItems(args, layoutSlots);
-        for (MenuContent content : contents) renderContent(content);
+        for (MenuContent content : contents) {
+            renderContent(content);
+        }
     }
 
     @Override
@@ -127,11 +128,15 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private List<MenuContent> loadContents(Map<String, List<Integer>> layoutSlots) {
         ConfigurationSection contents = config.getConfigurationSection("contents");
-        if (contents == null) return List.of();
+        if (contents == null) {
+            return List.of();
+        }
         List<MenuContent> result = new ArrayList<>();
         for (String id : contents.getKeys(false)) {
             ConfigurationSection section = contents.getConfigurationSection(id);
-            if (section == null) continue;
+            if (section == null) {
+                continue;
+            }
             List<Integer> slots = symbolSlots(id, layoutSlots);
             String type = section.getString("type", "").toLowerCase(Locale.ROOT);
             List<MenuEntry> entries = switch (type) {
@@ -180,12 +185,16 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private void renderContent(MenuContent content) {
-        if (content.slots().isEmpty()) return;
+        if (content.slots().isEmpty()) {
+            return;
+        }
         int first = page * content.slots().size();
         for (int index = 0;
              index < content.slots().size() && first + index < content.entries().size(); index++) {
             int slot = content.slots().get(index);
-            if (slot < 0 || slot >= inv.getSize()) continue;
+            if (slot < 0 || slot >= inv.getSize()) {
+                continue;
+            }
             MenuEntry entry = content.entries().get(first + index);
             ItemStack item = entry.skill() == null
                     ? buildAttributeItem(entry.attribute(), content.section())
@@ -198,41 +207,41 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     private void renderStaticItems(String[] args,
                                    Map<String, List<Integer>> layoutSlots) {
         ConfigurationSection items = config.getConfigurationSection("items");
-        if (items == null) return;
+        if (items == null) {
+            return;
+        }
         for (String id : items.getKeys(false)) {
             ConfigurationSection definition = items.getConfigurationSection(id);
-            if (definition == null) continue;
+            if (definition == null) {
+                continue;
+            }
             boolean hidden = definition.getBoolean("hide-on-first-page", false) && page == 0
                     || definition.getBoolean("hide-on-last-page", false) && page == maximumPage;
             ConfigurationSection displayed = hidden
                     ? definition.getConfigurationSection("hidden-item")
                     : definition.getConfigurationSection("item");
-            if (displayed == null && !hidden) displayed = definition;
-            if (displayed == null) continue;
+            if (displayed == null && !hidden) {
+                displayed = definition;
+            }
+            if (displayed == null) {
+                continue;
+            }
             ItemStack item = buildItem(displayed, args);
             for (int slot : symbolSlots(id, layoutSlots)) {
-                if (slot < 0 || slot >= inv.getSize()) continue;
+                if (slot < 0 || slot >= inv.getSize()) {
+                    continue;
+                }
                 setItem(slot, item.clone());
-                if (!hidden) shownStaticItems.put(slot, definition);
+                if (!hidden) {
+                    shownStaticItems.put(slot, definition);
+                }
             }
         }
     }
 
     private ItemStack buildSkillItem(SkillDefinition skill, ConfigurationSection content) {
         SkillManager manager = SkillManager.skillManager;
-        int level = manager.getLevel(player, skill);
-        double xp = manager.getExperience(player, skill);
-        double required = manager.getRequiredExperience(player, skill);
-        double percent = required <= 0.0D ? 100.0D : Math.min(100.0D, xp / required * 100.0D);
-        String[] args = merge(baseArgs(), new String[]{
-                "id", skill.id(), "name", skill.name(player),
-                "description", skill.description(player), "level", String.valueOf(level),
-                "maximum_level", String.valueOf(skill.maximumLevel()),
-                "experience", NUMBER.format(xp), "required_experience", NUMBER.format(required),
-                "remaining_experience", NUMBER.format(Math.max(0.0D, required - xp)),
-                "progress", NUMBER.format(percent),
-                "progress_bar", progressBar(percent, 20),
-                "source_count", String.valueOf(skill.sources().size())});
+        String[] args = merge(baseArgs(), manager.getProgressPlaceholders(player, skill));
         ConfigurationSection template = content.getConfigurationSection("item");
         ConfigurationSection icon = content.getBoolean("use-skill-icon", true) ? skill.icon() : null;
         return buildTemplatedItem(icon, template, Material.EXPERIENCE_BOTTLE, args);
@@ -269,9 +278,13 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                                          Material fallback, String[] args) {
         ItemStack item = base == null ? new ItemStack(fallback)
                 : BuildItem.buildItemStack(player, base, args);
-        if (template == null) return item;
+        if (template == null) {
+            return item;
+        }
         ConfigurationSection materialSource = template.contains("material") ? template : null;
-        if (materialSource != null) item = BuildItem.buildItemStack(player, template, args);
+        if (materialSource != null) {
+            item = BuildItem.buildItemStack(player, template, args);
+        }
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             EnchantmentReform.methodUtil.setItemName(meta, CommonUtil.modifyString(player,
@@ -299,14 +312,18 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private void executeActions(ConfigurationSection actions, MenuEntry entry) {
-        if (actions == null) return;
+        if (actions == null) {
+            return;
+        }
         if (actions.contains("type")) {
             executeAction(actions, entry);
             return;
         }
         for (String id : actions.getKeys(false)) {
             ConfigurationSection action = actions.getConfigurationSection(id);
-            if (action != null) executeAction(action, entry);
+            if (action != null) {
+                executeAction(action, entry);
+            }
         }
     }
 
@@ -419,37 +436,9 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         return layoutSlots.getOrDefault(id, List.of());
     }
 
-    private static String progressBar(double percent, int length) {
-        int filled = (int) Math.round(Math.max(0.0D, Math.min(100.0D, percent))
-                / 100.0D * length);
-        return "&a" + "|".repeat(filled) + "&8" + "|".repeat(length - filled);
-    }
-
     private List<String> normalizedList(ConfigurationSection section, String path) {
         return section.getStringList(path).stream()
                 .map(value -> value.toLowerCase(Locale.ROOT)).toList();
     }
 
-    private List<String> wrapLore(List<String> configured) {
-        List<String> result = new ArrayList<>();
-        for (String value : configured) {
-            if (value.isBlank()) {
-                result.add("");
-                continue;
-            }
-            for (String line : value.split("\\\\n", -1)) {
-                result.addAll(TextUtil.wrapKeepColor(line,
-                        ConfigManager.configManager.getInt(
-                                "enchantment-description.wrap-length", 30)));
-            }
-        }
-        return result;
-    }
-
-    private static String[] merge(String[] first, String[] second) {
-        String[] result = new String[first.length + second.length];
-        System.arraycopy(first, 0, result, 0, first.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
-        return result;
-    }
 }

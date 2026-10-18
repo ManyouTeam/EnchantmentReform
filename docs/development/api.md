@@ -86,6 +86,8 @@ public final class LaunchRingAbility extends AbstractAbility {
 
 Returning `true` requests cancellation of the current cancellable trigger. The base class handles common conditions, chance, cooldown, usage count, dynamic values, selectors, and location helpers.
 
+The factory is invoked once per `ConfigurationSection` and the resulting ability is reused until plugin reload or disable. Ability implementations must therefore keep invocation-specific values local to `execute`; shared mutable state must be thread-safe. Lifecycle callbacks are invoked once for every cached instance.
+
 Locations accept a scalar selector such as `location: SOURCE` or a section with `location.target` and `location.distance`. Use top-level `offset.x/y/z` for scalar locations and `location.offset.x/y/z` for section locations. Legacy `location.offset-x/y/z` remains supported; the new keys take precedence per axis. Ability cooldowns and usage limits remain scoped to the source entity.
 
 ## Custom Power Condition
@@ -165,6 +167,8 @@ public final class MinimumDamageModifier extends AbstractPowerModifier {
 ```
 
 The modifier base evaluates common conditions, random chance, and cooldown before `onApply`.
+
+Modifier factories follow the same lifecycle: one instance is cached per `ConfigurationSection` until reload or disable. Keep invocation-specific values local to `onApply`, and make shared mutable state thread-safe.
 
 ## Custom match rules
 

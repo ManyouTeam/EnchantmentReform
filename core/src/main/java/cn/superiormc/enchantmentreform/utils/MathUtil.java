@@ -6,6 +6,7 @@ import cn.superiormc.enchantmentreform.managers.ErrorManager;
 import redempt.crunch.Crunch;
 import redempt.crunch.functional.ExpressionEnv;
 
+import java.math.BigDecimal;
 import java.util.OptionalDouble;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,14 +15,12 @@ public class MathUtil {
     public static double doCalculate(String mathStr) {
         try {
             return calculate(mathStr);
-        }
-        catch (Throwable throwable) {
-            if (ConfigManager.configManager.getBoolean("debug")) {
-                throwable.printStackTrace();
-            }
+        } catch (Throwable throwable) {
+            String reason = ConfigManager.configManager.getBoolean("debug")
+                    && throwable.getMessage() != null ? " (" + throwable.getMessage() + ")" : "";
             ErrorManager.errorManager.sendErrorMessage("§cError: Your number option value " +
                     mathStr + " can not be read as a number, maybe" +
-                    "set math.enabled to false in config.yml maybe solve this problem!");
+                    "set math.enabled to false in config.yml maybe solve this problem!" + reason);
             return 0;
         }
     }
@@ -32,6 +31,13 @@ public class MathUtil {
         } catch (Throwable ignored) {
             return OptionalDouble.empty();
         }
+    }
+
+    public static String formatNumber(double value) {
+        if (!Double.isFinite(value)) {
+            return String.valueOf(value);
+        }
+        return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
     }
 
     private static double calculate(String mathStr) {

@@ -408,6 +408,10 @@ powers:
 
 # Skill definitions and XP sources are loaded from plugins/EnchantmentReform/skills/*.yml.
 skills:
+  progress-bar:
+    length: 20
+    filled: '&a|'
+    empty: '&8|'
   experience-multipliers:
     # Every matching entry is multiplied together. Use '*' or 'all' to target all skills.
     # Player multipliers set by /enchantmentreform setskillmultiplier are multiplied afterwards.

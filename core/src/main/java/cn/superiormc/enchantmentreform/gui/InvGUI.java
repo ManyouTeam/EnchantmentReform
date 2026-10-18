@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.gui;
 
 import cn.superiormc.enchantmentreform.methods.Dupe;
+import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
@@ -11,6 +12,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
@@ -58,6 +62,29 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
     public void setItem(int slot, ItemStack item) {
         inv.setItem(slot, Dupe.markGuiDisplayItem(item));
+    }
+
+    protected final List<String> wrapLore(List<String> configured) {
+        List<String> result = new ArrayList<>();
+        int wrapLength = ConfigManager.configManager.getInt(
+                "enchantment-description.wrap-length", 30);
+        for (String value : configured) {
+            if (value.isBlank()) {
+                result.add("");
+                continue;
+            }
+            for (String line : value.split("\\\\n", -1)) {
+                result.addAll(TextUtil.wrapKeepColor(line, wrapLength));
+            }
+        }
+        return result;
+    }
+
+    protected final String[] merge(String[] first, String[] second) {
+        String[] result = new String[first.length + second.length];
+        System.arraycopy(first, 0, result, 0, first.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
 
     public ConfigurationSection getSection() {

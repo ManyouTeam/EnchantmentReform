@@ -3,6 +3,7 @@ package cn.superiormc.enchantmentreform.objects.powermodifiers;
 import cn.superiormc.enchantmentreform.api.trigger.EntitySelector;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerStateStore;
+import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 import org.bukkit.Bukkit;
@@ -249,23 +250,16 @@ public class PowerModifierStackDamageModifier extends AbstractPowerModifier {
                                   DamageType damageType, DamageOperation operation) {
         return getString(path, "", context,
                 "pool", pool,
-                "stacks", formatNumber(stacks),
-                "previous_stacks", formatNumber(previousStacks),
-                "added_stacks", formatNumber(addedStacks),
+                "stacks", MathUtil.formatNumber(stacks),
+                "previous_stacks", MathUtil.formatNumber(previousStacks),
+                "added_stacks", MathUtil.formatNumber(addedStacks),
                 "max_stacks", Integer.toString(maximum),
-                "percent_per_stack", formatNumber(perStack),
-                "percent", formatNumber(percent),
-                "reset_seconds", formatNumber(resetSeconds),
+                "percent_per_stack", MathUtil.formatNumber(perStack),
+                "percent", MathUtil.formatNumber(percent),
+                "reset_seconds", MathUtil.formatNumber(resetSeconds),
                 "damage_type", damageType.name(),
                 "operation", operation.name(),
                 "clear_reason", clearReason == null ? "" : clearReason);
-    }
-
-    private String formatNumber(double value) {
-        if (!Double.isFinite(value)) {
-            return String.valueOf(value);
-        }
-        return String.format(Locale.ROOT, "%.2f", value).replaceAll("\\.?0+$", "");
     }
 
     private Set<String> configuredValues(String path) {

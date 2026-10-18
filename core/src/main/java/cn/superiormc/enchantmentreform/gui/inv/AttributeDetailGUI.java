@@ -14,8 +14,8 @@ import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttributeModifier;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
+import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,8 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class AttributeDetailGUI extends InvGUI implements GUIPageController {
-
-    private static final DecimalFormat NUMBER = new DecimalFormat("0.##");
 
     private static final List<String> LEGACY_DEFAULT_LAYOUT = List.of(
             "FFFFFFFFF", "FFFFIFFFF", "FFFFFFFFF",
@@ -205,10 +202,14 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         String upgradeSymbol = config.getString("upgrade-symbol", "U");
         String enableSymbol = config.getString("enable-symbol", "E");
         for (Map.Entry<Integer, String> entry : staticSlots.entrySet()) {
-            if (entry.getKey() >= inv.getSize()) continue;
+            if (entry.getKey() >= inv.getSize()) {
+                continue;
+            }
             ConfigurationSection button = config.getConfigurationSection(
                     "buttons." + entry.getValue());
-            if (button == null) continue;
+            if (button == null) {
+                continue;
+            }
             boolean hidden = button.getBoolean("hide-on-first-page", false) && page == 0
                     || button.getBoolean("hide-on-last-page", false) && page == maximumPage;
             ConfigurationSection shown = hidden
@@ -222,7 +223,9 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
                 shown = button.getConfigurationSection(attribute.isEnabledForPlayer(player)
                         ? "enabled-item" : "disabled-item");
             }
-            if (shown != null) setItem(entry.getKey(), buildItem(shown, args));
+            if (shown != null) {
+                setItem(entry.getKey(), buildItem(shown, args));
+            }
             if (!hidden && !entry.getValue().equals(upgradeSymbol)
                     && !entry.getValue().equals(config.getString("back-symbol", "B"))) {
                 actions.put(entry.getKey(), GUIActionManager.INSTANCE.createButtonActions(button));
@@ -231,14 +234,20 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
     }
 
     private void renderModifiers(List<ObjectCustomAttributeModifier> modifiers, String[] baseArgs) {
-        if (modifierSlots.isEmpty()) return;
+        if (modifierSlots.isEmpty()) {
+            return;
+        }
         if (modifiers.isEmpty()) {
             ConfigurationSection empty = config.getConfigurationSection("no-modifiers-item");
-            if (empty != null) setItem(modifierSlots.get(0), buildItem(empty, baseArgs));
+            if (empty != null) {
+                setItem(modifierSlots.get(0), buildItem(empty, baseArgs));
+            }
             return;
         }
         ConfigurationSection template = config.getConfigurationSection("modifier-item");
-        if (template == null) return;
+        if (template == null) {
+            return;
+        }
         int first = page * modifierSlots.size();
         for (int index = 0; index < modifierSlots.size() && first + index < modifiers.size(); index++) {
             ObjectCustomAttributeModifier modifier = modifiers.get(first + index);
@@ -264,7 +273,7 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
     private String modifierAmountDisplay(ObjectCustomAttributeModifier modifier) {
         double value = modifier.operation() == ObjectCustomAttributeModifier.Operation.ADD_VALUE
                 ? modifier.amount() : modifier.amount() * 100.0D;
-        return (value >= 0.0D ? "+" : "") + NUMBER.format(value)
+        return (value >= 0.0D ? "+" : "") + MathUtil.formatNumber(value)
                 + (modifier.operation() == ObjectCustomAttributeModifier.Operation.ADD_VALUE
                 ? "" : "%");
     }
@@ -325,20 +334,11 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
     private ItemStack buildItem(ConfigurationSection section, String[] args) {
         ItemStack item = BuildItem.buildItemStack(player, section, args);
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
-        List<String> lore = new ArrayList<>();
-        for (String configured : CommonUtil.modifyList(
-                player, section.getStringList("lore"), args)) {
-            if (configured.isBlank()) {
-                lore.add("");
-                continue;
-            }
-            for (String line : configured.split("\\\\n", -1)) {
-                lore.addAll(TextUtil.wrapKeepColor(line,
-                        ConfigManager.configManager.getInt(
-                                "enchantment-description.wrap-length", 30)));
-            }
+        if (meta == null) {
+            return item;
         }
+        List<String> lore = wrapLore(CommonUtil.modifyList(
+                player, section.getStringList("lore"), args));
         EnchantmentReform.methodUtil.setItemLore(meta, lore, player);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
                 ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
@@ -346,10 +346,4 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         return item;
     }
 
-    private static String[] merge(String[] first, String[] second) {
-        String[] result = new String[first.length + second.length];
-        System.arraycopy(first, 0, result, 0, first.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
-        return result;
-    }
 }

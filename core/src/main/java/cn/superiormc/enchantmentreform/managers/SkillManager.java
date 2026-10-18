@@ -10,6 +10,7 @@ import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.objects.skills.SkillSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
+import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -23,7 +24,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,10 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Loads skills, stores player progression, grants rewards, and enforces XP limits. */
 public final class SkillManager extends AbstractManager {
-
-    private static final DecimalFormat NUMBER = new DecimalFormat("0.##");
 
     public enum AllocationResult {
         SUCCESS, NOT_ENOUGH_POINTS, MAXIMUM_REACHED, CONDITION_NOT_MET,
@@ -204,6 +201,47 @@ public final class SkillManager extends AbstractManager {
 
     public double getRequiredExperience(Player player, SkillDefinition skill) {
         return skill.experienceForNextLevel(getLevel(player, skill));
+    }
+
+    public double getProgressPercent(Player player, SkillDefinition skill) {
+        double required = getRequiredExperience(player, skill);
+        if (required <= 0.0D) {
+            return 100.0D;
+        }
+        return Math.min(100.0D, getExperience(player, skill) / required * 100.0D);
+    }
+
+    public String getProgressBar(double percent) {
+        int length = Math.max(1, ConfigManager.configManager.getInt(
+                "skills.progress-bar.length", 20));
+        int filled = (int) Math.round(Math.max(0.0D, Math.min(100.0D, percent))
+                / 100.0D * length);
+        String filledSegment = ConfigManager.configManager.getString(
+                "skills.progress-bar.filled", "&a|");
+        String emptySegment = ConfigManager.configManager.getString(
+                "skills.progress-bar.empty", "&8|");
+        return filledSegment.repeat(filled) + emptySegment.repeat(length - filled);
+    }
+
+    public String[] getProgressPlaceholders(Player player, SkillDefinition skill) {
+        int level = getLevel(player, skill);
+        double experience = getExperience(player, skill);
+        double required = getRequiredExperience(player, skill);
+        double percent = getProgressPercent(player, skill);
+        return new String[]{
+                "id", skill.id(),
+                "skill", skill.name(player),
+                "name", skill.name(player),
+                "description", skill.description(player),
+                "level", String.valueOf(level),
+                "maximum_level", String.valueOf(skill.maximumLevel()),
+                "experience", MathUtil.formatNumber(experience),
+                "required_experience", MathUtil.formatNumber(required),
+                "remaining_experience", MathUtil.formatNumber(Math.max(0.0D, required - experience)),
+                "progress", MathUtil.formatNumber(percent),
+                "progress_bar", getProgressBar(percent),
+                "source_count", String.valueOf(skill.sources().size())
+        };
     }
 
     public int getAttributePoints(Player player) {
@@ -406,22 +444,17 @@ public final class SkillManager extends AbstractManager {
                 "skills.feedback.experience.cooldown-ticks", 5)) * 50L;
         FeedbackState state = feedbackStates.computeIfAbsent(player.getUniqueId(), ignored -> new FeedbackState());
         synchronized (state) {
-            if (now - state.lastAt < cooldown) return;
+            if (now - state.lastAt < cooldown) {
+                return;
+            }
             state.lastAt = now;
         }
-        int level = getLevel(player, skill);
-        double experience = getExperience(player, skill);
-        double required = getRequiredExperience(player, skill);
-        double percent = required <= 0.0D ? 100.0D
-                : Math.min(100.0D, experience / required * 100.0D);
-        String[] placeholders = {
-                "skill", skill.name(player), "level", String.valueOf(level),
-                "gained", NUMBER.format(gained), "experience", NUMBER.format(experience),
-                "required_experience", NUMBER.format(required),
-                "remaining_experience", NUMBER.format(Math.max(0.0D, required - experience)),
-                "progress", NUMBER.format(percent),
-                "progress_bar", progressBar(percent, 20)
-        };
+        double percent = getProgressPercent(player, skill);
+        String[] progressPlaceholders = getProgressPlaceholders(player, skill);
+        String[] placeholders = new String[progressPlaceholders.length + 2];
+        System.arraycopy(progressPlaceholders, 0, placeholders, 0, progressPlaceholders.length);
+        placeholders[progressPlaceholders.length] = "gained";
+        placeholders[progressPlaceholders.length + 1] = MathUtil.formatNumber(gained);
         String display = ConfigManager.configManager.getString(
                         "skills.feedback.experience.display", "BOSS_BAR")
                 .trim().toUpperCase(Locale.ROOT).replace('-', '_');
@@ -452,16 +485,12 @@ public final class SkillManager extends AbstractManager {
 
     private void playConfiguredSound(Player player, String path) {
         String sound = ConfigManager.configManager.getString(path + ".name", "");
-        if (sound.isBlank()) return;
+        if (sound.isBlank()) {
+            return;
+        }
         float volume = (float) Math.max(0.0D, ConfigManager.configManager.getDouble(path + ".volume", 1.0D));
         float pitch = (float) Math.max(0.0D, ConfigManager.configManager.getDouble(path + ".pitch", 1.0D));
         player.playSound(player.getLocation(), sound, volume, pitch);
-    }
-
-    private static String progressBar(double percent, int length) {
-        int safeLength = Math.max(1, length);
-        int filled = (int) Math.round(Math.max(0.0D, Math.min(100.0D, percent)) / 100.0D * safeLength);
-        return "&a" + "■".repeat(filled) + "&8" + "■".repeat(safeLength - filled);
     }
 
     private double pressureMultiplier(Player player, SkillSource source, String key, long now) {
@@ -556,7 +585,9 @@ public final class SkillManager extends AbstractManager {
     }
 
     public void playerQuit(UUID playerId) {
-        if (playerId == null) return;
+        if (playerId == null) {
+            return;
+        }
         rateWindows.remove(playerId);
         pressureStates.remove(playerId);
         feedbackStates.remove(playerId);

@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -128,8 +127,9 @@ public class LanguageManager extends AbstractManager {
         File file = new File(EnchantmentReform.instance.getDataFolder(), "languages/" + lang + ".yml");
         try {
             config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Failed to save language file "
+                    + file.getName() + ": " + exception.getMessage());
         }
     }
 

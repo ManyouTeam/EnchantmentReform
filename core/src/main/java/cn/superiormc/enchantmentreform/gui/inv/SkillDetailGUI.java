@@ -15,7 +15,6 @@ import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.objects.skills.SkillSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
-import cn.superiormc.enchantmentreform.utils.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -25,16 +24,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class SkillDetailGUI extends InvGUI implements GUIPageController {
-
-    private static final DecimalFormat NUMBER = new DecimalFormat("0.##");
 
     private final SkillDefinition skill;
 
@@ -82,7 +79,9 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
     @Override
     protected void constructGUI() {
         List<Integer> entrySlots = currentEntrySlots();
-        if (entrySlots.isEmpty()) return;
+        if (entrySlots.isEmpty()) {
+            return;
+        }
         int entryCount = view == View.SOURCES ? skill.sources().size() : skill.maximumLevel();
         maximumPage = Math.max(0, (entryCount - 1) / entrySlots.size());
         if (view == View.SOURCES && !attributeSlots.isEmpty()) {
@@ -169,7 +168,9 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
         parseAttributeSlots(config.getStringList("layout"),
                 config.getString("attribute-symbol", "A"));
         List<String> rewardLayout = config.getStringList("reward-layout");
-        if (rewardLayout.isEmpty()) rewardLayout = config.getStringList("layout");
+        if (rewardLayout.isEmpty()) {
+            rewardLayout = config.getStringList("layout");
+        }
         parseLayout(rewardLayout, config.getString("reward-symbol", "R"),
                 rewardSlots, rewardStaticSlots, true);
     }
@@ -197,11 +198,14 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
             for (int column = 0; column < 9; column++) {
                 String value = column < row.length() ? String.valueOf(row.charAt(column)) : " ";
                 int slot = rowIndex * 9 + column;
-                if (value.equals(symbol)) rowEntries.add(slot);
-                else if (!value.isBlank() && !value.equals(".")) staticSlots.put(slot, value);
+                if (value.equals(symbol)) {
+                    rowEntries.add(slot);
+                } else if (!value.isBlank() && !value.equals(".")) {
+                    staticSlots.put(slot, value);
+                }
             }
             if (snake && rowEntries.size() > 1 && rewardBand++ % 2 == 1) {
-                java.util.Collections.reverse(rowEntries);
+                Collections.reverse(rowEntries);
             }
             entrySlots.addAll(rowEntries);
         }
@@ -217,9 +221,13 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
 
     private void renderButtons(String[] args) {
         for (Map.Entry<Integer, String> entry : currentStaticSlots().entrySet()) {
-            if (entry.getKey() >= inv.getSize()) continue;
+            if (entry.getKey() >= inv.getSize()) {
+                continue;
+            }
             ConfigurationSection button = config.getConfigurationSection("buttons." + entry.getValue());
-            if (button == null) continue;
+            if (button == null) {
+                continue;
+            }
             boolean hidden = button.getBoolean("hide-on-first-page", false) && page == 0
                     || button.getBoolean("hide-on-last-page", false) && page == maximumPage;
             ConfigurationSection shown = hidden ? button.getConfigurationSection("hidden-item") : button;
@@ -227,7 +235,9 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
                     && view == View.REWARDS && button.getConfigurationSection("reward-view-item") != null) {
                 shown = button.getConfigurationSection("reward-view-item");
             }
-            if (shown != null) setItem(entry.getKey(), buildItem(shown, args));
+            if (shown != null) {
+                setItem(entry.getKey(), buildItem(shown, args));
+            }
             if (!hidden && !entry.getValue().equals(config.getString("view-symbol", "V"))) {
                 actions.put(entry.getKey(), GUIActionManager.INSTANCE.createButtonActions(button));
             }
@@ -332,7 +342,9 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
                 : rewardLevel == currentLevel + 1 ? "reward-item-next" : "reward-item";
         ConfigurationSection template = config.getConfigurationSection("reward-item");
         ConfigurationSection itemStyle = config.getConfigurationSection(itemKey);
-        if (itemStyle == null) itemStyle = template;
+        if (itemStyle == null) {
+            itemStyle = template;
+        }
         ItemStack item = itemStyle == null ? new ItemStack(Material.CHEST)
                 : BuildItem.buildItemStack(player, itemStyle, args);
         ItemMeta meta = item.getItemMeta();
@@ -464,19 +476,9 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
 
     private String[] skillArgs() {
         SkillManager manager = SkillManager.skillManager;
-        int level = manager.getLevel(player, skill);
-        double xp = manager.getExperience(player, skill);
-        double required = manager.getRequiredExperience(player, skill);
-        double percent = required <= 0.0D ? 100.0D : Math.min(100.0D, xp / required * 100.0D);
-        return new String[]{"id", skill.id(), "name", skill.name(player),
-                "description", skill.description(player), "level", String.valueOf(level),
-                "maximum_level", String.valueOf(skill.maximumLevel()), "experience", NUMBER.format(xp),
-                "required_experience", NUMBER.format(required), "remaining_experience",
-                NUMBER.format(Math.max(0.0D, required - xp)), "progress", NUMBER.format(percent),
-                "progress_bar", progressBar(percent, 20),
-                "source_count", String.valueOf(skill.sources().size()),
+        return merge(manager.getProgressPlaceholders(player, skill), new String[]{
                 "view", view.name().toLowerCase(),
-                "page", String.valueOf(page + 1), "pages", String.valueOf(maximumPage + 1)};
+                "page", String.valueOf(page + 1), "pages", String.valueOf(maximumPage + 1)});
     }
 
     private ItemStack buildItem(ConfigurationSection section, String[] args) {
@@ -490,27 +492,4 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
         return item;
     }
 
-    private List<String> wrapLore(List<String> lore) {
-        List<String> result = new ArrayList<>();
-        for (String configured : lore) {
-            for (String line : configured.split("\\\\n", -1)) {
-                result.addAll(TextUtil.wrapKeepColor(line,
-                        ConfigManager.configManager.getInt("enchantment-description.wrap-length", 30)));
-            }
-        }
-        return result;
-    }
-
-    private static String[] merge(String[] first, String[] second) {
-        String[] merged = new String[first.length + second.length];
-        System.arraycopy(first, 0, merged, 0, first.length);
-        System.arraycopy(second, 0, merged, first.length, second.length);
-        return merged;
-    }
-
-    private static String progressBar(double percent, int length) {
-        int filled = (int) Math.round(Math.max(0.0D, Math.min(100.0D, percent))
-                / 100.0D * length);
-        return "&a" + "|".repeat(filled) + "&8" + "|".repeat(length - filled);
-    }
 }
