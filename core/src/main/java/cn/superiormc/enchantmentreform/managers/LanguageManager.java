@@ -10,14 +10,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class LanguageManager extends AbstractManager {
 
     public static LanguageManager languageManager;
-
-    private static final String[] BUNDLED_LANGUAGES = {"en_US", "zh_CN"};
 
     private String serverLanguage = null;
 
@@ -32,16 +29,16 @@ public class LanguageManager extends AbstractManager {
 
     public String getPlayerLanguage(Player player) {
         if (player == null) {
-            return normalizeLanguage(serverLanguage);
+            return serverLanguage.toLowerCase();
         }
         try {
             if (ConfigManager.configManager.getBoolean("config-files.per-player-language")) {
-                return resolvePlayerLanguage(player.getLocale());
+                return player.getLocale().toLowerCase();
             } else {
-                return normalizeLanguage(serverLanguage);
+                return serverLanguage.toLowerCase();
             }
         } catch (NoSuchMethodError | NoClassDefFoundError e) {
-            return normalizeLanguage(serverLanguage);
+            return serverLanguage.toLowerCase();
         }
     }
 
@@ -51,7 +48,7 @@ public class LanguageManager extends AbstractManager {
             langFolder.mkdirs();
         }
 
-        serverLanguage = normalizeLanguage(ConfigManager.configManager.getString("config-files.language", "en_US"));
+        serverLanguage = ConfigManager.configManager.getString("config-files.language", "en-US");
         tempMessageFile = loadInternalLanguage(serverLanguage);
         if (tempMessageFile == null) {
             tempMessageFile = new YamlConfiguration();
@@ -71,7 +68,7 @@ public class LanguageManager extends AbstractManager {
                     // Keep administrator overrides while exposing newly bundled keys after upgrades.
                     config.setDefaults(bundledDefaults);
                 }
-                languageFiles.put(normalizeLanguage(lang), config);
+                languageFiles.put(lang.toLowerCase(), config);
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded language: " + lang + ".yml!");
             }
         }
@@ -79,7 +76,7 @@ public class LanguageManager extends AbstractManager {
         if (!languageFiles.containsKey("en_us")) {
             languageFiles.put("en_us", loadInternalLanguage("en_US"));
         }
-        if (!languageFiles.containsKey(normalizeLanguage(serverLanguage))) {
+        if (!languageFiles.containsKey(serverLanguage.toLowerCase())) {
             ErrorManager.errorManager.sendErrorMessage("§cError: Can not found language file: " + serverLanguage + ".yml at languages folder!");
             serverLanguage = "en_US";
         }
@@ -90,7 +87,7 @@ public class LanguageManager extends AbstractManager {
         String lang = getPlayerLanguage(player);
 
         YamlConfiguration config = languageFiles.getOrDefault(lang,
-                languageFiles.getOrDefault(normalizeLanguage(serverLanguage), tempMessageFile));
+                languageFiles.getOrDefault(serverLanguage.toLowerCase(), tempMessageFile));
         String text = config.getString(key);
 
         if (text == null) {
@@ -191,13 +188,6 @@ public class LanguageManager extends AbstractManager {
         }
 
         String resourceName = language.replace('-', '_');
-        String normalizedLanguage = normalizeLanguage(language);
-        for (String bundledLanguage : BUNDLED_LANGUAGES) {
-            if (normalizeLanguage(bundledLanguage).equals(normalizedLanguage)) {
-                resourceName = bundledLanguage;
-                break;
-            }
-        }
         return InitManager.loadBundledConfiguration("languages/" + resourceName + ".yml");
     }
 
@@ -212,22 +202,4 @@ public class LanguageManager extends AbstractManager {
         }
     }
 
-    private String normalizeLanguage(String language) {
-        return language == null ? "en_us" : language.replace('-', '_').toLowerCase(Locale.ROOT);
-    }
-
-    private String resolvePlayerLanguage(String locale) {
-        String normalized = normalizeLanguage(locale);
-        if (languageFiles.containsKey(normalized)) {
-            return normalized;
-        }
-        int separator = normalized.indexOf('_');
-        String family = separator < 0 ? normalized : normalized.substring(0, separator);
-        for (String language : languageFiles.keySet()) {
-            if (language.equals(family) || language.startsWith(family + "_")) {
-                return language;
-            }
-        }
-        return normalizeLanguage(serverLanguage);
-    }
 }

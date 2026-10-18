@@ -191,11 +191,14 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
 
     private void parseLayout(List<String> layout, String symbol, List<Integer> entrySlots,
                              Map<Integer, String> staticSlots, boolean snake) {
+        boolean vertical = snake && config.getBoolean("reward-vertical", false);
         int rewardBand = 0;
-        for (int rowIndex = 0; rowIndex < layout.size(); rowIndex++) {
-            String row = layout.get(rowIndex);
+        for (int band = 0; band < (vertical ? 9 : layout.size()); band++) {
             List<Integer> rowEntries = new ArrayList<>();
-            for (int column = 0; column < 9; column++) {
+            for (int offset = 0; offset < (vertical ? layout.size() : 9); offset++) {
+                int rowIndex = vertical ? offset : band;
+                int column = vertical ? band : offset;
+                String row = layout.get(rowIndex);
                 String value = column < row.length() ? String.valueOf(row.charAt(column)) : " ";
                 int slot = rowIndex * 9 + column;
                 if (value.equals(symbol)) {

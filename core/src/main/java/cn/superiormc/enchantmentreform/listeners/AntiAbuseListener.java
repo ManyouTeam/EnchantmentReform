@@ -5,6 +5,7 @@ import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -87,6 +89,13 @@ public final class AntiAbuseListener implements Listener {
     }
 
     @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        if (SkillManager.skillManager != null) {
+            SkillManager.skillManager.playerJoin(event.getPlayer());
+        }
+    }
+
+    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         manager().playerQuit(event.getPlayer().getUniqueId());
         if (SkillManager.skillManager != null) {
@@ -94,10 +103,12 @@ public final class AntiAbuseListener implements Listener {
         }
     }
 
-    private void move(List<Block> blocks, org.bukkit.block.BlockFace direction) {
+    private void move(List<Block> blocks, BlockFace direction) {
         List<Block> tracked = new ArrayList<>();
         for (Block block : blocks) {
-            if (manager().placedBlocks().isPlayerPlaced(block)) tracked.add(block);
+            if (manager().placedBlocks().isPlayerPlaced(block)) {
+                tracked.add(block);
+            }
         }
         tracked.forEach(manager().placedBlocks()::remove);
         tracked.forEach(block -> manager().placedBlocks().markPlayerPlaced(block.getRelative(direction)));

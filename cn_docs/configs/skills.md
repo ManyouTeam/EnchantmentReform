@@ -83,6 +83,31 @@ sources:
 
 `name`、`description`、`unit` 和 `icon` 用于该技能的独立来源 GUI。`trigger` 可写内置 ID（如 `block_break`、`melee_attack`、`attack`、`damage_by_entity`、`fish`、`enchant_item`、`consume`、`move`），也可写已注册触发器的完整命名空间 ID。`xp` 支持触发上下文数值占位符以及 `{amount}`；例如伤害触发可使用 `{original_damage}`，附魔可使用 `{original_experience}`。
 
+### 移动与重复动作累计结算
+
+默认敏捷来源调整为：每疾跑 10 格获得 3.5 XP，每游泳 10 格获得 2.5 XP，每有效跳跃 10 次获得 5 XP。以上为应用经验倍率、速率上限及压力衰减前的数值。累计满一批时才发放经验并发送一次经验提示。
+
+```yaml
+sources:
+  swimming:
+    trigger: move
+    movement-statistic: SWIM_ONE_CM
+    distance-per-reward: 10
+    xp: '2.5 * {amount}'
+    display-xp: 2.5
+    unit: '&7/10 格'
+  jumping:
+    trigger: jump
+    trigger-count-per-reward: 10
+    xp: '5 * {amount}'
+    display-xp: 5
+    unit: '&7/10 次跳跃'
+```
+
+`movement-statistic` 配合 `trigger: move` 使用，读取 `SWIM_ONE_CM`、`SPRINT_ONE_CM` 等原版距离统计。`distance-per-reward` 单位为格，默认 10，精度为厘米；只有对应统计的增量会计入，传送距离不会计入。达到阈值后，在下一次移动触发时结算完整批次，`{amount}` 表示本次批次数量。剩余距离在本次在线期间继续保留，切换活动不会清空。玩家加入或重载技能时初始化统计基线，不会补发历史距离；退出或重载会清空未结算进度。
+
+`trigger-count-per-reward` 在通过条件和共用反滥用检查后累计自动触发次数，满一批时 `{amount}` 为 1，`xp` 为整批奖励。它不能与 `movement-statistic` 同时使用。未配置这两个选项的来源沿用原有结算方式。压力阈值按完成结算的次数计算。已有服务器需要从新版 `skills/agility.yml` 同步 `sprinting`、`swimming`、`jumping` 三个来源段，单独替换 JAR 不会覆盖已有数值。
+
 ## 经验倍率
 
 权限倍率在 `config.yml` 中配置。使用 `*` 或 `all` 表示全部技能，也可以列出一个或多个技能 ID。玩家同时匹配多个配置时，所有倍率相乘。
@@ -123,7 +148,7 @@ skills:
 - `player-victim-cooldown-seconds`：仅玩家目标的重复触发冷却。
 - `maximum-uses-per-minute`：每分钟最大有效触发次数。
 
-技能来源默认开启前三项安全检查，并默认对同一玩家受害者设置 300 秒冷却。`maximum-xp-per-minute` 与 `pressure` 是技能经验专用：前者限制每分钟经验，后者在连续重复同一来源超过阈值后降低经验，切换活动或等待重置时间可恢复。
+技能来源默认开启前三项安全检查，并默认对实际伤害事件中的玩家受害者或其他玩家所指向的受害者设置 300 秒冷却。普通的自指 `target` 不会触发该默认冷却。`maximum-xp-per-minute` 与 `pressure` 是技能经验专用：前者限制每分钟经验，后者在连续重复同一来源超过阈值后降低经验，切换活动或等待重置时间可恢复。
 
 附魔、物品或属性中的示例：
 

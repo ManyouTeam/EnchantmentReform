@@ -203,10 +203,12 @@ override-lang:
   skill-enchanting-name: '&5Enchanting'
   skill-enchanting-description: '&7Enchant equipment, tools, and books at an enchanting table.'
   skill-source-unit-block: '&7/block'
+  skill-source-unit-10-blocks: '&7/10 blocks'
   skill-source-unit-harvest: '&7/harvest'
   skill-source-unit-catch: '&7/catch'
   skill-source-unit-damage: '&7/damage'
   skill-source-unit-jump: '&7/jump'
+  skill-source-unit-10-jumps: '&7/10 jumps'
   skill-source-unit-use: '&7/use'
   skill-source-unit-enchant-level: '&7/enchanting level spent'
   skill-source-unit-dodge: '&7/dodge'
@@ -308,11 +310,11 @@ override-lang:
   skill-source-defense-player: '&cWithstand Players'
   skill-source-defense-player-desc: '&7Take damage dealt by another player.'
   skill-source-agility-sprint: '&fSprinting'
-  skill-source-agility-sprint-desc: '&7Gain XP while sprinting across land.'
+  skill-source-agility-sprint-desc: '&7Gain XP for every 10 blocks sprinted; leftover distance carries over.'
   skill-source-agility-swim: '&3Swimming'
-  skill-source-agility-swim-desc: '&7Gain XP while moving in the swimming pose.'
+  skill-source-agility-swim-desc: '&7Gain XP for every 10 blocks swum; leftover distance carries over.'
   skill-source-agility-jump: '&aJumping'
-  skill-source-agility-jump-desc: '&7Normal jumps; this source is available on Paper only.'
+  skill-source-agility-jump-desc: '&7Gain XP for every 10 valid jumps; available on Paper only.'
   skill-source-agility-fall: '&cSurvived Fall'
   skill-source-agility-fall-desc: '&7Take fall damage after dropping from a height.'
   skill-source-alchemy-potion: '&dDrink Potion'
@@ -344,7 +346,7 @@ override-lang:
   custom-attribute-dodge-name: "&bDodge"
   custom-attribute-dodge-description: '&8With the matching enchantment, has a &a{melee_dodge_chance}% &8melee dodge chance and a &a{projectile_dodge_chance}% &8projectile dodge chance.'
   custom-attribute-endurance-name: "&bEndurance"
-  custom-attribute-endurance-description: '&8Reduces exhaustion from sprinting and sprint-jumping by &a{exhaustion_reduction}&8.'
+  custom-attribute-endurance-description: '&8Increases hunger restored by eating by &a{increase_percentage}&8.'
   custom-attribute-absorption-name: "&eAbsorption"
   custom-attribute-absorption-description: '&8Can hold up to &a{level} &8absorption layers. Each layer grants &e0.5 absorption hearts&8, for &e{absorption_hearts} hearts &8at full capacity. A source such as an enchantment must generate the layers.'
   enchantment-cleave-name: "Cleave"

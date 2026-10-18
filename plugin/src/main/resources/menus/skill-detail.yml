@@ -17,6 +17,9 @@ layout:
   - 'FSSSSSSSF'
   - 'FSSSSSSSF'
   - 'BFFVPIFNC'
+
+# Use column-wise snake order instead of row-wise snake order for rewards.
+reward-vertical: false
 reward-layout:
   - 'FRRRRRRRF'
   - 'FFFFFFFRF'

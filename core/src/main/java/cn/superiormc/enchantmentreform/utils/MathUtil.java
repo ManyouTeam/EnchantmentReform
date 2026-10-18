@@ -7,6 +7,7 @@ import redempt.crunch.Crunch;
 import redempt.crunch.functional.ExpressionEnv;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.OptionalDouble;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -37,7 +38,8 @@ public class MathUtil {
         if (!Double.isFinite(value)) {
             return String.valueOf(value);
         }
-        return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
+        return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP)
+                .stripTrailingZeros().toPlainString();
     }
 
     private static double calculate(String mathStr) {

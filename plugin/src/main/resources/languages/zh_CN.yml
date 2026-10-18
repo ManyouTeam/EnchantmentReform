@@ -203,10 +203,12 @@ override-lang:
   skill-enchanting-name: '&5附魔'
   skill-enchanting-description: '&7在附魔台为装备、工具与书籍附魔。'
   skill-source-unit-block: '&7/方块'
+  skill-source-unit-10-blocks: '&7/10 格'
   skill-source-unit-harvest: '&7/次收获'
   skill-source-unit-catch: '&7/次钓获'
   skill-source-unit-damage: '&7/点伤害'
   skill-source-unit-jump: '&7/次跳跃'
+  skill-source-unit-10-jumps: '&7/10 次跳跃'
   skill-source-unit-use: '&7/次使用'
   skill-source-unit-enchant-level: '&7/消耗的附魔等级'
   skill-source-unit-dodge: '&7/次闪避'
@@ -308,11 +310,11 @@ override-lang:
   skill-source-defense-player: '&c抵御玩家'
   skill-source-defense-player-desc: '&7承受其他玩家造成的伤害。'
   skill-source-agility-sprint: '&f冲刺移动'
-  skill-source-agility-sprint-desc: '&7在陆地冲刺移动时获得经验。'
+  skill-source-agility-sprint-desc: '&7累计疾跑每满 10 格获得一次经验，剩余距离继续累计。'
   skill-source-agility-swim: '&3游泳移动'
-  skill-source-agility-swim-desc: '&7以游泳姿态移动时获得经验。'
+  skill-source-agility-swim-desc: '&7累计游泳每满 10 格获得一次经验，剩余距离继续累计。'
   skill-source-agility-jump: '&a跳跃'
-  skill-source-agility-jump-desc: '&7正常跳跃；该来源仅在 Paper 服务端启用。'
+  skill-source-agility-jump-desc: '&7累计有效跳跃每满 10 次获得一次经验；仅限 Paper。'
   skill-source-agility-fall: '&c承受摔落'
   skill-source-agility-fall-desc: '&7从高处落下并承受摔落伤害。'
   skill-source-alchemy-potion: '&d饮用药水'
@@ -344,7 +346,7 @@ override-lang:
   custom-attribute-dodge-name: "&b闪避"
   custom-attribute-dodge-description: '&8拥有对应附魔时，近战闪避概率为 &a{melee_dodge_chance}%&8，投射物闪避概率为 &a{projectile_dodge_chance}%&8。'
   custom-attribute-endurance-name: "&b耐力"
-  custom-attribute-endurance-description: '&8减少疾跑与疾跑跳跃产生的 &a{exhaustion_reduction} &8疲劳度。'
+  custom-attribute-endurance-description: '&8进食时回复的饥饿值增加 &a{increase_percentage}&8。'
   custom-attribute-absorption-name: "&e吸收"
   custom-attribute-absorption-description: '&8最多容纳 &a{level} &8层伤害吸收；每层提供 &e0.5 颗伤害吸收心&8，满层共计 &e{absorption_hearts} 颗&8。需要附魔等来源触发后才会获得层数。'
   enchantment-cleave-name: "横扫"

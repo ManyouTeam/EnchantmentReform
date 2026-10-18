@@ -75,6 +75,31 @@ sources:
 
 `name`, `description`, `unit`, and `icon` populate the per-skill source GUI. `trigger` accepts built-ins such as `block_break`, `melee_attack`, `attack`, `damage_by_entity`, `fish`, `enchant_item`, `consume`, and `move`, or a fully namespaced registered trigger. `xp` supports numeric trigger-context placeholders and `{amount}`, including `{original_damage}` and `{original_experience}`.
 
+### Batched movement and repeated actions
+
+The default Agility sources award 3.5 XP per 10 blocks sprinted, 2.5 XP per 10 blocks swum, and 5 XP per 10 valid jumps, before multipliers, rate limits, and pressure reductions. XP and its feedback are emitted together when a batch completes.
+
+```yaml
+sources:
+  swimming:
+    trigger: move
+    movement-statistic: SWIM_ONE_CM
+    distance-per-reward: 10
+    xp: '2.5 * {amount}'
+    display-xp: 2.5
+    unit: '&7/10 blocks'
+  jumping:
+    trigger: jump
+    trigger-count-per-reward: 10
+    xp: '5 * {amount}'
+    display-xp: 5
+    unit: '&7/10 jumps'
+```
+
+`movement-statistic` uses a vanilla distance statistic such as `SWIM_ONE_CM` or `SPRINT_ONE_CM` with `trigger: move`. `distance-per-reward` is measured in blocks (default 10, rounded to centimeters). Only increases in that statistic count; teleport distance does not. The next move trigger settles complete batches and passes their count as `{amount}`. Remaining distance carries over between activities in the same session. Each player's baseline is initialized on join or skill reload, so historical statistics are not rewarded; unclaimed progress is reset on logout or reload.
+
+`trigger-count-per-reward` batches valid automatic triggers after their conditions and shared anti-abuse checks. `{amount}` is 1 when the configured count completes; `xp` is the reward for the whole batch. It cannot be combined with `movement-statistic`. Sources without either option retain their original behavior. Pressure thresholds count completed payouts. Existing installations should copy the updated `sprinting`, `swimming`, and `jumping` source sections from the bundled `skills/agility.yml`; replacing the JAR alone does not replace existing values.
+
 ## Experience multipliers
 
 Permission multipliers are configured in `config.yml`. Use `*` or `all` for every skill, or list one or more skill IDs. Every matching permission multiplier is multiplied together.
@@ -114,7 +139,7 @@ The following `anti-abuse` options work both on skill sources and inside any enc
 - `target-cooldown-seconds` and `player-victim-cooldown-seconds`
 - `maximum-uses-per-minute`
 
-Skill sources enable the first three safe defaults and use a 300-second same-player-victim cooldown by default. `maximum-xp-per-minute` and `pressure` are XP-only controls for caps and diminishing returns.
+Skill sources enable the first three safe defaults and use a 300-second cooldown for player victims in actual damage events or players targeted by another player. A normal self-referencing `target` does not activate this default cooldown. `maximum-xp-per-minute` and `pressure` are XP-only controls for caps and diminishing returns.
 
 Use `/enchantmentreform menu skill-info` for the overview, then click a skill for its progress. Every skill-detail GUI shows every attribute with `skill-menu.show` enabled. Clicking one opens `menus/attribute-detail.yml`, which separates current/base values, modifiers, requirements, and a clearly labelled upgrade control. The skill GUI can also switch between paginated XP sources and an S-shaped level-reward path. Reward lore uses `{reward_lines}` for the ordered, display-named list. Use `/enchantmentreform menu attribute-allocation` for global allocation; each attribute's `allocation` section controls visibility, per-level price, and common/per-level conditions.
 

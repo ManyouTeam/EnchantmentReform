@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Map;
@@ -92,8 +93,11 @@ public final class AntiAbuseManager extends AbstractManager {
             }
         }
 
+        boolean playerVictim = target instanceof Player
+                && (!target.getUniqueId().equals(playerId)
+                || context.event() instanceof EntityDamageEvent);
         long targetSeconds = Math.max(0L, number(anti, "target-cooldown-seconds",
-                target instanceof Player
+                playerVictim
                         ? number(anti, "player-victim-cooldown-seconds", safeDefaults ? 300L : 0L)
                         : 0L));
         String targetKey = null;
@@ -126,7 +130,9 @@ public final class AntiAbuseManager extends AbstractManager {
     }
 
     public void playerQuit(UUID playerId) {
-        if (playerId == null) return;
+        if (playerId == null) {
+            return;
+        }
         cooldowns.remove(playerId);
         useWindows.remove(playerId);
         String prefix = playerId + "/";

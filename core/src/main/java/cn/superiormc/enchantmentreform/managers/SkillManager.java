@@ -61,13 +61,16 @@ public final class SkillManager extends AbstractManager {
     public static SkillManager skillManager;
 
     private final Map<String, SkillDefinition> skills = new LinkedHashMap<>();
+
     private final Map<UUID, Map<String, RateWindow>> rateWindows = new ConcurrentHashMap<>();
+
     private final Map<UUID, PressureState> pressureStates = new ConcurrentHashMap<>();
+
     private final Map<UUID, FeedbackState> feedbackStates = new ConcurrentHashMap<>();
-    private final NamespacedKey attributePointsKey = new NamespacedKey(
-            EnchantmentReform.instance, "skill_attribute_points");
-    private final NamespacedKey allExperienceMultiplierKey = new NamespacedKey(
-            EnchantmentReform.instance, "skill_xp_multiplier/all");
+
+    private final NamespacedKey attributePointsKey = new NamespacedKey(EnchantmentReform.instance, "skill_attribute_points");
+
+    private final NamespacedKey allExperienceMultiplierKey = new NamespacedKey(EnchantmentReform.instance, "skill_xp_multiplier/all");
 
     public SkillManager() {
         skillManager = this;
@@ -81,8 +84,7 @@ public final class SkillManager extends AbstractManager {
         }
         File directory = new File(EnchantmentReform.instance.getDataFolder(), "skills");
         if (!directory.exists() && !directory.mkdirs()) {
-            ErrorManager.errorManager.sendErrorMessage(
-                    "§cError: Could not create skill directory: " + directory);
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create skill directory: " + directory);
             return;
         }
         File[] files = directory.listFiles((ignored, name) ->
@@ -102,12 +104,13 @@ public final class SkillManager extends AbstractManager {
                 if (skills.putIfAbsent(id, skill) != null) {
                     throw new IllegalArgumentException("Duplicate skill id: " + id);
                 }
-                TextUtil.sendMessage(null, TextUtil.pluginPrefix()
-                        + " §fLoaded skill: " + id + ".yml!");
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded skill: " + id + ".yml!");
             } catch (Throwable throwable) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load skill "
-                        + file.getName() + ": " + throwable.getMessage());
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load skill " + file.getName() + ": " + throwable.getMessage());
             }
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            playerJoin(player);
         }
     }
 
@@ -300,13 +303,23 @@ public final class SkillManager extends AbstractManager {
                 }
                 PowerContext context = new PowerContext(null, getLevel(player, skill), trigger,
                         data, data.triggerItem(), data.triggerItemSlot(), result);
-                if (!source.matches(context) || AntiAbuseManager.antiAbuseManager == null
+                boolean matches = source.matches(context);
+                double amount = source.tracksMovement()
+                        ? source.movementAmount(player, matches) : sourceAmount(data);
+                if (!matches || source.tracksMovement() && amount <= 0.0D
+                        || AntiAbuseManager.antiAbuseManager == null
                         || !AntiAbuseManager.antiAbuseManager.allows(
                         source.getSection("anti-abuse"), context,
                         "skill/" + skill.id() + "/" + source.id(), true)) {
                     continue;
                 }
-                grantSourceExperience(player, skill, source, context, sourceAmount(data));
+                if (source.batchesTriggers()) {
+                    amount = source.batchAmount(player, amount);
+                    if (amount <= 0.0D) {
+                        continue;
+                    }
+                }
+                grantSourceExperience(player, skill, source, context, amount);
             }
         }
     }
@@ -584,6 +597,14 @@ public final class SkillManager extends AbstractManager {
         return left * right;
     }
 
+    public void playerJoin(Player player) {
+        for (SkillDefinition skill : skills.values()) {
+            for (SkillSource source : skill.sources()) {
+                source.trackMovement(player);
+            }
+        }
+    }
+
     public void playerQuit(UUID playerId) {
         if (playerId == null) {
             return;
@@ -591,6 +612,11 @@ public final class SkillManager extends AbstractManager {
         rateWindows.remove(playerId);
         pressureStates.remove(playerId);
         feedbackStates.remove(playerId);
+        for (SkillDefinition skill : skills.values()) {
+            for (SkillSource source : skill.sources()) {
+                source.clearProgress(playerId);
+            }
+        }
     }
 
     @Override
@@ -598,6 +624,7 @@ public final class SkillManager extends AbstractManager {
         rateWindows.clear();
         pressureStates.clear();
         feedbackStates.clear();
+        skills.clear();
         skillManager = null;
     }
 }
