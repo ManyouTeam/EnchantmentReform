@@ -1,4 +1,5 @@
 error:
+  menu-console-usage: '&#98FB98[EnchantmentReform] &c控制台用法：er menu [菜单ID] <玩家> [技能ID|属性ID] [-b]'
   player-not-found: "&#98FB98[EnchantmentReform] &c找不到玩家 {player}!"
   args: "&#98FB98[EnchantmentReform] &c命令用法错误，请使用/enchantmentreform help获取帮助!"
   in-game: "&#98FB98[EnchantmentReform] &c你必须在游戏中使用该命令!"
@@ -33,9 +34,9 @@ command-tab:
   type-item-id: "[物品 ID]"
 dupe-removed: "&#98FB98[EnchantmentReform] &f已从您的背包中移除一个非法物品!"
 help:
-  main: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu <菜单ID> &7- 打开指定菜单。"
-  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu <菜单ID> &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。"
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu <菜单ID> <玩家名> [技能ID|属性ID] &7- 为在线玩家打开菜单。"
+  main: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。"
+  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。"
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。"
 override-lang:
   menu-back-main: '&b返回主菜单'
   attribute-current-effect: '&f当前效果'

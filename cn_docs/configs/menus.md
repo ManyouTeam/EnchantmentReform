@@ -1,4 +1,4 @@
-# 自由菜单配置
+# 🛠️ 自由菜单配置
 
 本页说明 `main.yml`、`skill-info.yml`、`attribute-info.yml`、`attribute-allocation.yml` 及自行新增菜单使用的自由菜单格式。菜单类型和打开方式见[菜单类型](../menus/README.md)；各内置选项及每个占位符的含义见[内置菜单选项](../menus/builtin-options.md)；全部动作类型与参数见[菜单动作](../menus/actions.md)。
 
@@ -56,6 +56,36 @@ contents:
 
 内容类型为 `skills` 或 `attributes`。属性模式支持 `all`、`information`、`allocation` 和 `skill`；`skill` 模式显示所有启用了 `skill-menu.show` 的属性，不再按技能 ID 过滤。两种内容均支持 `include` 与 `exclude` ID 列表。多个内容区共用当前页码，页数由最大的内容集合决定。
 
+## 技能与属性图标
+
+两种内容区均可使用对应配置文件顶层的 `icon` 作为基础物品，图标使用通用物品配置格式：
+
+| 内容类型 | 菜单内容区开关 | 图标位置 | 未配置图标时的默认材质 |
+| --- | --- | --- | --- |
+| `skills` | `use-skill-icon` | `skills/*.yml` 的顶层 `icon`，见[技能配置](skills.md#基础配置)。 | `EXPERIENCE_BOTTLE` |
+| `attributes` | `use-attribute-icon` | `attributes/*.yml` 的顶层 `icon`，见[属性配置](custom-attributes.md#配置项)。 | `NETHER_STAR` |
+
+两个开关均默认为 `true`，设为 `false` 时忽略对应图标。属性图标支持全部属性筛选模式，包括 `allocation`。菜单的 `item.material` 优先于图标；要保留每个技能或属性自己的图标，请省略 `item.material`，仍可使用 `item.name` 和 `item.lore` 统一显示文本。例如：
+
+```yaml
+contents:
+  S:
+    type: skills
+    use-skill-icon: true
+    item:
+      name: '&a{name}'
+      lore:
+        - '&7{description}'
+  A:
+    type: attributes
+    mode: allocation
+    use-attribute-icon: true
+    item:
+      name: '&a{name}'
+      lore:
+        - '&7{current_description}'
+```
+
 通用、技能与属性内容区的占位符逐项解释见[内置菜单选项与占位符](../menus/builtin-options.md)。
 
 ## 静态物品与动作
@@ -83,4 +113,4 @@ items:
 
 静态物品和内容物品都可以使用 `actions` 响应所有点击，或使用 `click-actions.<点击类型>` 区分 Bukkit 点击类型。
 
-自由菜单支持的九种动作、各自参数及适用的按钮类型见[菜单动作](../menus/actions.md)。
+所有菜单共用的动作类型、参数和上下文限制见[菜单动作](../menus/actions.md)。

@@ -1,4 +1,4 @@
-# 菜单类型
+# 📖 菜单类型
 
 插件内置菜单均位于 `plugins/EnchantmentReform/menus/`。除 `settings.yml` 外，YAML 文件名就是菜单 ID，可使用以下命令打开：
 
@@ -10,7 +10,7 @@
 
 菜单中的名称、描述、材质、布局和按钮均可修改。编辑后执行 `/enchantmentreform reload` 即可重载。
 
-查阅顺序：[内置菜单选项与占位符](builtin-options.md)说明每个 YAML 选项和动态文本的含义；[自由菜单配置](../configs/menus.md)给出可复用的布局示例；[菜单动作](actions.md)列出两套动作格式、每种动作的参数和使用范围。
+查阅顺序：[内置菜单选项与占位符](builtin-options.md)说明每个 YAML 选项和动态文本的含义；[自由菜单配置](../configs/menus.md)给出可复用的布局示例；[菜单动作](actions.md)说明所有菜单共用的动作格式、每种动作的参数和上下文限制。
 
 ## 内置菜单
 

@@ -2,24 +2,40 @@ package cn.superiormc.enchantmentreform.managers;
 
 import cn.superiormc.enchantmentreform.api.registry.KeyedRegistry;
 import cn.superiormc.enchantmentreform.objects.AbstractConfiguredSection;
-import cn.superiormc.enchantmentreform.objects.actions.*;
+import cn.superiormc.enchantmentreform.objects.actions.AbstractRunAction;
+import cn.superiormc.enchantmentreform.objects.actions.ActionActionBar;
+import cn.superiormc.enchantmentreform.objects.actions.ActionAnnouncement;
+import cn.superiormc.enchantmentreform.objects.actions.ActionAny;
+import cn.superiormc.enchantmentreform.objects.actions.ActionChance;
+import cn.superiormc.enchantmentreform.objects.actions.ActionClose;
+import cn.superiormc.enchantmentreform.objects.actions.ActionConsoleCommand;
+import cn.superiormc.enchantmentreform.objects.actions.ActionDelay;
+import cn.superiormc.enchantmentreform.objects.actions.ActionEffect;
+import cn.superiormc.enchantmentreform.objects.actions.ActionEntitySpawn;
+import cn.superiormc.enchantmentreform.objects.actions.ActionMessage;
+import cn.superiormc.enchantmentreform.objects.actions.ActionOPCommand;
+import cn.superiormc.enchantmentreform.objects.actions.ActionParticle;
+import cn.superiormc.enchantmentreform.objects.actions.ActionPlayerCommand;
+import cn.superiormc.enchantmentreform.objects.actions.ActionSound;
+import cn.superiormc.enchantmentreform.objects.actions.ActionTeleport;
+import cn.superiormc.enchantmentreform.objects.actions.ActionTitle;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Locale;
 
 public class ActionManager<S extends AbstractConfiguredSection<C>, C> {
 
     private final KeyedRegistry<String, AbstractRunAction<S, C>> actions = KeyedRegistry.stringTypes();
 
     public ActionManager() {
+        registerNewAction("message", new ActionMessage<>());
     }
 
-    public ActionManager(BuiltInActionOptions<S, C> options) {
-        registerBuiltInActions(options);
-    }
-
-    public void registerBuiltInActions(BuiltInActionOptions<S, C> options) {
+    public ActionManager(ActionChance.ActionsRunner<S, C> actionsRunner,
+                         ActionAny.RandomActionsRunner<S, C> randomActionsRunner,
+                         ActionDelay.DelayedActionsFactory<S, C> delayedActionsFactory,
+                         boolean close) {
         registerNewAction("message", new ActionMessage<>());
         registerNewAction("title", new ActionTitle<>());
         registerNewAction("action_bar", new ActionActionBar<>());
@@ -32,19 +48,12 @@ public class ActionManager<S extends AbstractConfiguredSection<C>, C> {
         registerNewAction("player_command", new ActionPlayerCommand<>());
         registerNewAction("teleport", new ActionTeleport<>());
         registerNewAction("entity_spawn", new ActionEntitySpawn<>());
-        if (options.close()) {
+        if (close) {
             registerNewAction("close", new ActionClose<>());
         }
-        if (options.mythicMobsSpawn()) {
-            registerNewAction("mythicmobs_spawn", new ActionMythicMobsSpawn<>());
-        }
-        registerNewAction("chance", new ActionChance<>(options.actionsRunner()));
-        registerNewAction("delay", new ActionDelay<>(options.canRunDelay(), options.delayedActionsFactory()));
-        registerNewAction("any", new ActionAny<>(options.randomActionsRunner()));
-        registerNewAction("conditional", new ActionConditional<>(
-                options.canRunConditional(),
-                options.conditionsRunner(),
-                options.actionsRunner()));
+        registerNewAction("chance", new ActionChance<>(actionsRunner));
+        registerNewAction("delay", new ActionDelay<>(delayedActionsFactory));
+        registerNewAction("any", new ActionAny<>(randomActionsRunner));
     }
 
     public void registerNewAction(String actionID, AbstractRunAction<S, C> action) {
@@ -70,27 +79,7 @@ public class ActionManager<S extends AbstractConfiguredSection<C>, C> {
     }
 
     private String normalize(String type) {
-        return type == null ? "" : type.toLowerCase().replace('-', '_');
+        return type == null ? "" : type.toLowerCase(Locale.ROOT).replace('-', '_');
     }
 
-    public record BuiltInActionOptions<S extends AbstractConfiguredSection<C>, C>(
-            ActionChance.ActionsRunner<S, C> actionsRunner,
-            ActionAny.RandomActionsRunner<S, C> randomActionsRunner,
-            ActionDelay.DelayedActionsFactory<S, C> delayedActionsFactory,
-            ActionConditional.ConditionsRunner<S, C> conditionsRunner,
-            Predicate<S> canRunDelay,
-            Predicate<S> canRunConditional,
-            boolean close,
-            boolean mythicMobsSpawn
-    ) {
-
-        public BuiltInActionOptions(
-                ActionChance.ActionsRunner<S, C> actionsRunner,
-                ActionAny.RandomActionsRunner<S, C> randomActionsRunner,
-                ActionDelay.DelayedActionsFactory<S, C> delayedActionsFactory,
-                ActionConditional.ConditionsRunner<S, C> conditionsRunner) {
-            this(actionsRunner, randomActionsRunner, delayedActionsFactory, conditionsRunner,
-                    singleAction -> true, singleAction -> true, false, false);
-        }
-    }
 }

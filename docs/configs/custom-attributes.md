@@ -7,6 +7,9 @@ enabled: true
 name: '&cPower Training'
 description: '&8Adds &a{bonus_damage} &8attack damage.'
 
+icon:
+  material: IRON_SWORD
+
 minimum-value: 0
 maximum-value: 10
 default-value: 0
@@ -51,12 +54,15 @@ powers:
         value: '{bonus_damage}'
 ```
 
+The top-level `icon` is an optional menu icon using the standard item configuration format. Free-menu attribute content uses it when `use-attribute-icon` is enabled (default `true`), falling back to `NETHER_STAR` when no icon is configured. The menu's `item.material` can override it, while `item.name` and `item.lore` provide shared display text. See [Free-menu icon configuration](menus.md#skill-and-attribute-icons) for skill and attribute examples side by side.
+
 ## Fields
 
 | Field                         | Default         | Description                                                                                                                                                             |
 | ----------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `enabled` | `true` | Whether this attribute is loaded. When false, it is unavailable in menus, commands, and powers. |
 | `name`                        | file ID         | Display name; supports `{lang:...}`.                                                                                                                                    |
+| `icon` | none | Optional menu icon using the standard item configuration format. Used by free-menu attribute content with `use-attribute-icon` enabled; the menu's `item.material` can override it. |
 | `description`                 | none            | Optional description; supports `{lang:...}`, `{level}`, and entries from `variables`. In descriptions, `{level}` is the viewing player's current final attribute value. |
 | `minimum-value`               | `0`             | Lowest value that can be stored.                                                                                                                                        |
 | `maximum-value`               | integer maximum | Highest value that can be stored.                                                                                                                                       |

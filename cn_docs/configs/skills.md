@@ -1,4 +1,4 @@
-# 技能系统
+# 🌟 技能系统
 
 完整技能模块由 `config.yml -> modules.skills` 控制。设为 `false` 后，不加载技能文件，也不会运行技能进度、经验、奖励、技能菜单内容及技能指令；所有 `skill_level` 能力条件及属性加点条件都会直接视为满足。
 
@@ -18,6 +18,8 @@ icon:
 ```
 
 `experience-formula` 计算升到下一级需要的经验。`{level}` 是将要达到的等级，`{current_level}` 是当前等级，并支持插件的数学计算格式。
+
+顶层 `icon` 是可选的菜单图标，使用通用物品配置格式。自由菜单的技能内容区通过 `use-skill-icon` 控制是否使用它，默认为 `true`；未配置图标时使用 `EXPERIENCE_BOTTLE`。菜单的 `item.material` 可覆盖图标，`item.name` 和 `item.lore` 用于统一显示文本。技能与属性图标的并列配置示例见[自由菜单图标配置](menus.md#技能与属性图标)。
 
 ## 升级奖励
 

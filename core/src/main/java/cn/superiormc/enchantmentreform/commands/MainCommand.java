@@ -44,8 +44,7 @@ public final class MainCommand implements CommandExecutor {
         }
         if (sender instanceof Player player) {
             object.executeCommandInGame(args, player);
-        }
-        else {
+        } else {
             object.executeCommandInConsole(args);
         }
         return true;

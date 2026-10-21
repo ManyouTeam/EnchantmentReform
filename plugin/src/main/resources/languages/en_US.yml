@@ -1,4 +1,5 @@
 error:
+  menu-console-usage: '&#98FB98[EnchantmentReform] &cConsole: er menu [menu-id] <player> [skill-id|attribute-id] [-b]'
   player-not-found: "&#98FB98[EnchantmentReform] &cWe can't find player {player}!"
   args: "&#98FB98[EnchantmentReform] &cWrong command usage, if you need help, use /enchantmentreform help!"
   in-game: "&#98FB98[EnchantmentReform] &cYou have to use this command in game!"
@@ -33,9 +34,9 @@ command-tab:
   type-item-id: "[item ID]"
 dupe-removed: "&#98FB98[EnchantmentReform] &fAn illegal item from your inventory has been removed!"
 help:
-  main: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu <menu-id> &7- Open a menu by ID."
-  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu <menu-id> &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin."
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu <menu-id> <player> [skill-id|attribute-id] &7- Open a menu for an online player."
+  main: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID."
+  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin."
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player."
 override-lang:
   menu-back-main: '&bBack to Main Menu'
   attribute-current-effect: '&fCurrent Effect'

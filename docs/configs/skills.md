@@ -1,4 +1,4 @@
-# Skills
+# 🌟 Skills
 
 The complete skill module is controlled by `config.yml -> modules.skills`. When it is `false`, skill files, progression, XP, rewards, skill menu content, and skill commands are disabled. Every `skill_level` power condition or attribute-allocation condition is then treated as satisfied.
 
@@ -40,6 +40,8 @@ rewards:
 ```
 
 `{level}` in the formula is the level being reached and `{current_level}` is the current level. Every entry in a reward list is one independently named reward: `type: attribute-points`, `type: attribute`, `type: attributes`, `type: command`, or `type: item`. Singular `attribute` uses `attribute` plus `amount`; plural `attributes` requires an `attributes` map and exposes its localized summary as `{attributes}`. Attribute rewards change custom-attribute base values. An item entry is itself an ItemFormat section. The S-shaped rewards GUI displays entries in YAML order using `display-name`, similar to AuraSkills/EcoSkills reward lists, instead of fixed category headings. Reward names support `{amount}`, `{attribute}`, `{attributes}`, `{player}`, `{skill}`, and `{level}` where applicable. Rewards are only read from typed `rewards` entries; untyped legacy reward sections are not accepted.
+
+The top-level `icon` is an optional menu icon using the standard item configuration format. Free-menu skill content uses it when `use-skill-icon` is enabled (default `true`), falling back to `EXPERIENCE_BOTTLE` when no icon is configured. The menu's `item.material` can override it, while `item.name` and `item.lore` provide shared display text. See [Free-menu icon configuration](menus.md#skill-and-attribute-icons) for skill and attribute examples side by side.
 
 ## XP sources
 

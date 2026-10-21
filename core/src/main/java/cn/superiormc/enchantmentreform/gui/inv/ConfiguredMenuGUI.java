@@ -2,16 +2,16 @@ package cn.superiormc.enchantmentreform.gui.inv;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.gui.InvGUI;
+import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import cn.superiormc.enchantmentreform.managers.GUIActionManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
-import cn.superiormc.enchantmentreform.utils.TextUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -93,14 +93,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     @Override
     public boolean clickEventHandle(Inventory inventory, ClickType type, int slot) {
         MenuEntry entry = shownEntries.get(slot);
-        if (entry != null) {
-            executeActions(clickActions(entry.content(), type), entry);
-            return true;
-        }
-        ConfigurationSection item = shownStaticItems.get(slot);
-        if (item != null) {
-            executeActions(clickActions(item, type), null);
-        }
+        ConfigurationSection button = entry == null ? shownStaticItems.get(slot) : entry.content();
+        GUIActionManager.INSTANCE.executeButtonActions(button, player,
+                new GUIActionContext(this, inventory, type, slot, menuId, menuId,
+                        entry == null ? null : entry.skill(), entry == null ? null : entry.attribute(),
+                        bypassPermission));
         return true;
     }
 
@@ -269,7 +266,9 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 "price", String.valueOf(attribute.getAllocationPrice(base, 1)),
                 "requirement", attribute.getAllocationRequirementDisplay(player, next),
                 "modifier_count", String.valueOf(attribute.getModifiers(player).size())});
-        return buildTemplatedItem(null, content.getConfigurationSection("item"),
+        ConfigurationSection icon = content.getBoolean("use-attribute-icon", true)
+                ? attribute.getConfig().getConfigurationSection("icon") : null;
+        return buildTemplatedItem(icon, content.getConfigurationSection("item"),
                 Material.NETHER_STAR, args);
     }
 
@@ -309,102 +308,6 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             item.setItemMeta(meta);
         }
         return item;
-    }
-
-    private void executeActions(ConfigurationSection actions, MenuEntry entry) {
-        if (actions == null) {
-            return;
-        }
-        if (actions.contains("type")) {
-            executeAction(actions, entry);
-            return;
-        }
-        for (String id : actions.getKeys(false)) {
-            ConfigurationSection action = actions.getConfigurationSection(id);
-            if (action != null) {
-                executeAction(action, entry);
-            }
-        }
-    }
-
-    private void executeAction(ConfigurationSection action, MenuEntry entry) {
-        String type = action.getString("type", "").toLowerCase(Locale.ROOT);
-        switch (type) {
-            case "previous_page" -> openPage(page - 1);
-            case "next_page" -> openPage(page + 1);
-            case "refresh" -> constructGUI();
-            case "close" -> player.closeInventory();
-            case "open_menu" -> openMenu(action.getString("menu", "main"));
-            case "open_skill" -> {
-                if (entry != null && entry.skill() != null) {
-                    new SkillDetailGUI(player, entry.skill(), menuId).openGUI();
-                }
-            }
-            case "open_attribute" -> {
-                if (entry != null && entry.attribute() != null) {
-                    new AttributeDetailGUI(player, entry.attribute(), menuId).openGUI();
-                }
-            }
-            case "allocate_attribute" -> {
-                if (entry != null && entry.attribute() != null) {
-                    int add = Math.max(1, action.getInt("add", 1));
-                    int price = entry.attribute().getAllocationPrice(
-                            entry.attribute().getBaseValue(player), add);
-                    SkillManager.AllocationResult result = SkillManager.skillManager.allocate(
-                            player, entry.attribute().getId(), add);
-                    sendAllocationResult(result, entry.attribute(), add, price);
-                    constructGUI();
-                }
-            }
-            case "command" -> {
-                String command = CommonUtil.modifyString(player,
-                        action.getString("command", ""),
-                        "player", player.getName(), "menu", menuId);
-                if (!command.isBlank()) {
-                    if (action.getBoolean("as-console", true)) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    } else {
-                        player.performCommand(command);
-                    }
-                }
-            }
-            default -> { }
-        }
-    }
-
-    private void openMenu(String targetId) {
-        if (!ConfigManager.configManager.hasMenu(targetId)) {
-            TextUtil.sendMessage(player, CommonUtil.parseLang(player,
-                    "{lang:menu-not-found}"));
-            return;
-        }
-        if ("enchantment-info".equalsIgnoreCase(targetId)) {
-            new EnchantmentInfoGUI(player).openGUI();
-        } else {
-            new ConfiguredMenuGUI(player, targetId).openGUI();
-        }
-    }
-
-    private void sendAllocationResult(SkillManager.AllocationResult result,
-                                      ObjectCustomAttribute attribute, int add, int price) {
-        String path = switch (result) {
-            case SUCCESS -> "skills.allocation-messages.success";
-            case NOT_ENOUGH_POINTS -> "skills.allocation-messages.not-enough-points";
-            case MAXIMUM_REACHED -> "skills.allocation-messages.maximum-reached";
-            case CONDITION_NOT_MET -> "skills.allocation-messages.condition-not-met";
-            default -> "skills.allocation-messages.invalid";
-        };
-        TextUtil.sendMessage(player, CommonUtil.modifyString(player,
-                ConfigManager.configManager.getString(path, "&cCould not allocate points."),
-                "attribute", attribute.getLocalizedName(player), "add", String.valueOf(add),
-                "price", String.valueOf(price),
-                "points", String.valueOf(SkillManager.skillManager.getAttributePoints(player))));
-    }
-
-    private ConfigurationSection clickActions(ConfigurationSection section, ClickType click) {
-        ConfigurationSection specific = section.getConfigurationSection(
-                "click-actions." + click.name());
-        return specific == null ? section.getConfigurationSection("actions") : specific;
     }
 
     private String[] baseArgs() {

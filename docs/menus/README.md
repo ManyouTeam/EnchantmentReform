@@ -1,4 +1,4 @@
-# Menu Types
+# 📖 Menu Types
 
 Built-in menus are stored in `plugins/EnchantmentReform/menus/`. Except for `settings.yml`, each YAML file name is also its menu ID and can be opened with:
 
@@ -10,7 +10,7 @@ The console must specify an online player: `enchantmentreform menu <menu-id> <pl
 
 Names, descriptions, materials, layouts, and buttons are configurable. Run `/enchantmentreform reload` after editing them.
 
-Reading guide: [Built-in Menu Options and Placeholders](builtin-options.md) explains each YAML option and dynamic text value; [Free Menu Configuration](../configs/menus.md) provides reusable layout examples; [Menu Actions](actions.md) lists both action formats, their parameters, and where they work.
+Reading guide: [Built-in Menu Options and Placeholders](builtin-options.md) explains each YAML option and dynamic text value; [Free Menu Configuration](../configs/menus.md) provides reusable layout examples; [Menu Actions](actions.md) describes the shared action format, parameters, and context requirements for all menus.
 
 ## Built-in menus
 

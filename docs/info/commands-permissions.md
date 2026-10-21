@@ -7,10 +7,24 @@ Aliases: `/er`, `/enchants`
 ## Menus
 
 ```text
-/enchantmentreform menu <menu-id>
+/enchantmentreform menu [menu-id]
+/enchantmentreform menu skill-detail <skill-id>
+/enchantmentreform menu attribute-detail <attribute-id>
 ```
 
 Opens the YAML menu whose file name matches `menu-id`. For example, use `menu main`, `menu enchantment-info`, `menu skill-info`, `menu attribute-info`, or `menu attribute-allocation`.
+
+Omit the menu ID to open `main`. The console can open menus for online players:
+
+```text
+er menu Steve
+er menu main Steve
+er menu main Steve -b
+er menu skill-detail Steve mining -b
+er menu attribute-detail Steve strength -b
+```
+
+Console syntax: `er menu [menu-id] <player> [skill-id|attribute-id] [-b]`. Without `-b`, the target player's menu permission is checked. With `-b`, the current menu session skips menu `permission` checks, including navigation, detail pages and back buttons. Disabled menus remain disabled, and reward claims and attribute upgrades keep their own checks. Player commands cannot enable this bypass. Menu IDs, online players, context IDs and `-b` support tab completion.
 
 Permission:
 

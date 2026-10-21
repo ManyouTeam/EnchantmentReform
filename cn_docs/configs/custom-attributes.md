@@ -1,4 +1,4 @@
-# 自定义属性
+# 🥕 自定义属性
 
 直接放在 `plugins/EnchantmentReform/attributes` 下的每个 `.yml` 文件定义一个持久化的玩家整数属性，子目录不会被扫描。去掉 `.yml` 后的文件名是全局唯一的属性 ID。基础值和持久 modifier 保存在玩家 PDC 中，应用 modifier 后的最终值会作为 `{level}` 传递给配置的 Power。
 
@@ -6,6 +6,9 @@
 enabled: true
 name: '&c力量训练'
 description: '&8增加 &a{bonus_damage} &8点攻击伤害。'
+
+icon:
+  material: IRON_SWORD
 
 minimum-value: 0
 maximum-value: 10
@@ -51,6 +54,8 @@ powers:
         value: '{bonus_damage}'
 ```
 
+顶层 `icon` 是可选的菜单图标，使用通用物品配置格式。自由菜单的属性内容区通过 `use-attribute-icon` 控制是否使用它，默认为 `true`；未配置图标时使用 `NETHER_STAR`。菜单的 `item.material` 可覆盖图标，`item.name` 和 `item.lore` 用于统一显示文本。技能与属性图标的并列配置示例见[自由菜单图标配置](menus.md#技能与属性图标)。
+
 ## 配置项
 
 | 配置项 | 默认值 | 说明 |
@@ -58,6 +63,7 @@ powers:
 | `enabled` | `true` | 是否加载该属性。设为 false 后，该属性不会出现在菜单、命令补全中，也不会注册或执行其 Power。 |
 | `name` | 文件 ID | 显示名称，支持 `{lang:...}`。 |
 | `description` | 无 | 可选描述，支持 `{lang:...}`、`{level}` 和 `variables` 中的变量；描述里的 `{level}` 是查看者当前的最终属性值。 |
+| `icon` | 无 | 可选的菜单图标，使用通用物品配置格式。自由菜单的属性内容区启用 `use-attribute-icon` 时使用；菜单的 `item.material` 仍可覆盖该图标。 |
 | `minimum-value` | `0` | 可以保存的最小值。 |
 | `maximum-value` | Java 整数最大值 | 可以保存的最大值。 |
 | `default-value` | `0` | 玩家没有 PDC 数据时返回的基础值。 |

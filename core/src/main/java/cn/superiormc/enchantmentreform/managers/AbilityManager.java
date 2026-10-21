@@ -7,6 +7,8 @@ import cn.superiormc.enchantmentreform.nms.NmsBridge;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;
 import cn.superiormc.enchantmentreform.objects.ObjectAction;
 import cn.superiormc.enchantmentreform.objects.ObjectSingleAction;
+import cn.superiormc.enchantmentreform.objects.actions.ActionConditional;
+import cn.superiormc.enchantmentreform.objects.actions.ActionMythicMobsSpawn;
 import cn.superiormc.enchantmentreform.objects.abilities.AbstractAbility;
 import cn.superiormc.enchantmentreform.objects.abilities.AccelerateCropsAbility;
 import cn.superiormc.enchantmentreform.objects.abilities.AccelerateWorkBlocksAbility;
@@ -262,18 +264,19 @@ public class AbilityManager extends AbstractManager {
     }
 
     private ActionManager<ObjectSingleAction, PowerContext> createActionManager() {
-        return new ActionManager<>(new ActionManager.BuiltInActionOptions<>(
+        ActionManager<ObjectSingleAction, PowerContext> manager = new ActionManager<>(
                 (section, parent, player, context) -> createActions(section).runAllActions(player, context),
                 (section, parent, player, context, amount) ->
                         createActions(section).runRandomEveryActions(player, context, amount),
                 (section, parent, context) ->
                         player -> createActions(section).runAllActions(player, context),
+                false);
+        manager.registerNewAction("conditional", new ActionConditional<>(
                 (section, parent, player, context) ->
                         PowerConditionsManager.powerConditions.matches(section, context, player),
-                action -> true,
-                action -> true,
-                false,
-                true));
+                (section, parent, player, context) -> createActions(section).runAllActions(player, context)));
+        manager.registerNewAction("mythicmobs_spawn", new ActionMythicMobsSpawn<>());
+        return manager;
     }
 
     private ObjectAction<ObjectSingleAction, PowerContext> createActions(ConfigurationSection section) {

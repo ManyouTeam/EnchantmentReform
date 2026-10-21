@@ -1,4 +1,4 @@
-# Built-in Menu Options
+# ⚙️ Built-in Menu Options
 
 This page documents each option in `plugins/EnchantmentReform/menus/`. Item nodes accept the material, name, lore, CustomModelData, and other common options from [ItemFormat™](../shared-formats/itemformat-tm.md).
 
@@ -39,7 +39,7 @@ These work in the `title`, static items, and dynamic content items of a free men
 | `title` | Menu title, commonly using `{page}` and `{pages}`. |
 | `layout` | `S` marks dynamic skill slots; other characters refer to `items`. The number of dynamic slots determines the page size. |
 | `contents.S.type` | Content type. The skill overview uses `skills`. |
-| `contents.S.use-skill-icon` | When `true`, uses the icon from each `skills/*.yml` file while the menu template still formats its name and lore. |
+| `contents.S.use-skill-icon` | Defaults to `true`, using each skill file's top-level `icon` as the base item, or `EXPERIENCE_BOTTLE` if absent. Set to `false` to ignore skill icons. The menu's `item.material` takes priority; omit it to retain individual icons. Use `item.name` and `item.lore` for shared display text. See [icon examples](../configs/menus.md#skill-and-attribute-icons). |
 | `contents.S.include` | Optional skill-ID allowlist. Empty means all skills. |
 | `contents.S.exclude` | Optional skill-ID denylist applied after `include`. |
 | `contents.S.item` | Display template for every skill entry. |
@@ -74,6 +74,7 @@ Use these in `contents.S.item`, together with the shared free-menu placeholders.
 | `contents.A.type` | Content type, which must be `attributes`. |
 | `contents.A.mode` | Attribute filter mode. `information` only includes attributes with `show-in-attribute-gui` enabled. |
 | `contents.A.include` / `exclude` | Attribute-ID allowlist and denylist. |
+| `contents.A.use-attribute-icon` | Defaults to `true`, using each attribute file's top-level `icon` as the base item, or `NETHER_STAR` if absent. Set to `false` to ignore attribute icons. The menu's `item.material` takes priority; omit it to retain individual icons. Use `item.name` and `item.lore` for shared display text. Supports every attribute mode, including `allocation`. See [icon examples](../configs/menus.md#skill-and-attribute-icons). |
 | `contents.A.item` | Display template for each attribute. |
 | `contents.A.actions` / `click-actions` | Generic or click-specific entry actions. The default left-click action is `open_attribute`. |
 | `items` | Static page, information, and return buttons. |
@@ -107,6 +108,7 @@ This menu also uses the free-menu format. These options differ from `attribute-i
 | Option | Purpose |
 | --- | --- |
 | `contents.A.mode` | Uses `allocation`, including only attributes with `allocation.show-in-menu` enabled. |
+| `contents.A.use-attribute-icon` | Same as the attribute overview; defaults to `true`. Omit `item.material` to use each attribute file's `icon`. |
 | `contents.A.item` | Usually previews current/next values, `{next_price}`, and `{requirement}`. It only controls display, not the actual price or requirements. |
 | `contents.A.actions` / `click-actions` | The default opens details with `open_attribute`. `allocate_attribute` may instead allocate directly, using `add` as the number of levels. |
 | `items.I` | The default information item displays available points through `{points}` or `{attribute_points}`. |
@@ -129,7 +131,7 @@ The catalogue uses a dedicated format instead of `contents` and `items`.
 | `buttons.<character>.filter-type` | Turns the button into a `RARITY` or `SUPPORTED_ITEM` filter. Left-click advances and right-click reverses. |
 | `hide-on-first-page` / `hide-on-last-page` | Hides a button on the first or final page. |
 | `hidden-item` | Replacement shown while hidden; omit it to leave the slot empty. |
-| `actions` | Normal button actions such as `previous_page`, `next_page`, `refresh`, and `close`. |
+| `actions` / `click-actions` | Normal button actions such as `previous_page`, `next_page`, `refresh`, and `close`. |
 
 ### Enchantment-entry placeholders
 
@@ -181,7 +183,7 @@ Skill details have separate XP-source and level-reward views and use a dedicated
 | `buttons.<character>` | Other static layout buttons. |
 | `buttons.<view character>.reward-view-item` | Alternate toggle appearance while viewing rewards. |
 | `hide-on-first-page` / `hide-on-last-page` / `hidden-item` | Boundary-page appearance for navigation buttons. |
-| `actions` | Normal button actions. Back and view switching are handled automatically by their symbols. |
+| `actions` / `click-actions` | Normal button actions. Back and view switching are handled automatically by their symbols. |
 
 ### Shared skill-detail placeholders
 
@@ -272,7 +274,7 @@ Use these in `reward-item`, alongside the shared skill-detail placeholders.
 | `buttons.U.maximum-item` | Replacement for the upgrade control after reaching `allocation.maximum-value`. |
 | `buttons.E.enabled-item` / `disabled-item` | Appearances for the current enabled state. |
 | `hide-on-first-page` / `hide-on-last-page` / `hidden-item` | Boundary-page appearance for navigation buttons. |
-| `actions` | Actions for buttons other than the automatic back, upgrade, toggle, and effective-level controls. |
+| `actions` / `click-actions` | Actions for buttons other than the automatic back, upgrade, toggle, and effective-level controls. |
 
 ### Shared attribute-detail placeholders
 
@@ -325,4 +327,4 @@ Only available in `modifier-item`, together with the shared attribute-detail pla
 
 ## Common button actions
 
-Dedicated-menu buttons support navigation, messages, commands, effects, and more; free menus support opening other menus and allocating points. See [Menu Actions](actions.md) for both complete type lists, parameters, and limitations.
+All menus share navigation, messages, commands, menu opening, and other actions, using `actions` or `click-actions`. Skill and attribute operations require the corresponding object context. See [Menu Actions](actions.md) for types, parameters, and limitations.

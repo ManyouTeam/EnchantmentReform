@@ -4,12 +4,10 @@ import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.gui.InvGUI;
 import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
-import cn.superiormc.enchantmentreform.gui.action.ObjectSingleGUIAction;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
 import cn.superiormc.enchantmentreform.managers.GUIActionManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
-import cn.superiormc.enchantmentreform.objects.ObjectAction;
 import cn.superiormc.enchantmentreform.objects.PowerEnchantmentDefinition;
 import cn.superiormc.enchantmentreform.objects.VanillaEnchantmentOverride;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
@@ -21,7 +19,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -65,7 +62,7 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
 
     private int maximumPage;
 
-    private final Map<Integer, ObjectAction<ObjectSingleGUIAction, GUIActionContext>> slotActions =
+    private final Map<Integer, ConfigurationSection> slotActions =
             new LinkedHashMap<>();
 
     public EnchantmentInfoGUI(Player player) {
@@ -106,8 +103,9 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
             cycleFilter(filterType, type.isRightClick() ? -1 : 1);
             return true;
         }
-        GUIActionManager.INSTANCE.execute(slotActions.get(slot), player,
-                new GUIActionContext(this, inventory, type, slot));
+        GUIActionManager.INSTANCE.executeButtonActions(slotActions.get(slot), player,
+                new GUIActionContext(this, inventory, type, slot, "enchantment-info", "enchantment-info",
+                        null, null, bypassPermission));
         return true;
     }
 
@@ -179,7 +177,7 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
                     "amount", String.valueOf(enchantmentAmount),
                     "rarity_filter", displayRarityFilter(),
                     "supported_item_filter", displaySupportedItemsFilter()));
-            slotActions.put(entry.getKey(), GUIActionManager.INSTANCE.createButtonActions(button));
+            slotActions.put(entry.getKey(), button);
         }
     }
 

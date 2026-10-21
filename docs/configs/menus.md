@@ -1,4 +1,4 @@
-# Free Menu Configuration
+# 🛠️ Free Menu Configuration
 
 This page covers the free-menu format used by `main.yml`, `skill-info.yml`, `attribute-info.yml`, `attribute-allocation.yml`, and custom menus. See [Menu Types](../menus/README.md) for how to open them, [Built-in Menu Options](../menus/builtin-options.md) for every option and placeholder, and [Menu Actions](../menus/actions.md) for action types and parameters.
 
@@ -56,6 +56,36 @@ contents:
 
 Content types are `skills` and `attributes`. Attribute modes are `all`, `information`, `allocation`, and `skill`; skill mode shows every attribute with `skill-menu.show` enabled and no longer filters by skill ID. Both content types support `include` and `exclude` ID lists. All content sections share the menu page number; the largest collection determines the page count.
 
+## Skill and attribute icons
+
+Both content types can use the corresponding configuration file's top-level `icon` as the base item. Icons use the standard item configuration format:
+
+| Content type | Content-section switch | Icon location | Fallback material when no icon is configured |
+| --- | --- | --- | --- |
+| `skills` | `use-skill-icon` | Top-level `icon` in `skills/*.yml`; see [Skills](skills.md). | `EXPERIENCE_BOTTLE` |
+| `attributes` | `use-attribute-icon` | Top-level `icon` in `attributes/*.yml`; see [Custom Attributes](custom-attributes.md#fields). | `NETHER_STAR` |
+
+Both switches default to `true`; set one to `false` to ignore the corresponding icons. Attribute icons support every attribute mode, including `allocation`. The menu's `item.material` takes priority over the icon; omit it to retain each skill or attribute's icon while using `item.name` and `item.lore` for shared display text. For example:
+
+```yaml
+contents:
+  S:
+    type: skills
+    use-skill-icon: true
+    item:
+      name: '&a{name}'
+      lore:
+        - '&7{description}'
+  A:
+    type: attributes
+    mode: allocation
+    use-attribute-icon: true
+    item:
+      name: '&a{name}'
+      lore:
+        - '&7{current_description}'
+```
+
 See [Built-in Menu Options and Placeholders](../menus/builtin-options.md) for the meaning of every shared, skill, and attribute placeholder.
 
 ## Static items and actions
@@ -83,4 +113,4 @@ items:
 
 Static and content items can use `actions` for every click or `click-actions.<CLICK_TYPE>` for a specific Bukkit click type.
 
-See [Menu Actions](../menus/actions.md) for all nine free-menu actions, their parameters, and which entry types can use them.
+See [Menu Actions](../menus/actions.md) for the shared menu action types, parameters, and object-context requirements.

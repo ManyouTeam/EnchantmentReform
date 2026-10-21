@@ -20,6 +20,8 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
     protected Inventory inv;
 
+    protected boolean bypassPermission;
+
     public String title;
 
     public InvGUI(Player player) {
@@ -45,7 +47,7 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
                 return;
             }
             String permission = section.getString("permission", "").strip();
-            if (!permission.isEmpty() && !player.hasPermission(permission)) {
+            if (!bypassPermission && !permission.isEmpty() && !player.hasPermission(permission)) {
                 TextUtil.sendMessage(player, CommonUtil.parseLang(player, "{lang:menu-no-permission}"));
                 return;
             }
@@ -58,6 +60,11 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
     public @NotNull Inventory getInventory() {
         return inv;
+    }
+
+    public void openGUI(boolean bypass) {
+        bypassPermission = bypass;
+        openGUI();
     }
 
     public void setItem(int slot, ItemStack item) {

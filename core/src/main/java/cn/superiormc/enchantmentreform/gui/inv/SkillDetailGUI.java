@@ -4,13 +4,11 @@ import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.gui.InvGUI;
 import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
-import cn.superiormc.enchantmentreform.gui.action.ObjectSingleGUIAction;
 import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.GUIActionManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
-import cn.superiormc.enchantmentreform.objects.ObjectAction;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.objects.skills.SkillSource;
@@ -49,7 +47,7 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
 
     private final Map<Integer, String> rewardStaticSlots = new LinkedHashMap<>();
 
-    private final Map<Integer, ObjectAction<ObjectSingleGUIAction, GUIActionContext>> actions = new LinkedHashMap<>();
+    private final Map<Integer, ConfigurationSection> actions = new LinkedHashMap<>();
 
     private final Map<Integer, ObjectCustomAttribute> shownAttributes = new LinkedHashMap<>();
 
@@ -120,12 +118,12 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
     public boolean clickEventHandle(Inventory inventory, ClickType type, int slot) {
         ObjectCustomAttribute attribute = shownAttributes.get(slot);
         if (attribute != null) {
-            new AttributeDetailGUI(player, attribute, skill, returnMenuId).openGUI();
+            new AttributeDetailGUI(player, attribute, skill, returnMenuId).openGUI(bypassPermission);
             return true;
         }
         String symbol = currentStaticSlots().get(slot);
         if (symbol != null && symbol.equals(config.getString("back-symbol", "B"))) {
-            new ConfiguredMenuGUI(player, returnMenuId).openGUI();
+            new ConfiguredMenuGUI(player, returnMenuId).openGUI(bypassPermission);
             return true;
         }
         if (symbol != null && symbol.equals(config.getString("view-symbol", "V"))) {
@@ -135,8 +133,9 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
             openGUI();
             return true;
         }
-        GUIActionManager.INSTANCE.execute(actions.get(slot), player,
-                new GUIActionContext(this, inventory, type, slot));
+        GUIActionManager.INSTANCE.executeButtonActions(actions.get(slot), player,
+                new GUIActionContext(this, inventory, type, slot, "skill-detail", returnMenuId,
+                        skill, null, bypassPermission));
         return true;
     }
 
@@ -242,7 +241,7 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
                 setItem(entry.getKey(), buildItem(shown, args));
             }
             if (!hidden && !entry.getValue().equals(config.getString("view-symbol", "V"))) {
-                actions.put(entry.getKey(), GUIActionManager.INSTANCE.createButtonActions(button));
+                actions.put(entry.getKey(), button);
             }
         }
     }

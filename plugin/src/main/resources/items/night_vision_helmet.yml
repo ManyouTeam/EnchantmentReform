@@ -1,0 +1,24 @@
+base-item:
+  material: GOLDEN_HELMET
+  name: '{lang:custom-item-night_vision_helmet-name}'
+  lore:
+    - '{lang:custom-item-night_vision_helmet-lore}'
+
+active-slots:
+  - HEAD
+
+allow-duplicate: false
+
+powers:
+  on-tick:
+    interval: 10
+    abilities:
+      night-vision:
+        type: potion_effect
+        target: SOURCE
+        potion: minecraft:night_vision
+        duration: 30
+        amplifier: 0
+        ambient: true
+        particles: false
+        icon: true

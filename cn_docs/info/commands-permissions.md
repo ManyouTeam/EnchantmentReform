@@ -7,10 +7,24 @@
 ## 菜单
 
 ```text
-/enchantmentreform menu <菜单ID>
+/enchantmentreform menu [菜单ID]
+/enchantmentreform menu skill-detail <技能ID>
+/enchantmentreform menu attribute-detail <属性ID>
 ```
 
 按照 YAML 文件名打开菜单。例如：`menu main`、`menu enchantment-info`、`menu skill-info`、`menu attribute-info`、`menu attribute-allocation`。
+
+省略菜单ID时打开 `main`。控制台可以为在线玩家打开菜单：
+
+```text
+er menu Steve
+er menu main Steve
+er menu main Steve -b
+er menu skill-detail Steve mining -b
+er menu attribute-detail Steve strength -b
+```
+
+完整控制台格式为 `er menu [菜单ID] <玩家> [技能ID|属性ID] [-b]`。不加 `-b` 会检查目标玩家的菜单权限；加上后跳过菜单自身的 `permission` 检查，该状态在当前菜单的跳转、详情页和返回时保留。关闭菜单后玩家自行打开仍按正常权限检查。已禁用的菜单仍无法打开，技能奖励领取、属性升级等操作继续检查各自条件。玩家命令无法使用 `-b` 跳过权限。目标离线、菜单不存在或详情上下文无效时显示相应提示；命令支持菜单、在线玩家、上下文和 `-b` 补全。
 
 权限：
 

@@ -22,7 +22,7 @@ public class ActionChance<S extends AbstractConfiguredSection<C>, C> extends Abs
             return;
         }
         double rate = singleAction.getDouble("rate", player, context);
-        if (RandomUtils.nextDouble(0, 100) <= rate) {
+        if (RandomUtils.nextDouble(0, 100) < rate) {
             runner.run(chanceSection, singleAction, player, context);
         }
     }

@@ -1,4 +1,4 @@
-# 内置菜单选项
+# ⚙️ 内置菜单选项
 
 本页按照 `plugins/EnchantmentReform/menus/` 中的文件说明每个选项。物品节点支持 [ItemFormat™](../shared-formats/itemformat-tm.md) 的材质、名称、描述、CustomModelData 等通用物品选项。
 
@@ -39,7 +39,7 @@
 | `title` | 菜单标题。通常使用 `{page}` 和 `{pages}` 显示页码。 |
 | `layout` | `S` 为动态技能槽；其他字符从 `items` 读取静态按钮。动态槽数量决定每页显示的技能数量。 |
 | `contents.S.type` | 内容类型。技能总览必须使用 `skills`。 |
-| `contents.S.use-skill-icon` | 为 `true` 时优先使用各 `skills/*.yml` 中配置的技能图标；模板仍会覆盖名称和描述。 |
+| `contents.S.use-skill-icon` | 默认为 `true`，使用各技能文件顶层的 `icon` 作为基础物品。未配置图标时使用 `EXPERIENCE_BOTTLE`；设为 `false` 时忽略技能图标。菜单的 `item.material` 优先，省略它才能保留各技能图标；`item.name` 和 `item.lore` 用于统一显示文本。见[图标配置示例](../configs/menus.md#技能与属性图标)。 |
 | `contents.S.include` | 可选技能 ID 白名单。留空时包含全部技能。 |
 | `contents.S.exclude` | 可选技能 ID 黑名单，在 `include` 之后排除。 |
 | `contents.S.item` | 每个技能物品的显示模板。 |
@@ -74,6 +74,7 @@
 | `contents.A.type` | 内容类型，必须使用 `attributes`。 |
 | `contents.A.mode` | 属性筛选模式。`information` 只显示启用了 `show-in-attribute-gui` 的属性。 |
 | `contents.A.include` / `exclude` | 按属性 ID 设置白名单或黑名单。 |
+| `contents.A.use-attribute-icon` | 默认为 `true`，使用各属性文件顶层的 `icon` 作为基础物品。未配置图标时使用 `NETHER_STAR`；设为 `false` 时忽略属性图标。菜单的 `item.material` 优先，省略它才能保留各属性图标；`item.name` 和 `item.lore` 用于统一显示文本。适用于所有属性筛选模式，包括 `allocation`。见[图标配置示例](../configs/menus.md#技能与属性图标)。 |
 | `contents.A.item` | 属性物品显示模板。 |
 | `contents.A.actions` / `click-actions` | 配置属性物品的通用或指定点击动作。默认左键使用 `open_attribute`。 |
 | `items` | 翻页、说明和返回主菜单等静态按钮。 |
@@ -107,6 +108,7 @@
 | 选项 | 作用 |
 | --- | --- |
 | `contents.A.mode` | 使用 `allocation`，只显示启用了 `allocation.show-in-menu` 的属性。 |
+| `contents.A.use-attribute-icon` | 与属性总览相同，默认为 `true`；省略 `item.material` 后可使用各属性文件的 `icon`。 |
 | `contents.A.item` | 通常显示当前等级、升级后的数值、`{next_price}` 与 `{requirement}`。这里只负责显示，不决定真实价格或条件。 |
 | `contents.A.actions` / `click-actions` | 默认通过 `open_attribute` 进入详情页后升级；也可使用 `allocate_attribute` 直接加点，并用 `add` 指定增加等级。 |
 | `items.I` | 默认显示玩家剩余属性点，支持 `{points}` 或 `{attribute_points}`。 |
@@ -129,7 +131,7 @@
 | `buttons.<字符>.filter-type` | 将按钮设为筛选器。支持 `RARITY` 和 `SUPPORTED_ITEM`；左键切换到下一项，右键切换到上一项。 |
 | `hide-on-first-page` / `hide-on-last-page` | 在第一页或最后一页隐藏按钮。 |
 | `hidden-item` | 按钮隐藏时显示的替代物品；省略时该格为空。 |
-| `actions` | 普通按钮动作，例如 `previous_page`、`next_page`、`refresh` 和 `close`。 |
+| `actions` / `click-actions` | 普通按钮动作，例如 `previous_page`、`next_page`、`refresh` 和 `close`。 |
 
 ### 附魔条目占位符
 
@@ -181,7 +183,7 @@
 | `buttons.<字符>` | 布局中其他静态按钮。 |
 | `buttons.<视图字符>.reward-view-item` | 当前位于奖励视图时，视图切换按钮使用的替代外观。 |
 | `hide-on-first-page` / `hide-on-last-page` / `hidden-item` | 控制翻页按钮在边界页的外观。 |
-| `actions` | 普通按钮动作。返回和切换视图由对应字符自动处理。 |
+| `actions` / `click-actions` | 普通按钮动作。返回和切换视图由对应字符自动处理。 |
 
 ### 技能详情通用占位符
 
@@ -272,7 +274,7 @@
 | `buttons.U.maximum-item` | 属性达到 `allocation.maximum-value` 后替换升级按钮的外观。 |
 | `buttons.E.enabled-item` / `disabled-item` | 属性当前启用或停用时显示的两种外观。 |
 | `hide-on-first-page` / `hide-on-last-page` / `hidden-item` | 控制分页按钮在边界页的显示。 |
-| `actions` | 除返回、升级、启停和有效等级控制外，其他按钮执行的动作。 |
+| `actions` / `click-actions` | 除返回、升级、启停和有效等级控制外，其他按钮执行的动作。 |
 
 ### 属性详情通用占位符
 
@@ -325,4 +327,4 @@
 
 ## 通用按钮动作
 
-专用菜单按钮支持翻页、关闭、消息、命令、效果等多种动作；自由菜单支持打开其他菜单、加点等动作。两套完整类型、参数与限制见[菜单动作](actions.md)。
+所有菜单共用翻页、关闭、消息、命令、菜单跳转等动作，并支持 `actions` 和 `click-actions`。技能与属性操作需要对应对象上下文。完整类型、参数与限制见[菜单动作](actions.md)。

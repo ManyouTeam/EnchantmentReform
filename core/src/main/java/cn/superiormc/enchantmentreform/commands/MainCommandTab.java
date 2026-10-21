@@ -24,7 +24,9 @@ public final class MainCommandTab implements TabCompleter {
         if (args.length <= 1) {
             for (AbstractCommand object : CommandManager.commandManager.getSubCommandsMap().values()) {
                 if (object.getRequiredPermission() == null || object.getRequiredPermission().isEmpty()
-                        || sender.hasPermission(object.getRequiredPermission())) result.add(object.getId());
+                        || sender.hasPermission(object.getRequiredPermission())) {
+                    result.add(object.getId());
+                }
             }
             return result;
         }

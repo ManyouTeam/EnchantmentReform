@@ -26,6 +26,10 @@ public final class ObjectSingleGUIAction extends AbstractConfiguredSection<GUIAc
                 "page", String.valueOf(context.gui().getCurrentPage() + 1),
                 "pages", String.valueOf(context.gui().getPageCount()),
                 "slot", String.valueOf(context.slot()),
-                "click", context.clickType().name()), player);
+                "click", context.clickType().name(),
+                "player", player == null ? "" : player.getName(),
+                "menu", context.menuId(),
+                "skill", context.skill() == null ? "" : context.skill().id(),
+                "attribute", context.attribute() == null ? "" : context.attribute().getId()), player);
     }
 }
