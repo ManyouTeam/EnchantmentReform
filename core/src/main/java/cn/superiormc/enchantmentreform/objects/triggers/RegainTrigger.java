@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
@@ -14,7 +15,9 @@ public final class RegainTrigger extends EventTrigger<EntityRegainHealthEvent> {
     protected void handle(EntityRegainHealthEvent event, TriggerRuntime runtime) {
         if (event.getEntity() instanceof Player player) {
             runtime.fire(this, runtime.base(player, event)
-                    .extra(BuiltinContextKeys.ORIGINAL_AMOUNT, event.getAmount()));
+                    .extra(BuiltinContextKeys.ORIGINAL_AMOUNT, event.getAmount())
+                    .extra(BuiltinContextKeys.EFFECTIVE_HEALING, Math.max(0D, Math.min(event.getAmount(),
+                            cn.superiormc.enchantmentreform.utils.CommonUtil.getMaxHealth(player) - player.getHealth()))));
         }
     }
 }

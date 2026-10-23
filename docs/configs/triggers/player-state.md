@@ -21,6 +21,8 @@ Numeric extra-context names documented on trigger pages are also expression plac
 
 ## `on-effect-tick`
 
+Supported `count`: `events`.
+
 Runs for Paper's instant or periodic effect-tick event when the affected entity is a player.
 
 | Context | Value |
@@ -29,6 +31,8 @@ Runs for Paper's instant or periodic effect-tick event when the affected entity 
 | Extra context | Effect type and effect instance remain on `EntityEffectTickEvent` |
 
 ## `on-potion-effect`
+
+Supported `count`: `events`.
 
 Runs when a potion effect is added, changed, or removed from a player.
 
@@ -40,6 +44,8 @@ Runs when a potion effect is added, changed, or removed from a player.
 
 ## `on-exhaustion`
 
+Supported `count`: `events`, `exhaustion`.
+
 Runs when Paper reports exhaustion for a player.
 
 | Context | Value |
@@ -48,6 +54,8 @@ Runs when Paper reports exhaustion for a player.
 | Extra context | Exhaustion amount and reason remain on `EntityExhaustionEvent` |
 
 ## `on-food-level-change`
+
+Supported `count`: `events`.
 
 Runs when a player's food level changes.
 
@@ -60,6 +68,8 @@ Runs when a player's food level changes.
 
 ## `on-air-change`
 
+Supported `count`: `events`.
+
 Runs when a player's remaining air changes.
 
 | Context | Value |
@@ -71,6 +81,8 @@ Runs when a player's remaining air changes.
 
 ## `on-exp-change`
 
+Supported `count`: `events`, `experience`.
+
 Runs when a player's experience amount changes.
 
 | Context | Value |
@@ -81,6 +93,8 @@ Runs when a player's experience amount changes.
 `{original_experience}` resolves to the experience amount before modifiers are applied.
 
 ## `on-pickup-experience`
+
+Supported `count`: `events`, `experience`.
 
 Runs when a player picks up a Paper experience orb.
 

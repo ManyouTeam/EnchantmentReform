@@ -19,6 +19,8 @@
 
 ## `on-item-damage`
 
+支持的 `count`：`events`、`durability`。
+
 当玩家的某个物品受到耐久度损耗时执行。
 
 | 上下文 | 值 |
@@ -29,6 +31,8 @@
 | 额外上下文 | `original_item_damage`；可修改的物品耐久损耗结果 |
 
 ## `on-item-group-cooldown`
+
+支持的 `count`：`events`。
 
 在 Paper 的物品冷却组事件中执行。
 
@@ -41,6 +45,8 @@
 
 ## `on-item-held`
 
+支持的 `count`：`events`。
+
 当玩家选中的快捷栏槽位发生变化时执行。
 
 | 上下文 | 值 |
@@ -50,6 +56,8 @@
 | 额外上下文 | 原槽位索引和新槽位索引仍保留在事件中 |
 
 ## `on-swap-hand`
+
+支持的 `count`：`events`。
 
 当主手和副手物品互换时执行。
 
@@ -61,6 +69,8 @@
 
 ## `on-enchant-item`
 
+支持的 `count`：`events`。
+
 当玩家通过 `EnchantItemEvent` 对物品进行附魔时执行。
 
 | 上下文 | 值 |
@@ -70,6 +80,8 @@
 | 额外上下文 | `original_experience` 为附魔选项显示的等级门槛；`enchantment_level_cost` 为实际扣除的 1/2/3 级；`original_lapis` 为所选档位的青金石花费；可修改的经验结果；附魔台提供的附魔仍保留在事件中 |
 
 ## `on-elytra-boost`
+
+支持的 `count`：`events`。
 
 当玩家使用烟花火箭加速鞘翅飞行时执行。
 

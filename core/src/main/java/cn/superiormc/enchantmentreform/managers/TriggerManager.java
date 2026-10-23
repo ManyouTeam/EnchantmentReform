@@ -15,10 +15,6 @@ import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.power.PowerExecutionResult;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Entity;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +26,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
+
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.plugin.Plugin;
 
 public final class TriggerManager extends AbstractManager {
 
@@ -349,9 +350,9 @@ public final class TriggerManager extends AbstractManager {
                 && !enchantment.meetsConditions(data.player(), context)) {
             return;
         }
-        if (!power.isEnabled() || !power.meetsTriggerConditions(context)) {
-            return;
-        }
+        if (!power.isEnabled()) return;
+        context = power.prepareTrigger(context);
+        if (context == null) return;
         Entity skill = data.skillEntity() == null ? data.player() : data.skillEntity();
         boolean allowed;
         if (active.source().isDuplicateAllowed()) {

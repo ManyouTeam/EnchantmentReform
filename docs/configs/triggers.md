@@ -12,6 +12,9 @@ powers:
 
 EnchantmentReform currently registers **63 built-in triggers**.
 
+
+Skill sources and powers use `count` to select a unit and `count-every` for repeatable batches. See [counting modes](counting.md) for support and examples.
+
 ## Reference pages
 
 * [Tick and lifecycle triggers](triggers/lifecycle.md)

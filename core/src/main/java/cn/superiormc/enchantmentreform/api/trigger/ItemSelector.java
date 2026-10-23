@@ -5,6 +5,7 @@ import java.util.Locale;
 public enum ItemSelector {
     CONTEXT,
     TRIGGER_ITEM,
+    COUNTED_ITEM,
     MAIN_HAND,
     OFF_HAND,
     HELMET,

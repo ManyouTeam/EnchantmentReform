@@ -19,6 +19,8 @@
 
 ## `on-shoot`
 
+支持的 `count`：`events`。
+
 当 `EntityShootBowEvent` 的发射者是玩家时执行。
 
 | 上下文 | 值 |
@@ -31,6 +33,8 @@
 | 区别 | 不会启动 EnchantmentReform 的投射物后续追踪 |
 
 ## `on-shoot-bow`
+
+支持的 `count`：`events`。
 
 初始上下文与 `on-shoot` 相同；能力执行完成后，如果最终的 `SKILL` 实体是投射物，则开始追踪该投射物。
 
@@ -45,6 +49,8 @@
 
 ## `on-load-crossbow`
 
+支持的 `count`：`events`。
+
 当玩家为弩装填弹药时执行。
 
 | 上下文 | 值 |
@@ -54,6 +60,8 @@
 | 额外行为 | 在支持的情况下，取消能力可以取消或阻止底层 Paper 事件 |
 
 ## `on-projectile-launch`
+
+支持的 `count`：`events`。
 
 当投射物被发射，并且其发射者是玩家时执行。
 
@@ -67,6 +75,8 @@
 | 说明 | 此通用发射触发器本身不会创建投射物后续追踪数据 |
 
 ## `on-projectile-tick`
+
+支持的 `count`：`events`。
 
 对于由 `on-shoot-bow` 追踪的投射物，每 Tick 执行一次。
 
@@ -82,6 +92,8 @@
 
 ## `on-projectile-hit`
 
+支持的 `count`：`events`。
+
 当投射物命中后，且能够解析到追踪数据时执行；对于由玩家直接发射且可直接解析的投射物，也会执行。
 
 | 上下文 | 值 |
@@ -96,6 +108,8 @@
 | 额外上下文 | `projectile`；处理此事件后会结束追踪 |
 
 ## `on-riptide`
+
+支持的 `count`：`events`。
 
 当玩家使用激流附魔时执行。
 

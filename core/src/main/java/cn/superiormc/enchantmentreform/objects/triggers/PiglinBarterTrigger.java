@@ -25,6 +25,7 @@ public final class PiglinBarterTrigger extends EventTrigger<PiglinBarterEvent> {
             return;
         }
         runtime.fire(this, runtime.base(player, event)
+                .outputItems(event.getOutcome())
                 .source(event.getEntity())
                 .target(event.getEntity())
                 .location(event.getEntity().getLocation())

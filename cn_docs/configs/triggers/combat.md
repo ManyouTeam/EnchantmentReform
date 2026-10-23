@@ -19,6 +19,8 @@
 
 ## `on-attack`
 
+支持的 `count`：`events`、`damage`。
+
 当附魔玩家需要为某次实体伤害负责时执行，包括可追溯到该玩家的投射物或三叉戟伤害。
 
 | 上下文 | 值 |
@@ -32,6 +34,8 @@
 
 ## `on-melee-attack`
 
+支持的 `count`：`events`、`damage`。
+
 仅当直接伤害来源就是玩家本人时执行。
 
 | 上下文 | 值 |
@@ -43,6 +47,8 @@
 | 额外上下文 | `original_damage`、`damage_cause`；可修改的 `damage` 结果 |
 
 ## `on-damage`
+
+支持的 `count`：`events`、`damage`。
 
 当附魔玩家受到任意伤害时执行，包括环境伤害。
 
@@ -56,6 +62,8 @@
 
 ## `on-damage-by-entity`
 
+支持的 `count`：`events`、`damage`。
+
 仅当附魔玩家受到实体造成的伤害时执行。
 
 | 上下文 | 值 |
@@ -68,6 +76,8 @@
 
 ## `on-kill`
 
+支持的 `count`：`events`、`items`。
+
 当某个玩家被记录为实体击杀者时执行。
 
 | 上下文 | 值 |
@@ -78,6 +88,8 @@
 | 额外上下文 | `original_experience`；可修改的掉落经验值 |
 
 ## `on-death`
+
+支持的 `count`：`events`。
 
 当附魔玩家死亡时执行。
 
@@ -90,6 +102,8 @@
 
 ## `on-regain`
 
+支持的 `count`：`events`、`healing`。
+
 当附魔玩家恢复生命值时执行。
 
 | 上下文 | 值 |
@@ -98,6 +112,8 @@
 | 额外上下文 | `original_amount`；可修改的生命恢复量；恢复原因仍保留在事件中 |
 
 ## `on-combust`
+
+支持的 `count`：`events`。
 
 当附魔玩家被点燃时执行。
 
@@ -108,6 +124,8 @@
 
 ## `on-knockback`
 
+支持的 `count`：`events`。
+
 当 Paper 的实体击退事件中，被击退实体是附魔玩家时执行。
 
 | 上下文 | 值 |
@@ -117,6 +135,8 @@
 | 额外上下文 | 击退原因和向量仍可通过 Paper 事件访问 |
 
 ## `on-attempt-smash-attack`
+
+支持的 `count`：`events`。
 
 当玩家尝试执行 Paper 的重击攻击时执行。
 
@@ -130,6 +150,8 @@
 
 ## `on-lunge`
 
+支持的 `count`：`events`。
+
 当 Paper 的实体突进事件中的实体是玩家时执行。
 
 | 上下文 | 值 |
@@ -139,6 +161,8 @@
 | 额外上下文 | 突进专用数值仍保留在 Paper 事件中 |
 
 ## `on-shield-block`
+
+支持的 `count`：`events`、`blocked_damage`。
 
 当受到的实体伤害被作为盾牌格挡处理时执行。
 
@@ -152,6 +176,8 @@
 | 额外上下文 | `original_damage` 为被格挡的伤害量；`damage_cause`；可修改的 `damage` 结果 |
 
 ## `on-shield-disable`
+
+支持的 `count`：`events`。
 
 当 Paper 报告玩家的盾牌被禁用时执行。
 

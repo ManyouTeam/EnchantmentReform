@@ -70,8 +70,10 @@ When a matching event occurs, EnchantmentReform processes an active enchantment 
 ```
 active enchantment and trigger lookup
   → trigger-specific checks such as hand or tick interval
+  → trigger conditions and counted-object filters
+  → anti-abuse
+  → quantity accumulation and count-every batch settlement
   → powers.limit
-  → trigger conditions
   → trigger modifiers
   → trigger abilities
   → final event result
@@ -84,7 +86,7 @@ active enchantment and trigger lookup
 * Tracked projectile continuation may reuse the power captured at launch instead of rerolling the power-wide limit.
 
 {% hint style="warning" %}
-`powers.limit` is checked before trigger conditions. A configured cooldown or usage count can therefore be acquired even when a later condition causes the trigger section to be skipped.
+See [counting modes](../counting.md). Incomplete batches do not reach `powers.limit`. Settled batches are not refunded when chance, cooldown, or use limits prevent execution.
 {% endhint %}
 
 See [Power Triggers](../triggers.md) for the context supplied by each trigger and the meaning of `SOURCE`, `SKILL`, and `TARGET`.

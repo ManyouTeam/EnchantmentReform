@@ -19,6 +19,8 @@
 
 ## `on-target`
 
+支持的 `count`：`events`。
+
 当某个实体将玩家选为目标时执行。
 
 | 上下文 | 值 |
@@ -30,6 +32,8 @@
 
 ## `on-untag`
 
+支持的 `count`：`events`。
+
 当一个先前被记录为正在攻击玩家的实体，将目标改为非玩家实体或清除目标时执行。
 
 | 上下文 | 值 |
@@ -40,6 +44,8 @@
 | 额外上下文 | `target_reason` |
 
 ## `on-creeper-explode`
+
+支持的 `count`：`events`。
 
 当爆炸准备事件中的实体是玩家，或是当前正将某个玩家作为目标的苦力怕时执行。
 
@@ -53,6 +59,8 @@
 
 ## `on-enderman-attack-player`
 
+支持的 `count`：`events`。
+
 当 Paper 检查玩家是否正在直视末影人、并可能因此使末影人攻击玩家时执行。取消事件只会阻止直视引发的敌对行为，不会阻止末影人在玩家主动攻击后反击。
 
 | 上下文 | 值 |
@@ -64,6 +72,8 @@
 
 ## `on-phantom-pre-spawn`
 
+支持的 `count`：`events`。
+
 当 Paper 的幻翼预生成事件由某个玩家引发时执行。
 
 | 上下文 | 值 |
@@ -73,6 +83,8 @@
 | 额外行为 | 取消能力会将 `shouldAbortSpawn` 设置为 true |
 
 ## `on-warden-anger-change`
+
+支持的 `count`：`events`。
 
 当 Paper 报告监守者对某个玩家的愤怒值发生变化时执行。
 

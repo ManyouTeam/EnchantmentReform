@@ -2,6 +2,7 @@ package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
@@ -29,6 +30,7 @@ public final class DamageTrigger extends EventTrigger<EntityDamageEvent> {
                 .source(attacker).skill(direct == null ? player : direct)
                 .target(player).location(player.getLocation())
                 .extra(BuiltinContextKeys.ORIGINAL_DAMAGE, event.getDamage())
+                .extra(BuiltinContextKeys.FINAL_DAMAGE, event.getFinalDamage())
                 .extra(BuiltinContextKeys.DAMAGE_CAUSE, event.getCause())
                 .extra(BuiltinContextKeys.DAMAGE_BY_ENTITY,
                         event instanceof EntityDamageByEntityEvent)

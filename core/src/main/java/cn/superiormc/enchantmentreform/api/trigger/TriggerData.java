@@ -1,19 +1,22 @@
 package cn.superiormc.enchantmentreform.api.trigger;
 
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 public final class TriggerData {
 
@@ -41,6 +44,10 @@ public final class TriggerData {
 
     private final long tick;
 
+    private final List<ItemStack> outputItems;
+
+    private final List<BlockState> placedBlocks;
+
     private final Map<ContextKey<?>, Object> extras;
 
     private TriggerData(Builder builder) {
@@ -56,6 +63,8 @@ public final class TriggerData {
         triggerItem = builder.triggerItem;
         triggerItemSlot = builder.triggerItemSlot;
         tick = builder.tick;
+        outputItems = builder.outputItems;
+        placedBlocks = List.copyOf(builder.placedBlocks);
         extras = Map.copyOf(builder.extras);
     }
 
@@ -77,6 +86,24 @@ public final class TriggerData {
             builder.location(value.getLocation().add(0.5D, 0.5D, 0.5D));
         }
         return builder.build();
+    }
+
+    public List<ItemStack> outputItems() {
+        return outputItems.stream().map(ItemStack::clone).toList();
+    }
+
+    public List<BlockState> placedBlocks() {
+        return placedBlocks;
+    }
+
+    public TriggerData withCountedItem(ItemStack item) {
+        return toBuilder().extra(BuiltinContextKeys.COUNTED_ITEM, item.clone()).build();
+    }
+
+    public TriggerData withPlacedBlock(BlockState state) {
+        return toBuilder().block(state.getBlock())
+                .location(state.getLocation().add(0.5D, 0.5D, 0.5D))
+                .extra(BuiltinContextKeys.BROKEN_BLOCK_STATE, state).build();
     }
 
     public Player player() {
@@ -159,6 +186,8 @@ public final class TriggerData {
         private ItemStack triggerItem;
         private EquipmentSlot triggerItemSlot;
         private long tick;
+        private List<ItemStack> outputItems = List.of();
+        private List<BlockState> placedBlocks = List.of();
         private final Map<ContextKey<?>, Object> extras = new LinkedHashMap<>();
 
         private Builder(Player player) {
@@ -178,7 +207,21 @@ public final class TriggerData {
             triggerItem = data.triggerItem;
             triggerItemSlot = data.triggerItemSlot;
             tick = data.tick;
+            outputItems = data.outputItems;
+            placedBlocks = data.placedBlocks;
             extras.putAll(data.extras);
+        }
+
+        public Builder outputItems(List<ItemStack> items) {
+            outputItems = items.stream().filter(Objects::nonNull)
+                    .filter(item -> !item.getType().isAir() && item.getAmount() > 0)
+                    .map(ItemStack::clone).toList();
+            return this;
+        }
+
+        public Builder placedBlocks(List<BlockState> blocks) {
+            placedBlocks = List.copyOf(blocks);
+            return this;
         }
 
         public Builder source(Entity entity) {

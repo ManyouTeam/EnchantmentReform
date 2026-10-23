@@ -7,6 +7,13 @@ import cn.superiormc.enchantmentreform.managers.PowerConditionsManager;
 import cn.superiormc.enchantmentreform.objects.AbstractConfiguredSection;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -15,12 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
 
 public abstract class AbstractAbility extends AbstractConfiguredSection<PowerContext> {
 
@@ -180,6 +181,8 @@ public abstract class AbstractAbility extends AbstractConfiguredSection<PowerCon
                                                EntitySelector holderSelector) {
         if (selector == ItemSelector.CONTEXT) return valid(context.item());
         if (selector == ItemSelector.TRIGGER_ITEM) return valid(context.triggerItem());
+        if (selector == ItemSelector.COUNTED_ITEM) return valid(context.triggerData() == null ? null
+                : context.triggerData().extra(cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys.COUNTED_ITEM).orElse(null));
         Entity holder = context.entity(holderSelector);
         if (!(holder instanceof LivingEntity living)) return List.of();
         EntityEquipment equipment = living.getEquipment();

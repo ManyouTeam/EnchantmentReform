@@ -79,28 +79,39 @@ sources:
 
 ### Batched movement and repeated actions
 
-The default Agility sources award 3.5 XP per 10 blocks sprinted, 2.5 XP per 10 blocks swum, and 5 XP per 10 valid jumps, before multipliers, rate limits, and pressure reductions. XP and its feedback are emitted together when a batch completes.
+`count` selects a unit and `count-every` defines a batch. Normal power conditions select movement types. These sources give 3.5 XP per ten sprinted blocks, 2.5 XP per ten swum blocks, and 5 XP per ten jumps:
 
 ```yaml
 sources:
+  sprinting:
+    trigger: move
+    count: distance
+    count-every: 10
+    xp: '3.5 * {amount}'
+    display-xp: 3.5
+    conditions:
+      sprint:
+        type: sprinting
+        target: PLAYER
   swimming:
     trigger: move
-    movement-statistic: SWIM_ONE_CM
-    distance-per-reward: 10
+    count: distance
+    count-every: 10
     xp: '2.5 * {amount}'
     display-xp: 2.5
-    unit: '&7/10 blocks'
+    conditions:
+      swim:
+        type: swimming
+        target: PLAYER
   jumping:
     trigger: jump
-    trigger-count-per-reward: 10
+    count: events
+    count-every: 10
     xp: '5 * {amount}'
     display-xp: 5
-    unit: '&7/10 jumps'
 ```
 
-`movement-statistic` uses a vanilla distance statistic such as `SWIM_ONE_CM` or `SPRINT_ONE_CM` with `trigger: move`. `distance-per-reward` is measured in blocks (default 10, rounded to centimeters). Only increases in that statistic count; teleport distance does not. The next move trigger settles complete batches and passes their count as `{amount}`. Remaining distance carries over between activities in the same session. Each player's baseline is initialized on join or skill reload, so historical statistics are not rewarded; unclaimed progress is reset on logout or reload.
-
-`trigger-count-per-reward` batches valid automatic triggers after their conditions and shared anti-abuse checks. `{amount}` is 1 when the configured count completes; `xp` is the reward for the whole batch. It cannot be combined with `movement-statistic`. Sources without either option retain their original behavior. Pressure thresholds count completed payouts. Existing installations should copy the updated `sprinting`, `swimming`, and `jumping` source sections from the bundled `skills/agility.yml`; replacing the JAR alone does not replace existing values.
+Distance uses matching move events rather than vanilla cumulative statistics. The three old batching fields are ignored without separate errors. See [counting modes](counting.md) for batch amounts, fractional remainders, and item filters. Omitted `count` means events; sources scaling XP with damage must set `count: damage` explicitly.
 
 ## Experience multipliers
 

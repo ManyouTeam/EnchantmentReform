@@ -12,6 +12,7 @@ public final class TradeTrigger extends EventTrigger<PlayerTradeEvent> {
     @Override
     protected void handle(PlayerTradeEvent event, TriggerRuntime runtime) {
         runtime.fire(this, runtime.base(event.getPlayer(), event)
+                .outputItems(java.util.List.of(event.getTrade().getResult()))
                 .target(event.getMerchant())
                 .location(event.getMerchant().getLocation())
                 .triggerItem(event.getTrade().getResult(), EquipmentSlot.HAND));

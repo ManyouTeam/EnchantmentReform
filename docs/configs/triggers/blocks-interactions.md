@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-block-break`
 
+Supported `count`: `events`.
+
 Runs when a player breaks a block.
 
 | Context | Value |
@@ -30,6 +32,8 @@ Runs when a player breaks a block.
 
 ## `on-block-damage`
 
+Supported `count`: `events`.
+
 Runs when a player begins damaging a block.
 
 | Context | Value |
@@ -39,6 +43,8 @@ Runs when a player begins damaging a block.
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | Event item / `HAND` |
 
 ## `on-block-break-progress-update`
+
+Supported `count`: `events`.
 
 Runs for Paper block-break progress updates produced by a player.
 
@@ -51,6 +57,8 @@ Runs for Paper block-break progress updates produced by a player.
 
 ## `on-block-drop-item`
 
+Supported `count`: `events`, `items`.
+
 Runs when item entities are produced from a broken block.
 
 | Context | Value |
@@ -61,6 +69,8 @@ Runs when item entities are produced from a broken block.
 | Extra context | `broken_block_state` preserves the pre-break block state; drop entities remain on the event |
 
 ## `on-block-place`
+
+Supported `count`: `events`, `blocks`.
 
 Runs when a player places a block.
 
@@ -73,6 +83,8 @@ Runs when a player places a block.
 
 ## `on-inside-block`
 
+Supported `count`: `events`.
+
 Runs for Paper's inside-block event when the entity is a player.
 
 | Context | Value |
@@ -81,6 +93,8 @@ Runs for Paper's inside-block event when the entity is a player.
 | `BLOCK` / `LOCATION` | Block whose hitbox contains/processes the player and its center |
 
 ## `on-interact`
+
+Supported `count`: `events`.
 
 Runs for `PlayerInteractEvent`.
 
@@ -94,6 +108,8 @@ Runs for `PlayerInteractEvent`.
 
 ## `on-consume`
 
+Supported `count`: `events`.
+
 Runs when a player consumes an item.
 
 | Context | Value |
@@ -102,6 +118,8 @@ Runs when a player consumes an item.
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | Consumed item and hand |
 
 ## `on-name-entity`
+
+Supported `count`: `events`.
 
 Runs for Paper's player-name-entity event.
 
@@ -113,6 +131,8 @@ Runs for Paper's player-name-entity event.
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | Name tag from main or off hand when found |
 
 ## `on-vibration-receive`
+
+Supported `count`: `events`.
 
 Runs when a Sculk sensor is about to receive a vibration (game event) caused by a player.
 

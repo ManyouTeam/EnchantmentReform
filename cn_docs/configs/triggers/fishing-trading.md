@@ -19,6 +19,8 @@
 
 ## `on-fish`
 
+支持的 `count`：`events`、`items`。
+
 在 `PlayerFishEvent` 的每一种状态下执行。
 
 | 上下文 | 值 |
@@ -34,6 +36,8 @@
 
 ## `on-purchase`
 
+支持的 `count`：`events`、`items`。
+
 在 Paper 的玩家购买事件中执行。
 
 | 上下文 | 值 |
@@ -45,6 +49,8 @@
 | 额外上下文 | 商人配方、使用次数和购买状态仍保留在事件中 |
 
 ## `on-trade`
+
+支持的 `count`：`events`、`items`。
 
 在 Paper 的玩家交易事件中执行。
 

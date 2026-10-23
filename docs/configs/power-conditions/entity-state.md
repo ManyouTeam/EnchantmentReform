@@ -599,6 +599,8 @@ match:
 
 ---
 
+`item: COUNTED_ITEM` selects the current output stack during `count: items` evaluation. Conditions check each stack separately and sum only matching quantities. It does not match in other contexts; `CONTEXT` and `TRIGGER_ITEM` retain their meaning. See [counting modes](../counting.md).
+
 ## `catch_match_item`
 
 **Purpose:** Runs MatchItemFormat against the item entity caught by fishing.

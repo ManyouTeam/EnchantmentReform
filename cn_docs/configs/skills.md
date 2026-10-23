@@ -87,28 +87,39 @@ sources:
 
 ### 移动与重复动作累计结算
 
-默认敏捷来源调整为：每疾跑 10 格获得 3.5 XP，每游泳 10 格获得 2.5 XP，每有效跳跃 10 次获得 5 XP。以上为应用经验倍率、速率上限及压力衰减前的数值。累计满一批时才发放经验并发送一次经验提示。
+`count` 选择计量单位，`count-every` 设置每批要求，移动类型使用普通能力条件。下面的片段分别设置每疾跑 10 格获得 3.5 XP、每游泳 10 格获得 2.5 XP、每跳跃 10 次获得 5 XP：
 
 ```yaml
 sources:
+  sprinting:
+    trigger: move
+    count: distance
+    count-every: 10
+    xp: '3.5 * {amount}'
+    display-xp: 3.5
+    conditions:
+      sprint:
+        type: sprinting
+        target: PLAYER
   swimming:
     trigger: move
-    movement-statistic: SWIM_ONE_CM
-    distance-per-reward: 10
+    count: distance
+    count-every: 10
     xp: '2.5 * {amount}'
     display-xp: 2.5
-    unit: '&7/10 格'
+    conditions:
+      swim:
+        type: swimming
+        target: PLAYER
   jumping:
     trigger: jump
-    trigger-count-per-reward: 10
+    count: events
+    count-every: 10
     xp: '5 * {amount}'
     display-xp: 5
-    unit: '&7/10 次跳跃'
 ```
 
-`movement-statistic` 配合 `trigger: move` 使用，读取 `SWIM_ONE_CM`、`SPRINT_ONE_CM` 等原版距离统计。`distance-per-reward` 单位为格，默认 10，精度为厘米；只有对应统计的增量会计入，传送距离不会计入。达到阈值后，在下一次移动触发时结算完整批次，`{amount}` 表示本次批次数量。剩余距离在本次在线期间继续保留，切换活动不会清空。玩家加入或重载技能时初始化统计基线，不会补发历史距离；退出或重载会清空未结算进度。
-
-`trigger-count-per-reward` 在通过条件和共用反滥用检查后累计自动触发次数，满一批时 `{amount}` 为 1，`xp` 为整批奖励。它不能与 `movement-statistic` 同时使用。未配置这两个选项的来源沿用原有结算方式。压力阈值按完成结算的次数计算。已有服务器需要从新版 `skills/agility.yml` 同步 `sprinting`、`swimming`、`jumping` 三个来源段，单独替换 JAR 不会覆盖已有数值。
+距离按照符合条件的移动事件计算，不再使用原版累计统计。旧的三个累计字段不再读取，也不额外报错。批次数、小数余量和物品筛选见[计数方式](counting.md)。省略 `count` 时按事件次数计算，按伤害量发经验的来源须明确配置 `count: damage`。
 
 ## 经验倍率
 

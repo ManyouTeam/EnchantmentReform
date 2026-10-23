@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +20,9 @@ public final class FishTrigger extends EventTrigger<PlayerFishEvent> {
                 ? event.getPlayer().getInventory().getItemInOffHand()
                 : event.getPlayer().getInventory().getItemInMainHand();
         runtime.fire(this, runtime.base(event.getPlayer(), event)
+                .outputItems(event.getState() == PlayerFishEvent.State.CAUGHT_FISH
+                        && event.getCaught() instanceof org.bukkit.entity.Item item
+                        ? java.util.List.of(item.getItemStack()) : java.util.List.of())
                 .skill(event.getHook())
                 .target(event.getCaught()).location(event.getHook().getLocation())
                 .triggerItem(rod, hand)

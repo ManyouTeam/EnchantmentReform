@@ -31,6 +31,7 @@
 
 * [📄 Enchantments](configs/enchantment-configuration.md)
 * [🌟 Skills](configs/skills.md)
+* [🔢 Counting modes](configs/counting.md)
 * [🧵 Custom Items](configs/custom-items.md)
 * [🥕 Custom Attributes](configs/custom-attributes.md)
 * [🧩 Vanilla Enchantment Overrides](configs/vanilla-enchantment-overrides.md)

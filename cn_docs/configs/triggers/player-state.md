@@ -21,6 +21,8 @@
 
 ## `on-effect-tick`
 
+支持的 `count`：`events`。
+
 当 Paper 的瞬时或周期性效果 Tick 事件作用于玩家时执行。
 
 | 上下文 | 值 |
@@ -29,6 +31,8 @@
 | 额外上下文 | 效果类型和效果实例仍保留在 `EntityEffectTickEvent` 中 |
 
 ## `on-potion-effect`
+
+支持的 `count`：`events`。
 
 当玩家身上的药水效果被添加、改变或移除时执行。
 
@@ -40,6 +44,8 @@
 
 ## `on-exhaustion`
 
+支持的 `count`：`events`、`exhaustion`。
+
 当 Paper 报告玩家产生消耗度时执行。
 
 | 上下文 | 值 |
@@ -48,6 +54,8 @@
 | 额外上下文 | 消耗度数值和原因仍保留在 `EntityExhaustionEvent` 中 |
 
 ## `on-food-level-change`
+
+支持的 `count`：`events`。
 
 当玩家的饥饿值发生变化时执行。
 
@@ -60,6 +68,8 @@
 
 ## `on-air-change`
 
+支持的 `count`：`events`。
+
 当玩家的剩余空气值发生变化时执行。
 
 | 上下文 | 值 |
@@ -71,6 +81,8 @@
 
 ## `on-exp-change`
 
+支持的 `count`：`events`、`experience`。
+
 当玩家的经验数量发生变化时执行。
 
 | 上下文 | 值 |
@@ -81,6 +93,8 @@
 `{original_experience}` 会解析为能力修改器应用前的经验数量。
 
 ## `on-pickup-experience`
+
+支持的 `count`：`events`、`experience`。
 
 当玩家拾取 Paper 经验球时执行。
 

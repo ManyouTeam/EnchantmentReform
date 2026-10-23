@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-shoot`
 
+Supported `count`: `events`.
+
 Runs for `EntityShootBowEvent` when the shooter is a player.
 
 | Context | Value |
@@ -31,6 +33,8 @@ Runs for `EntityShootBowEvent` when the shooter is a player.
 | Difference | Does not start EnchantmentReform projectile continuation |
 
 ## `on-shoot-bow`
+
+Supported `count`: `events`.
 
 Uses the same initial context as `on-shoot`, then starts projectile tracking for the final `SKILL` entity when it is a projectile.
 
@@ -45,6 +49,8 @@ Uses the same initial context as `on-shoot`, then starts projectile tracking for
 
 ## `on-load-crossbow`
 
+Supported `count`: `events`.
+
 Runs when a player loads a crossbow.
 
 | Context | Value |
@@ -54,6 +60,8 @@ Runs when a player loads a crossbow.
 | Extra behavior | Cancelling the power can cancel/deny the underlying Paper event where supported |
 
 ## `on-projectile-launch`
+
+Supported `count`: `events`.
 
 Runs for a projectile launch whose shooter is a player.
 
@@ -67,6 +75,8 @@ Runs for a projectile launch whose shooter is a player.
 | Note | This generic launch trigger does not itself create tracked continuation |
 
 ## `on-projectile-tick`
+
+Supported `count`: `events`.
 
 Runs once per tick for a projectile tracked by `on-shoot-bow`.
 
@@ -82,6 +92,8 @@ Runs once per tick for a projectile tracked by `on-shoot-bow`.
 
 ## `on-projectile-hit`
 
+Supported `count`: `events`.
+
 Runs when a projectile hits after tracked data is resolved, or when a player-shot projectile can be resolved directly.
 
 | Context | Value |
@@ -96,6 +108,8 @@ Runs when a projectile hits after tracked data is resolved, or when a player-sho
 | Extra context | `projectile`; tracking ends when this event is handled |
 
 ## `on-riptide`
+
+Supported `count`: `events`.
 
 Runs when a player uses Riptide.
 

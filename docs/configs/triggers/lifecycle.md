@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-tick`
 
+Supported `count`: `events`.
+
 Runs periodically for each online player with an active enchantment. Configure the interval inside the trigger section:
 
 ```yaml
@@ -37,6 +39,8 @@ powers:
 
 ## `on-target-tick`
 
+Supported `count`: `events`.
+
 Runs periodically when the player is looking at an entity found by a 32-block entity ray trace.
 
 | Context | Value |
@@ -49,6 +53,8 @@ Runs periodically when the player is looking at an entity found by a 32-block en
 
 ## `on-spawn`
 
+Supported `count`: `events`.
+
 Runs one tick after a player joins, and also one tick after a player respawns.
 
 | Context | Value |
@@ -60,6 +66,8 @@ Runs one tick after a player joins, and also one tick after a player respawns.
 
 ## `on-respawn`
 
+Supported `count`: `events`.
+
 Runs one tick after `PlayerRespawnEvent`.
 
 | Context | Value |
@@ -69,6 +77,8 @@ Runs one tick after `PlayerRespawnEvent`.
 | `BLOCK` | Block at the respawn location |
 
 ## `on-activate`
+
+Supported `count`: `events`.
 
 Runs when an enchantment becomes active in an eligible equipment slot.
 
@@ -81,6 +91,8 @@ Runs when an enchantment becomes active in an eligible equipment slot.
 | Extra behavior | Executes specifically for the transitioning enchantment |
 
 ## `on-deactivate`
+
+Supported `count`: `events`.
 
 Runs when an enchantment stops being active.
 

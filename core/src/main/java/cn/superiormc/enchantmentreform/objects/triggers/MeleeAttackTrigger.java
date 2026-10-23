@@ -2,6 +2,7 @@ package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 import cn.superiormc.enchantmentreform.power.AttackCooldownUtil;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -22,6 +23,7 @@ public final class MeleeAttackTrigger extends EventTrigger<EntityDamageByEntityE
                 .location(event.getEntity().getLocation())
                 .triggerItem(player.getInventory().getItemInMainHand(), EquipmentSlot.HAND)
                 .extra(BuiltinContextKeys.ORIGINAL_DAMAGE, event.getDamage())
+                .extra(BuiltinContextKeys.FINAL_DAMAGE, event.getFinalDamage())
                 .extra(BuiltinContextKeys.ATTACK_COOLDOWN,
                         AttackCooldownUtil.consume(player, event.getEntity()))
                 .extra(BuiltinContextKeys.DAMAGE_CAUSE, event.getCause()));

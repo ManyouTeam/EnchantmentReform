@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-attack`
 
+Supported `count`: `events`, `damage`.
+
 Runs when the enchanted player is responsible for entity damage, including attributable projectile or trident damage.
 
 | Context | Value |
@@ -32,6 +34,8 @@ Runs when the enchanted player is responsible for entity damage, including attri
 
 ## `on-melee-attack`
 
+Supported `count`: `events`, `damage`.
+
 Runs only when the direct damager is the player.
 
 | Context | Value |
@@ -43,6 +47,8 @@ Runs only when the direct damager is the player.
 | Extra context | `original_damage`, `damage_cause`; mutable `damage` result |
 
 ## `on-damage`
+
+Supported `count`: `events`, `damage`.
 
 Runs when the enchanted player receives any damage, including environmental damage.
 
@@ -56,6 +62,8 @@ Runs when the enchanted player receives any damage, including environmental dama
 
 ## `on-damage-by-entity`
 
+Supported `count`: `events`, `damage`.
+
 Runs only when the enchanted player receives entity-caused damage.
 
 | Context | Value |
@@ -68,6 +76,8 @@ Runs only when the enchanted player receives entity-caused damage.
 
 ## `on-kill`
 
+Supported `count`: `events`, `items`.
+
 Runs when a player is recorded as the killer of an entity.
 
 | Context | Value |
@@ -78,6 +88,8 @@ Runs when a player is recorded as the killer of an entity.
 | Extra context | `original_experience`; mutable dropped experience |
 
 ## `on-death`
+
+Supported `count`: `events`.
 
 Runs when the enchanted player dies.
 
@@ -90,6 +102,8 @@ Runs when the enchanted player dies.
 
 ## `on-regain`
 
+Supported `count`: `events`, `healing`.
+
 Runs when the enchanted player regains health.
 
 | Context | Value |
@@ -98,6 +112,8 @@ Runs when the enchanted player regains health.
 | Extra context | `original_amount`; mutable regain amount; regain reason remains on the event |
 
 ## `on-combust`
+
+Supported `count`: `events`.
 
 Runs when the enchanted player is set on fire.
 
@@ -108,6 +124,8 @@ Runs when the enchanted player is set on fire.
 
 ## `on-knockback`
 
+Supported `count`: `events`.
+
 Runs for Paper's entity knockback event when the knocked entity is the enchanted player.
 
 | Context | Value |
@@ -117,6 +135,8 @@ Runs for Paper's entity knockback event when the knocked entity is the enchanted
 | Extra context | Knockback cause and vector remain available on the Paper event |
 
 ## `on-attempt-smash-attack`
+
+Supported `count`: `events`.
 
 Runs when a player attempts a Paper smash attack.
 
@@ -130,6 +150,8 @@ Runs when a player attempts a Paper smash attack.
 
 ## `on-lunge`
 
+Supported `count`: `events`.
+
 Runs for Paper's entity lunge event when the entity is a player.
 
 | Context | Value |
@@ -139,6 +161,8 @@ Runs for Paper's entity lunge event when the entity is a player.
 | Extra context | Lunge-specific values remain on the Paper event |
 
 ## `on-shield-block`
+
+Supported `count`: `events`, `blocked_damage`.
 
 Runs for incoming entity damage processed as a shield block.
 
@@ -152,6 +176,8 @@ Runs for incoming entity damage processed as a shield block.
 | Extra context | `original_damage` is the blocked amount; `damage_cause`; mutable `damage` result |
 
 ## `on-shield-disable`
+
+Supported `count`: `events`.
 
 Runs when Paper reports that a player's shield is disabled.
 

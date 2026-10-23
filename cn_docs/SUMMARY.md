@@ -31,6 +31,7 @@
 
 * [📄 附魔](configs/enchantment-configuration.md)
 * [🌟 技能系统](configs/skills.md)
+* [🔢 计数方式](configs/counting.md)
 * [🧵 自定义物品](configs/custom-items.md)
 * [🥕 自定义属性](configs/custom-attributes.md)
 * [🧩 原版附魔覆盖](configs/vanilla-enchantment-overrides.md)

@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-fish`
 
+Supported `count`: `events`, `items`.
+
 Runs for every `PlayerFishEvent` state.
 
 | Context | Value |
@@ -34,6 +36,8 @@ Use a fishing-state condition when a power should run only for states such as ca
 
 ## `on-purchase`
 
+Supported `count`: `events`, `items`.
+
 Runs for Paper's player purchase event.
 
 | Context | Value |
@@ -45,6 +49,8 @@ Runs for Paper's player purchase event.
 | Extra context | Merchant recipe, uses, and purchase state remain on the event |
 
 ## `on-trade`
+
+Supported `count`: `events`, `items`.
 
 Runs for Paper's player trade event.
 

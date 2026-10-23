@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-move`
 
+Supported `count`: `events`, `distance`.
+
 Runs only when `PlayerMoveEvent.hasChangedBlock()` is true.
 
 | Context | Value |
@@ -30,6 +32,8 @@ Runs only when `PlayerMoveEvent.hasChangedBlock()` is true.
 
 ## `on-input`
 
+Supported `count`: `events`.
+
 Runs when Paper reports a player input update.
 
 | Context | Value |
@@ -38,6 +42,8 @@ Runs when Paper reports a player input update.
 | Extra context | Forward, backward, left, right, jump, sprint, and sneak input state remains on `PlayerInputEvent` |
 
 ## `on-jump`
+
+Supported `count`: `events`.
 
 Runs for Paper's player jump event.
 
@@ -50,6 +56,8 @@ Runs for Paper's player jump event.
 
 ## `on-toggle-flight`
 
+Supported `count`: `events`.
+
 Runs when a player toggles flight.
 
 | Context | Value |
@@ -58,6 +66,8 @@ Runs when a player toggles flight.
 | Extra context | New flight state remains on `PlayerToggleFlightEvent`; cancellation is applied to cancellable events |
 
 ## `on-toggle-sneak`
+
+Supported `count`: `events`.
 
 Runs when a player toggles sneaking.
 

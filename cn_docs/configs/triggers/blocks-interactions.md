@@ -19,6 +19,8 @@
 
 ## `on-block-break`
 
+支持的 `count`：`events`。
+
 当玩家破坏方块时执行。
 
 | 上下文 | 值 |
@@ -30,6 +32,8 @@
 
 ## `on-block-damage`
 
+支持的 `count`：`events`。
+
 当玩家开始挖掘或破坏一个方块时执行。
 
 | 上下文 | 值 |
@@ -39,6 +43,8 @@
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | 事件物品 / `HAND` |
 
 ## `on-block-break-progress-update`
+
+支持的 `count`：`events`。
 
 当 Paper 报告由玩家产生的方块破坏进度更新时执行。
 
@@ -51,6 +57,8 @@
 
 ## `on-block-drop-item`
 
+支持的 `count`：`events`、`items`。
+
 当被破坏方块生成物品实体时执行。
 
 | 上下文 | 值 |
@@ -61,6 +69,8 @@
 | 额外上下文 | `broken_block_state` 会保留方块破坏前的状态；掉落物实体仍保留在事件中 |
 
 ## `on-block-place`
+
+支持的 `count`：`events`、`blocks`。
 
 当玩家放置方块时执行。
 
@@ -73,6 +83,8 @@
 
 ## `on-inside-block`
 
+支持的 `count`：`events`。
+
 当 Paper 的实体处于方块内部事件中的实体是玩家时执行。
 
 | 上下文 | 值 |
@@ -81,6 +93,8 @@
 | `BLOCK` / `LOCATION` | 碰撞箱包含或正在处理该玩家的方块，以及该方块的中心位置 |
 
 ## `on-interact`
+
+支持的 `count`：`events`。
 
 在 `PlayerInteractEvent` 中执行。
 
@@ -94,6 +108,8 @@
 
 ## `on-consume`
 
+支持的 `count`：`events`。
+
 当玩家食用或消耗一个物品时执行。
 
 | 上下文 | 值 |
@@ -102,6 +118,8 @@
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | 被消耗的物品及事件使用的手 |
 
 ## `on-name-entity`
+
+支持的 `count`：`events`。
 
 在 Paper 的玩家为实体命名事件中执行。
 
@@ -113,6 +131,8 @@
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | 能够找到时，为主手或副手中的命名牌 |
 
 ## `on-vibration-receive`
+
+支持的 `count`：`events`。
 
 当幽匿传感器即将接收到由玩家产生的振动（游戏事件）时执行。
 

@@ -19,6 +19,8 @@
 
 ## `on-move`
 
+支持的 `count`：`events`、`distance`。
+
 仅当 `PlayerMoveEvent.hasChangedBlock()` 为 `true` 时执行。
 
 | 上下文 | 值 |
@@ -30,6 +32,8 @@
 
 ## `on-input`
 
+支持的 `count`：`events`。
+
 当 Paper 报告玩家输入状态发生更新时执行。
 
 | 上下文 | 值 |
@@ -38,6 +42,8 @@
 | 额外上下文 | 前进、后退、左移、右移、跳跃、疾跑和潜行输入状态仍保留在 `PlayerInputEvent` 中 |
 
 ## `on-jump`
+
+支持的 `count`：`events`。
 
 在 Paper 的玩家跳跃事件中执行。
 
@@ -50,6 +56,8 @@
 
 ## `on-toggle-flight`
 
+支持的 `count`：`events`。
+
 当玩家切换飞行状态时执行。
 
 | 上下文 | 值 |
@@ -58,6 +66,8 @@
 | 额外上下文 | 新的飞行状态仍保留在 `PlayerToggleFlightEvent` 中；对于可取消事件，取消状态会应用到事件 |
 
 ## `on-toggle-sneak`
+
+支持的 `count`：`events`。
 
 当玩家切换潜行状态时执行。
 

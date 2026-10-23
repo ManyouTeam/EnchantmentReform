@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-target`
 
+Supported `count`: `events`.
+
 Runs when an entity selects a player as its target.
 
 | Context | Value |
@@ -30,6 +32,8 @@ Runs when an entity selects a player as its target.
 
 ## `on-untag`
 
+Supported `count`: `events`.
+
 Runs when an entity that was remembered as targeting a player changes to a non-player or clears its target.
 
 | Context | Value |
@@ -40,6 +44,8 @@ Runs when an entity that was remembered as targeting a player changes to a non-p
 | Extra context | `target_reason` |
 
 ## `on-creeper-explode`
+
+Supported `count`: `events`.
 
 Runs for an explosion-prime event when the priming entity is a player or a creeper currently targeting a player.
 
@@ -53,6 +59,8 @@ Runs for an explosion-prime event when the priming entity is a player or a creep
 
 ## `on-enderman-attack-player`
 
+Supported `count`: `events`.
+
 Runs for Paper's Enderman attack-player event when an Enderman checks whether a player is looking directly at it. Cancelling prevents gaze-triggered aggression without preventing retaliation when the player attacks first.
 
 | Context | Value |
@@ -64,6 +72,8 @@ Runs for Paper's Enderman attack-player event when an Enderman checks whether a 
 
 ## `on-phantom-pre-spawn`
 
+Supported `count`: `events`.
+
 Runs for Paper's phantom pre-spawn event when the spawning entity is a player.
 
 | Context | Value |
@@ -73,6 +83,8 @@ Runs for Paper's phantom pre-spawn event when the spawning entity is a player.
 | Extra behavior | Cancelling sets `shouldAbortSpawn` |
 
 ## `on-warden-anger-change`
+
+Supported `count`: `events`.
 
 Runs when Paper reports a Warden anger change whose target is a player.
 

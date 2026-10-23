@@ -2,28 +2,21 @@ package cn.superiormc.enchantmentreform.managers;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.api.trigger.AbstractTrigger;
+import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerResult;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
+import cn.superiormc.enchantmentreform.objects.counting.CountMode;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.objects.skills.SkillSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +24,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 public final class SkillManager extends AbstractManager {
 
@@ -303,23 +306,17 @@ public final class SkillManager extends AbstractManager {
                 }
                 PowerContext context = new PowerContext(null, getLevel(player, skill), trigger,
                         data, data.triggerItem(), data.triggerItemSlot(), result);
-                boolean matches = source.matches(context);
-                double amount = source.tracksMovement()
-                        ? source.movementAmount(player, matches) : sourceAmount(data);
-                if (!matches || source.tracksMovement() && amount <= 0.0D
-                        || AntiAbuseManager.antiAbuseManager == null
+                BigDecimal quantity = source.measure(context);
+                if (quantity.signum() <= 0 || AntiAbuseManager.antiAbuseManager == null
                         || !AntiAbuseManager.antiAbuseManager.allows(
                         source.getSection("anti-abuse"), context,
                         "skill/" + skill.id() + "/" + source.id(), true)) {
                     continue;
                 }
-                if (source.batchesTriggers()) {
-                    amount = source.batchAmount(player, amount);
-                    if (amount <= 0.0D) {
-                        continue;
-                    }
-                }
-                grantSourceExperience(player, skill, source, context, amount);
+                PowerContext counted = source.settle(context, quantity);
+                if (counted == null) continue;
+                double amount = counted.triggerData().extra(BuiltinContextKeys.COUNT_AMOUNT).orElse(0D);
+                grantSourceExperience(player, skill, source, counted, amount);
             }
         }
     }
@@ -359,7 +356,9 @@ public final class SkillManager extends AbstractManager {
                 "skill/" + skill.id() + "/" + source.id(), true)) {
             return 0.0D;
         }
-        return grantSourceExperience(player, skill, source, context, amount);
+        PowerContext counted = source.settle(context, CountMode.positive(amount));
+        return counted == null ? 0D : grantSourceExperience(player, skill, source, counted,
+                counted.triggerData().extra(BuiltinContextKeys.COUNT_AMOUNT).orElse(0D));
     }
 
     public void addExperience(Player player, SkillDefinition skill, double amount) {
@@ -394,13 +393,6 @@ public final class SkillManager extends AbstractManager {
         }
         data.set(levelKey(skill), PersistentDataType.INTEGER, level);
         data.set(experienceKey(skill), PersistentDataType.DOUBLE, Math.max(0.0D, experience));
-    }
-
-    private double sourceAmount(TriggerData data) {
-        if (data.event() instanceof EntityDamageEvent damage) {
-            return Math.max(0.0D, damage.getFinalDamage());
-        }
-        return 1.0D;
     }
 
     private void applyReward(Player player, SkillDefinition skill, int level) {
@@ -600,7 +592,7 @@ public final class SkillManager extends AbstractManager {
     public void playerJoin(Player player) {
         for (SkillDefinition skill : skills.values()) {
             for (SkillSource source : skill.sources()) {
-                source.trackMovement(player);
+                source.initializeCounting(player);
             }
         }
     }

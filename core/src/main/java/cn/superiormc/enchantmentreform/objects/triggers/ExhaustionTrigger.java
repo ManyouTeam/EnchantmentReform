@@ -12,7 +12,9 @@ public final class ExhaustionTrigger extends EventTrigger<EntityExhaustionEvent>
     @Override
     protected void handle(EntityExhaustionEvent event, TriggerRuntime runtime) {
         if (event.getEntity() instanceof Player player) {
-            runtime.fire(this, runtime.base(player, event));
+            runtime.fire(this, runtime.base(player, event)
+                    .extra(cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys.EXHAUSTION_AMOUNT,
+                            (double) event.getExhaustion()));
         }
     }
 }

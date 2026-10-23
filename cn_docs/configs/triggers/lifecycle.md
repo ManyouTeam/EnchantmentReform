@@ -19,6 +19,8 @@
 
 ## `on-tick`
 
+支持的 `count`：`events`。
+
 对每个拥有激活附魔的在线玩家周期性执行。可在触发器部分配置执行间隔：
 
 ```yaml
@@ -37,6 +39,8 @@ powers:
 
 ## `on-target-tick`
 
+支持的 `count`：`events`。
+
 当玩家视线通过 32 格实体射线追踪命中某个实体时，周期性执行。
 
 | 上下文 | 值 |
@@ -49,6 +53,8 @@ powers:
 
 ## `on-spawn`
 
+支持的 `count`：`events`。
+
 玩家加入服务器后的 1 Tick 执行一次，玩家重生后的 1 Tick 也会执行一次。
 
 | 上下文 | 值 |
@@ -60,6 +66,8 @@ powers:
 
 ## `on-respawn`
 
+支持的 `count`：`events`。
+
 在 `PlayerRespawnEvent` 后的 1 Tick 执行。
 
 | 上下文 | 值 |
@@ -69,6 +77,8 @@ powers:
 | `BLOCK` | 重生位置处的方块 |
 
 ## `on-activate`
+
+支持的 `count`：`events`。
 
 当某个附魔在符合要求的装备槽位中变为激活状态时执行。
 
@@ -81,6 +91,8 @@ powers:
 | 额外行为 | 仅针对正在发生状态变化的那个附魔执行 |
 
 ## `on-deactivate`
+
+支持的 `count`：`events`。
 
 当某个附魔不再处于激活状态时执行。
 

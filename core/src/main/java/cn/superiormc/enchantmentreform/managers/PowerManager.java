@@ -2,12 +2,13 @@ package cn.superiormc.enchantmentreform.managers;
 
 import cn.superiormc.enchantmentreform.objects.ObjectPower;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerStateStore;
-import org.bukkit.entity.Entity;
-import org.bukkit.block.Block;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 
 public final class PowerManager extends AbstractManager {
 
@@ -76,6 +77,7 @@ public final class PowerManager extends AbstractManager {
         AbilityManager.abilityManager.onEntityUnload(entityId);
         PowerModifiersManager.powerModifiers.onEntityUnload(entityId);
         PowerConditionsManager.powerConditions.onEntityUnload(entityId);
+        powers.values().forEach(power -> power.clearCounting(entityId));
         PowerStateStore.clearEntity(entityId);
     }
 

@@ -7,17 +7,27 @@ import cn.superiormc.enchantmentreform.managers.PowerManager;
 import cn.superiormc.enchantmentreform.managers.PowerModifiersManager;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerStateStore;
+import cn.superiormc.enchantmentreform.objects.counting.CountBatch;
+import cn.superiormc.enchantmentreform.objects.counting.TriggerCounter;
 import cn.superiormc.enchantmentreform.power.PowerExecutionResult;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ObjectPower extends AbstractConfiguredSection<PowerContext> {
 
     protected boolean enabled;
 
     private final PowerVariables variables;
+
+    private record TriggerCounting(TriggerCounter counter, CountBatch batches) { }
+
+    private final Map<String, TriggerCounting> counters = new ConcurrentHashMap<>();
 
     public ObjectPower(String id, ConfigurationSection section) {
         this(id, section, PowerVariables.from(section.getConfigurationSection("variables")));
@@ -27,6 +37,13 @@ public class ObjectPower extends AbstractConfiguredSection<PowerContext> {
         super(id, section);
         enabled = section.getBoolean("enabled", true);
         this.variables = variables == null ? PowerVariables.empty() : variables;
+        for (String key : section.getKeys(false)) {
+            ConfigurationSection configured = section.getConfigurationSection(key);
+            if (key.startsWith("on-") && configured != null) {
+                counters.put(key, new TriggerCounting(new TriggerCounter(configured,
+                        "enchantmentreform:" + key.substring(3).replace('-', '_')), new CountBatch(configured, true)));
+            }
+        }
     }
 
     public PowerExecutionResult executeTrigger(PowerContext context) {
@@ -52,6 +69,29 @@ public class ObjectPower extends AbstractConfiguredSection<PowerContext> {
                 || AntiAbuseManager.antiAbuseManager.allows(
                 triggerSection.getConfigurationSection("anti-abuse"), context,
                 "power/" + id + "/" + context.trigger().key(), false));
+    }
+
+    /** Count matching quantities before applying the power's chance, cooldown, and use limits. */
+    public PowerContext prepareTrigger(PowerContext context) {
+        ConfigurationSection configured = section.getConfigurationSection(context.trigger().configKey());
+        if (configured == null) {
+            return null;
+        }
+        TriggerCounting counting = counters.computeIfAbsent(context.trigger().configKey(), key ->
+                new TriggerCounting(new TriggerCounter(configured, context.trigger().key().toString()),
+                        new CountBatch(configured, true)));
+        var quantity = counting.counter().measure(context, value -> PowerConditionsManager.powerConditions.matches(
+                configured.getConfigurationSection("conditions"), value));
+        if (quantity.signum() <= 0 || AntiAbuseManager.antiAbuseManager != null
+                && !AntiAbuseManager.antiAbuseManager.allows(configured.getConfigurationSection("anti-abuse"),
+                context, "power/" + id + "/" + context.trigger().key(), false)) {
+            return null;
+        }
+        return counting.batches().settle(context, quantity);
+    }
+
+    public void clearCounting(UUID player) {
+        counters.values().forEach(counting -> counting.batches().clear(player));
     }
 
     public boolean willUseThisPower(Entity entity, Entity skillEntity, int level, String eventKey) {

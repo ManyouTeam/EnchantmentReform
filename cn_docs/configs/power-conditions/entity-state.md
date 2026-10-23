@@ -599,6 +599,8 @@ match:
 
 ---
 
+`item: COUNTED_ITEM` 用于 `count: items` 的逐项产物筛选。条件分别检查每个产物堆，只累计匹配数量。此选择器在其他场景中不匹配，`CONTEXT` 和 `TRIGGER_ITEM` 的含义不变。见[计数方式](../counting.md)。
+
 ## `catch_match_item`
 
 **用途：**对钓鱼事件中钓到的物品实体执行 MatchItemFormat。

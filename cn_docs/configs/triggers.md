@@ -12,6 +12,9 @@ powers:
 
 EnchantmentReform 目前注册了 **63 个内置触发器**。
 
+
+技能来源与能力均可使用 `count` 选择计量单位，使用 `count-every` 按批次结算。支持范围和示例见[计数方式](counting.md)。
+
 ## 参考页面
 
 * [Tick 与生命周期触发器](triggers/lifecycle.md)

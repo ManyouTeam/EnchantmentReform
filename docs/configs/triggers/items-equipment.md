@@ -19,6 +19,8 @@ When a role is marked **player**, it resolves to the same entity as `PLAYER`. A 
 
 ## `on-item-damage`
 
+Supported `count`: `events`, `durability`.
+
 Runs when one of the player's items takes durability damage.
 
 | Context | Value |
@@ -29,6 +31,8 @@ Runs when one of the player's items takes durability damage.
 | Extra context | `original_item_damage`; mutable item-damage result |
 
 ## `on-item-group-cooldown`
+
+Supported `count`: `events`.
 
 Runs for Paper's item cooldown-group event.
 
@@ -41,6 +45,8 @@ Runs for Paper's item cooldown-group event.
 
 ## `on-item-held`
 
+Supported `count`: `events`.
+
 Runs when the selected hotbar slot changes.
 
 | Context | Value |
@@ -50,6 +56,8 @@ Runs when the selected hotbar slot changes.
 | Extra context | Previous and new slot indexes remain on the event |
 
 ## `on-swap-hand`
+
+Supported `count`: `events`.
 
 Runs when main-hand and off-hand items are swapped.
 
@@ -61,6 +69,8 @@ Runs when main-hand and off-hand items are swapped.
 
 ## `on-enchant-item`
 
+Supported `count`: `events`.
+
 Runs when a player enchants an item through `EnchantItemEvent`.
 
 | Context | Value |
@@ -70,6 +80,8 @@ Runs when a player enchants an item through `EnchantItemEvent`.
 | Extra context | `original_experience` is the displayed level requirement; `enchantment_level_cost` is the 1/2/3 levels actually consumed; `original_lapis` is the selected lapis cost; mutable experience result; offered enchantments remain on the event |
 
 ## `on-elytra-boost`
+
+Supported `count`: `events`.
 
 Runs when a player uses a firework to boost Elytra flight.
 
