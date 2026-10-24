@@ -285,8 +285,8 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
                 "effective_value", String.valueOf(value),
                 "attribute_enabled", String.valueOf(attribute.isEnabledForPlayer(player)),
                 "attribute_status", CommonUtil.parseLang(player, attribute.isEnabledForPlayer(player)
-                        ? "{lang:attribute-detail-status-enabled}"
-                        : "{lang:attribute-detail-status-disabled}"),
+                ? "{lang:attribute-detail-status-enabled}"
+                : "{lang:attribute-detail-status-disabled}"),
                 "value", String.valueOf(value),
                 "minimum_value", String.valueOf(attribute.getMinimumValue()),
                 "maximum_value", String.valueOf(attribute.getMaximumValue()),

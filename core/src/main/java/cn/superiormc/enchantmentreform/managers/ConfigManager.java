@@ -6,6 +6,7 @@ import cn.superiormc.enchantmentreform.objects.menus.ObjectAttributeMenu;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectMenu;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectSkillMenu;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
+import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,23 +15,15 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class ConfigManager extends AbstractManager {
 
     public static ConfigManager configManager;
-
-    private static final List<String> MENU_FILES = List.of(
-            "enchantment-info", "attribute-info", "skill-info", "skill-detail",
-            "attribute-allocation", "attribute-detail", "main");
 
     public FileConfiguration config;
 
@@ -38,22 +31,18 @@ public class ConfigManager extends AbstractManager {
 
     public Map<String, SkillDefinition> skillConfigs = new LinkedHashMap<>();
 
-    private final YamlConfiguration menuConfig = new YamlConfiguration();
+    public Map<String, ObjectMenu> menuConfigs = new LinkedHashMap<>();
 
-    private final ConfigurationSection enchantmentMenu;
+    private YamlConfiguration menuSettings = new YamlConfiguration();
 
     public ConfigManager() {
         configManager = this;
         EnchantmentReform.instance.reloadConfig();
         config = EnchantmentReform.instance.getConfig();
-        config.addDefault("anvil.bypass-enchantment-level-limit", false);
-        config.options().copyDefaults(true);
         EnchantmentReform.instance.saveConfig();
         initAttributeConfigs();
         initSkillConfigs();
-        loadMenus();
         initMenuConfigs();
-        enchantmentMenu = getSection("menu.enchantment-info");
     }
 
     public void reloadAttributeConfigs() {
@@ -64,18 +53,22 @@ public class ConfigManager extends AbstractManager {
         initSkillConfigs();
     }
 
+    public void reloadMenuConfigs() {
+        initMenuConfigs();
+    }
+
     private void initAttributeConfigs() {
         attributeConfigs.clear();
         File directory = new File(EnchantmentReform.instance.getDataFolder(), "attributes");
         if (!directory.exists() && !directory.mkdirs()) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create custom attribute directory: " + directory);
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
             return;
         }
-        for (File file : findAttributeFiles(directory)) {
+        for (File file : CommonUtil.getYamlFiles(directory)) {
             String id = file.getName().substring(0, file.getName().length() - 4)
                     .toLowerCase(Locale.ROOT);
             try {
-                YamlConfiguration config = InitManager.loadConfiguration(file, "attributes/" + file.getName().toLowerCase(Locale.ROOT));
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
                 ObjectCustomAttribute attribute = new ObjectCustomAttribute(id, config);
                 if (!attribute.isEnabled()) {
                     continue;
@@ -97,19 +90,14 @@ public class ConfigManager extends AbstractManager {
         }
         File directory = new File(EnchantmentReform.instance.getDataFolder(), "skills");
         if (!directory.exists() && !directory.mkdirs()) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create skill directory: " + directory);
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
             return;
         }
-        File[] files = directory.listFiles((ignored, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".yml"));
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
+        for (File file : CommonUtil.getYamlFiles(directory)) {
             String id = file.getName().substring(0, file.getName().length() - 4)
                     .toLowerCase(Locale.ROOT);
             try {
-                YamlConfiguration config = InitManager.loadConfiguration(file, "skills/" + file.getName());
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
                 if (!config.getBoolean("enabled", true)) {
                     continue;
                 }
@@ -124,54 +112,58 @@ public class ConfigManager extends AbstractManager {
         }
     }
 
-    private void loadMenus() {
+    private void initMenuConfigs() {
+        menuConfigs.clear();
+        menuSettings = new YamlConfiguration();
         File directory = new File(EnchantmentReform.instance.getDataFolder(), "menus");
         if (!directory.exists() && !directory.mkdirs()) {
             ErrorManager.errorManager.sendErrorMessage(
                     "§cError: Could not create menu configuration directory: " + directory);
             return;
         }
-        loadMenuFile(directory, "settings", null);
-        for (String menu : MENU_FILES) {
-            loadMenuFile(directory, menu, menu);
+        File settingsFile = new File(directory, "settings.yml");
+        try {
+            menuSettings = YamlConfiguration.loadConfiguration(settingsFile);
+        } catch (Exception exception) {
+            ErrorManager.errorManager.sendErrorMessage(
+                    "§cError: Could not load menu configuration menus/settings.yml: " + exception.getMessage());
         }
-        File[] customMenus = directory.listFiles((ignored, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".yml")
-                        && !name.equalsIgnoreCase("settings.yml"));
-        if (customMenus != null) {
-            Set<String> loaded = new LinkedHashSet<>(MENU_FILES);
-            for (File file : customMenus) {
-                String id = file.getName().substring(0, file.getName().length() - 4)
-                        .toLowerCase(Locale.ROOT);
-                if (loaded.add(id)) {
-                    loadMenuFile(directory, id, id);
-                }
-            }
-        }
-    }
-
-    private void initMenuConfigs() {
-        ObjectMenu.commonMenus.clear();
-        for (String id : getMenuIds()) {
-            ConfigurationSection section = getMenu(id);
-            if (id.equals("enchantment-info")) {
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            if (file.equals(settingsFile)) {
                 continue;
             }
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            String resource = "menus/" + directory.toPath().relativize(file.toPath())
+                    .toString().replace(File.separatorChar, '/');
             try {
+                YamlConfiguration section = YamlConfiguration.loadConfiguration(file);
                 ObjectMenu menu = switch (id) {
                     case "skill-detail" -> new ObjectSkillMenu(id, section);
                     case "attribute-detail" -> new ObjectAttributeMenu(id, section);
+                    case "enchantment-info" -> {
+                        ObjectMenu enchantmentMenu = new ObjectMenu(id, section, "buttons", false);
+                        enchantmentMenu.initMenu();
+                        yield enchantmentMenu;
+                    }
                     default -> new ObjectMenu(id, section);
                 };
-                ObjectMenu.commonMenus.put(id, menu);
+                if (menuConfigs.putIfAbsent(id, menu) != null) {
+                    throw new IllegalArgumentException("Duplicate menu id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded menu: " + id + ".yml!");
             } catch (Throwable throwable) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load menu " + id + ": " + throwable.getMessage());
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load menu " + resource + ": " + throwable.getMessage());
             }
         }
     }
 
     public ConfigurationSection getEnchantmentMenu() {
-        return enchantmentMenu;
+        return getMenu("enchantment-info");
+    }
+
+    public ConfigurationSection getMenuSettings() {
+        return menuSettings;
     }
 
     public ConfigurationSection getSupportedItems() {
@@ -183,15 +175,15 @@ public class ConfigManager extends AbstractManager {
     }
 
     public boolean getBoolean(String path) {
-        return configuration(path).getBoolean(normalizePath(path), false);
+        return config.getBoolean(path, false);
     }
 
     public boolean getBoolean(String path, boolean defaultValue) {
-        return configuration(path).getBoolean(normalizePath(path), defaultValue);
+        return config.getBoolean(path, defaultValue);
     }
 
     public String getString(String path, String... args) {
-        String s = configuration(path).getString(normalizePath(path));
+        String s = config.getString(path);
         if (s == null) {
             if (args.length == 0) {
                 return null;
@@ -211,29 +203,26 @@ public class ConfigManager extends AbstractManager {
     }
 
     public int getInt(String path, int defaultValue) {
-        return configuration(path).getInt(normalizePath(path), defaultValue);
+        return config.getInt(path, defaultValue);
     }
 
     public double getDouble(String path, double defaultValue) {
-        return configuration(path).getDouble(normalizePath(path), defaultValue);
+        return config.getDouble(path, defaultValue);
     }
 
     public ConfigurationSection getSection(String path) {
-        FileConfiguration selected = configuration(path);
-        String normalized = normalizePath(path);
-        if (selected.getConfigurationSection(normalized) == null) {
+        if (config.getConfigurationSection(path) == null) {
             return new MemoryConfiguration();
         }
-        return selected.getConfigurationSection(normalized);
+        return config.getConfigurationSection(path);
     }
 
     public ConfigurationSection getMenu(String id) {
         if (id == null) {
             return new MemoryConfiguration();
         }
-        ConfigurationSection section = menuConfig.getConfigurationSection(
-                id.toLowerCase(Locale.ROOT));
-        return section == null ? new MemoryConfiguration() : section;
+        ObjectMenu menu = menuConfigs.get(id.toLowerCase(Locale.ROOT));
+        return menu == null ? new MemoryConfiguration() : menu.getConfig();
     }
 
     public ObjectCustomAttribute getAttribute(String id) {
@@ -245,7 +234,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     public ObjectMenu getMenuObject(String id) {
-        ObjectMenu menu = ObjectMenu.commonMenus.get(id.toLowerCase(Locale.ROOT));
+        ObjectMenu menu = id == null ? null : menuConfigs.get(id.toLowerCase(Locale.ROOT));
         if (menu == null) {
             throw new IllegalArgumentException("Unknown menu: " + id);
         }
@@ -253,63 +242,10 @@ public class ConfigManager extends AbstractManager {
     }
 
     public boolean hasMenu(String id) {
-        return id != null && menuConfig.isConfigurationSection(id.toLowerCase(Locale.ROOT));
+        return id != null && menuConfigs.containsKey(id.toLowerCase(Locale.ROOT));
     }
 
     public Collection<String> getMenuIds() {
-        return menuConfig.getKeys(false).stream()
-                .filter(menuConfig::isConfigurationSection)
-                .toList();
-    }
-
-    private List<File> findAttributeFiles(File directory) {
-        List<File> result = new ArrayList<>();
-        File[] entries = directory.listFiles();
-        if (entries == null) {
-            return result;
-        }
-        for (File entry : entries) {
-            if (entry.isFile()
-                    && entry.getName().toLowerCase(Locale.ROOT).endsWith(".yml")) {
-                result.add(entry);
-            }
-        }
-        result.sort(Comparator.comparing(File::getName));
-        return result;
-    }
-
-    private void loadMenuFile(File directory, String fileName, String sectionName) {
-        String resource = "menus/" + fileName + ".yml";
-        File file = new File(directory, fileName + ".yml");
-        YamlConfiguration loaded;
-        try {
-            loaded = InitManager.loadConfiguration(file, resource);
-        } catch (Exception exception) {
-            ErrorManager.errorManager.sendErrorMessage(
-                    "§cError: Could not load menu configuration " + resource + ": " + exception.getMessage());
-            return;
-        }
-        ConfigurationSection target = sectionName == null
-                ? menuConfig : menuConfig.createSection(sectionName);
-        copySection(loaded, target);
-    }
-
-    private static void copySection(ConfigurationSection source, ConfigurationSection target) {
-        for (String key : source.getKeys(false)) {
-            ConfigurationSection child = source.getConfigurationSection(key);
-            if (child == null) {
-                target.set(key, source.get(key));
-            } else {
-                copySection(child, target.createSection(key));
-            }
-        }
-    }
-
-    private FileConfiguration configuration(String path) {
-        return path != null && path.startsWith("menu.") ? menuConfig : config;
-    }
-
-    private static String normalizePath(String path) {
-        return path != null && path.startsWith("menu.") ? path.substring("menu.".length()) : path;
+        return List.copyOf(menuConfigs.keySet());
     }
 }

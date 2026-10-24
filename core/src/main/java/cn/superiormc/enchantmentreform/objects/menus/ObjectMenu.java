@@ -12,8 +12,6 @@ import java.util.Map;
 
 public class ObjectMenu {
 
-    public static Map<String, ObjectMenu> commonMenus = new LinkedHashMap<>();
-
     private final String id;
 
     private final ConfigurationSection config;
@@ -33,7 +31,7 @@ public class ObjectMenu {
         initMenu();
     }
 
-    protected ObjectMenu(String id, ConfigurationSection config, String buttonPath, boolean validateLayout) {
+    public ObjectMenu(String id, ConfigurationSection config, String buttonPath, boolean validateLayout) {
         this.id = id;
         this.config = config;
         this.buttonPath = buttonPath;

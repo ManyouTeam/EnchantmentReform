@@ -12,7 +12,7 @@ public class Dupe {
     private static final NamespacedKey antiDupe = new NamespacedKey(EnchantmentReform.instance, "anti_dupe");
 
     public static ItemStack markGuiDisplayItem(ItemStack item) {
-        if (!ConfigManager.configManager.getBoolean("menu.anti-dupe-checker")) {
+        if (!ConfigManager.configManager.getMenuSettings().getBoolean("anti-dupe-checker", true)) {
             return item;
         }
         if (item == null || item.getType().isAir()) {

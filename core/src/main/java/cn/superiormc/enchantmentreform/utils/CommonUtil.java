@@ -11,11 +11,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.projectiles.ProjectileSource;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -60,18 +56,6 @@ public class CommonUtil {
         }
         AttributeInstance attribute = living.getAttribute(Attribute.MAX_ABSORPTION);
         return attribute == null ? living.getHealth() : attribute.getValue();
-    }
-
-    public static ItemStack getSlotItem(EntityEquipment equipment, String slot) {
-        return switch (slot.toUpperCase(Locale.ROOT).replace('-', '_')) {
-            case "MAIN_HAND" -> equipment.getItemInMainHand();
-            case "OFF_HAND" -> equipment.getItemInOffHand();
-            case "HELMET" -> equipment.getHelmet();
-            case "CHESTPLATE" -> equipment.getChestplate();
-            case "LEGGINGS" -> equipment.getLeggings();
-            case "BOOTS" -> equipment.getBoots();
-            default -> null;
-        };
     }
 
     public static Map<String, Boolean> loadedPlugins = new HashMap<>();
@@ -175,18 +159,6 @@ public class CommonUtil {
         MythicBukkit.inst().getMobManager().getMythicMob(mobID).ifPresent(mob -> mob.spawn(BukkitAdapter.adapt(location), level));
     }
 
-    public static void mkDir(File dir) {
-        if (!dir.exists()) {
-            File parentFile = dir.getParentFile();
-            if (parentFile == null) {
-                return;
-            }
-            String parentPath = parentFile.getPath();
-            mkDir(new File(parentPath));
-            dir.mkdir();
-        }
-    }
-
     public static NamespacedKey parseNamespacedKey(String key) {
         String[] keySplit = key.split(":");
         if (keySplit.length == 1) {
@@ -259,17 +231,21 @@ public class CommonUtil {
         }
     }
 
-    public static boolean hasEnoughDurability(ItemStack itemStack, int requiredDurability) {
-        if (requiredDurability <= 0 || itemStack == null || itemStack.getType().isAir()) {
-            return true;
+    public static List<File> getYamlFiles(File dir) {
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) {
+            return Collections.emptyList();
         }
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null || itemMeta.isUnbreakable() || !(itemMeta instanceof Damageable damageable)) {
-            return true;
+
+        Arrays.sort(files, Comparator.comparing(File::getName));
+        List<File> yamlFiles = new ArrayList<>();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                yamlFiles.addAll(getYamlFiles(file));
+            } else if (file.getName().endsWith(".yml")) {
+                yamlFiles.add(file);
+            }
         }
-        int maxDurability = damageable.hasMaxDamage()
-                ? damageable.getMaxDamage()
-                : itemStack.getType().getMaxDurability();
-        return maxDurability <= 0 || maxDurability - damageable.getDamage() >= requiredDurability;
+        return yamlFiles;
     }
 }

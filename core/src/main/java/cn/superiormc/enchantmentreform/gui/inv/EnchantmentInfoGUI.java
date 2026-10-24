@@ -296,11 +296,11 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
                         Stream.of(ALL_FILTER),
                         type == FilterType.RARITY
                                 ? getAllEnchantments().stream()
-                                        .map(this::rarity)
-                                        .filter(Objects::nonNull)
-                                        .filter(value -> !value.isBlank())
-                                        .distinct()
-                                        .sorted(rarityComparator())
+                                .map(this::rarity)
+                                .filter(Objects::nonNull)
+                                .filter(value -> !value.isBlank())
+                                .distinct()
+                                .sorted(rarityComparator())
                                 : supportedItemsFilters().stream().map(SupportedItemsFilter::id))
                 .toList();
         String current = type == FilterType.RARITY ? rarityFilter : supportedItemsFilter;
