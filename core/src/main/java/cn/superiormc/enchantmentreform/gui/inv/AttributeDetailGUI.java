@@ -5,15 +5,17 @@ import cn.superiormc.enchantmentreform.gui.InvGUI;
 import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
-import cn.superiormc.enchantmentreform.managers.GUIActionManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttributeModifier;
+import cn.superiormc.enchantmentreform.objects.buttons.ObjectButton;
+import cn.superiormc.enchantmentreform.objects.menus.ObjectAttributeMenu;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -30,23 +32,21 @@ import java.util.Map;
 
 public final class AttributeDetailGUI extends InvGUI implements GUIPageController {
 
-    private static final List<String> LEGACY_DEFAULT_LAYOUT = List.of(
-            "FFFFFFFFF", "FFFFIFFFF", "FFFFFFFFF",
-            "FMMMMMMMF", "FMMMMMMMF", "BFFPUNFFC");
-
     private final ObjectCustomAttribute attribute;
 
     private final SkillDefinition returnSkill;
 
     private final String returnMenuId;
 
+    private final ObjectAttributeMenu menu;
+
     private final ConfigurationSection config;
 
-    private final List<Integer> modifierSlots = new ArrayList<>();
+    private final List<Integer> modifierSlots;
 
-    private final Map<Integer, String> staticSlots = new LinkedHashMap<>();
+    private final Map<Integer, String> staticSlots;
 
-    private final Map<Integer, ConfigurationSection> actions = new LinkedHashMap<>();
+    private final Map<Integer, ObjectButton> actions = new LinkedHashMap<>();
 
     private int page;
 
@@ -63,8 +63,10 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         this.attribute = attribute;
         this.returnSkill = returnSkill;
         this.returnMenuId = returnMenuId;
-        this.config = ConfigManager.configManager.getSection("menu.attribute-detail");
-        parseLayout();
+        this.menu = (ObjectAttributeMenu) ConfigManager.configManager.getMenuObject("attribute-detail");
+        this.config = menu.getConfig();
+        this.modifierSlots = menu.getModifierSlots();
+        this.staticSlots = menu.getStaticSlots();
     }
 
     public AttributeDetailGUI(Player player, ObjectCustomAttribute attribute,
@@ -73,8 +75,10 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         this.attribute = attribute;
         this.returnSkill = null;
         this.returnMenuId = returnMenuId;
-        this.config = ConfigManager.configManager.getSection("menu.attribute-detail");
-        parseLayout();
+        this.menu = (ObjectAttributeMenu) ConfigManager.configManager.getMenuObject("attribute-detail");
+        this.config = menu.getConfig();
+        this.modifierSlots = menu.getModifierSlots();
+        this.staticSlots = menu.getStaticSlots();
     }
 
     @Override
@@ -86,7 +90,7 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         page = Math.max(0, Math.min(page, maximumPage));
         String[] args = attributeArgs();
         title = CommonUtil.modifyString(player,
-                config.getString("title", "&8{attribute_name}"), args);
+                config.getString("title", "&8{attribute_name} &8• &7{page}/{pages}"), args);
         if (inv == null) {
             inv = EnchantmentReform.methodUtil.createNewInv(
                     player, config.getInt("size", 54), title, this);
@@ -148,7 +152,11 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
             }
             return true;
         }
-        GUIActionManager.INSTANCE.executeButtonActions(actions.get(slot), player,
+        ObjectButton button = actions.get(slot);
+        if (button == null) {
+            return true;
+        }
+        button.clickEvent(player,
                 new GUIActionContext(this, inventory, type, slot, "attribute-detail",
                         returnMenuId == null ? "attribute-info" : returnMenuId,
                         returnSkill, attribute, bypassPermission));
@@ -158,7 +166,8 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
     @Override
     public void openPage(int page) {
         this.page = Math.max(0, Math.min(page, maximumPage));
-        constructGUI();
+        inv = null;
+        openGUI();
     }
 
     @Override
@@ -176,28 +185,6 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         return config;
     }
 
-    private void parseLayout() {
-        int slot = 0;
-        String modifierSymbol = config.getString("modifier-symbol", "M");
-        List<String> layout = config.getStringList("layout");
-        for (String row : layout) {
-            for (int column = 0; column < 9; column++, slot++) {
-                String symbol = column < row.length()
-                        ? String.valueOf(row.charAt(column)) : " ";
-                if (symbol.equals(modifierSymbol)) {
-                    modifierSlots.add(slot);
-                } else if (!symbol.isBlank() && !symbol.equals(".")) {
-                    staticSlots.put(slot, symbol);
-                }
-            }
-        }
-        // Preserve the old bundled layout on upgrades while exposing the two new controls.
-        if (layout.equals(LEGACY_DEFAULT_LAYOUT)) {
-            staticSlots.put(46, config.getString("enable-symbol", "E"));
-            staticSlots.put(52, config.getString("effective-level-symbol", "L"));
-        }
-    }
-
     private void renderStaticItems(String[] args) {
         String upgradeSymbol = config.getString("upgrade-symbol", "U");
         String enableSymbol = config.getString("enable-symbol", "E");
@@ -205,8 +192,8 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
             if (entry.getKey() >= inv.getSize()) {
                 continue;
             }
-            ConfigurationSection button = config.getConfigurationSection(
-                    "buttons." + entry.getValue());
+            ObjectButton object = menu.getButton(entry.getValue());
+            ConfigurationSection button = object == null ? null : object.getConfig();
             if (button == null) {
                 continue;
             }
@@ -228,7 +215,7 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
             }
             if (!hidden && !entry.getValue().equals(upgradeSymbol)
                     && !entry.getValue().equals(config.getString("back-symbol", "B"))) {
-                actions.put(entry.getKey(), button);
+                actions.put(entry.getKey(), object);
             }
         }
     }

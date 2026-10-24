@@ -15,10 +15,8 @@ import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -28,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
@@ -63,8 +60,6 @@ public final class SkillManager extends AbstractManager {
 
     public static SkillManager skillManager;
 
-    private final Map<String, SkillDefinition> skills = new LinkedHashMap<>();
-
     private final Map<UUID, Map<String, RateWindow>> rateWindows = new ConcurrentHashMap<>();
 
     private final Map<UUID, PressureState> pressureStates = new ConcurrentHashMap<>();
@@ -77,40 +72,17 @@ public final class SkillManager extends AbstractManager {
 
     public SkillManager() {
         skillManager = this;
-        loadSkills();
+        initializeSkills();
     }
 
     public void loadSkills() {
-        skills.clear();
+        ConfigManager.configManager.reloadSkillConfigs();
+        initializeSkills();
+    }
+
+    private void initializeSkills() {
         if (!isEnabled()) {
             return;
-        }
-        File directory = new File(EnchantmentReform.instance.getDataFolder(), "skills");
-        if (!directory.exists() && !directory.mkdirs()) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create skill directory: " + directory);
-            return;
-        }
-        File[] files = directory.listFiles((ignored, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".yml"));
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            String id = file.getName().substring(0, file.getName().length() - 4)
-                    .toLowerCase(Locale.ROOT);
-            try {
-                YamlConfiguration config = InitManager.loadConfiguration(file, "skills/" + file.getName());
-                if (!config.getBoolean("enabled", true)) {
-                    continue;
-                }
-                SkillDefinition skill = new SkillDefinition(id, config);
-                if (skills.putIfAbsent(id, skill) != null) {
-                    throw new IllegalArgumentException("Duplicate skill id: " + id);
-                }
-                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded skill: " + id + ".yml!");
-            } catch (Throwable throwable) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load skill " + file.getName() + ": " + throwable.getMessage());
-            }
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             playerJoin(player);
@@ -118,11 +90,11 @@ public final class SkillManager extends AbstractManager {
     }
 
     public Collection<SkillDefinition> getSkills() {
-        return List.copyOf(skills.values());
+        return List.copyOf(ConfigManager.configManager.skillConfigs.values());
     }
 
     public SkillDefinition getSkill(String id) {
-        return id == null ? null : skills.get(id.toLowerCase(Locale.ROOT));
+        return id == null ? null : ConfigManager.configManager.getSkill(id);
     }
 
     public boolean isEnabled() {
@@ -298,7 +270,7 @@ public final class SkillManager extends AbstractManager {
             return;
         }
         Player player = data.player();
-        for (SkillDefinition skill : skills.values()) {
+        for (SkillDefinition skill : ConfigManager.configManager.skillConfigs.values()) {
             for (SkillSource source : skill.sources()) {
                 if (source.manualOnly()
                         || !source.trigger().equals(trigger.key().toString())) {
@@ -590,7 +562,7 @@ public final class SkillManager extends AbstractManager {
     }
 
     public void playerJoin(Player player) {
-        for (SkillDefinition skill : skills.values()) {
+        for (SkillDefinition skill : ConfigManager.configManager.skillConfigs.values()) {
             for (SkillSource source : skill.sources()) {
                 source.initializeCounting(player);
             }
@@ -604,7 +576,7 @@ public final class SkillManager extends AbstractManager {
         rateWindows.remove(playerId);
         pressureStates.remove(playerId);
         feedbackStates.remove(playerId);
-        for (SkillDefinition skill : skills.values()) {
+        for (SkillDefinition skill : ConfigManager.configManager.skillConfigs.values()) {
             for (SkillSource source : skill.sources()) {
                 source.clearProgress(playerId);
             }
@@ -616,7 +588,7 @@ public final class SkillManager extends AbstractManager {
         rateWindows.clear();
         pressureStates.clear();
         feedbackStates.clear();
-        skills.clear();
+        ConfigManager.configManager.skillConfigs.clear();
         skillManager = null;
     }
 }

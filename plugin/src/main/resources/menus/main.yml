@@ -2,7 +2,7 @@ enabled: true
 # Leave empty to allow opening without an additional permission.
 permission: ''
 
-title: '{lang:main-menu-title}'
+title: '{lang:main-menu-title} &8• &7{page}/{pages}'
 layout:
   - 'FFFFFFFFF'
   - 'FSAU.C.EF'

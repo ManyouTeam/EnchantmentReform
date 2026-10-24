@@ -2,7 +2,7 @@ enabled: true
 # Leave empty to allow opening without an additional permission.
 permission: ''
 
-title: '&8{attribute_name}'
+title: '&8{attribute_name} &8• &7{page}/{pages}'
 size: 54
 modifier-symbol: M
 back-symbol: B

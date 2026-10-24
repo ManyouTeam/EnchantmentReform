@@ -6,12 +6,15 @@ import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
-import cn.superiormc.enchantmentreform.managers.GUIActionManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
+import cn.superiormc.enchantmentreform.objects.buttons.ObjectButton;
+import cn.superiormc.enchantmentreform.objects.menus.ObjectMenu;
+import cn.superiormc.enchantmentreform.objects.menus.ObjectMenuContent;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -40,11 +43,13 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private final String menuId;
 
+    private final ObjectMenu menu;
+
     private final ConfigurationSection config;
 
     private final Map<Integer, MenuEntry> shownEntries = new LinkedHashMap<>();
 
-    private final Map<Integer, ConfigurationSection> shownStaticItems = new LinkedHashMap<>();
+    private final Map<Integer, ObjectButton> shownStaticItems = new LinkedHashMap<>();
 
     private int page;
 
@@ -53,17 +58,13 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     public ConfiguredMenuGUI(Player player, String menuId) {
         super(player);
         this.menuId = menuId == null ? "main" : menuId.toLowerCase(Locale.ROOT);
-        this.config = ConfigManager.configManager.getMenu(this.menuId);
+        this.menu = ConfigManager.configManager.getMenuObject(this.menuId);
+        this.config = menu.getConfig();
     }
 
     @Override
     protected void constructGUI() {
-        List<String> layout = config.getStringList("layout");
-        if (layout.isEmpty() || layout.size() > 6
-                || layout.stream().anyMatch(row -> row.length() != 9)) {
-            throw new IllegalArgumentException("Menu '" + menuId
-                    + "' requires a layout containing 1-6 rows of exactly 9 characters");
-        }
+        List<String> layout = menu.getLayout();
         Map<String, List<Integer>> layoutSlots = layoutSlots(layout);
         List<MenuContent> contents = loadContents(layoutSlots);
         maximumPage = 0;
@@ -75,7 +76,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         }
         page = Math.max(0, Math.min(page, maximumPage));
         String[] args = baseArgs();
-        title = CommonUtil.modifyString(player, config.getString("title", "&8" + menuId), args);
+        title = CommonUtil.modifyString(player, config.getString("title", "&8" + menuId + " &8• &7{page}/{pages}"), args);
         int size = layout.size() * 9;
         if (inv == null || inv.getSize() != size) {
             inv = EnchantmentReform.methodUtil.createNewInv(player, size, title, this);
@@ -93,8 +94,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     @Override
     public boolean clickEventHandle(Inventory inventory, ClickType type, int slot) {
         MenuEntry entry = shownEntries.get(slot);
-        ConfigurationSection button = entry == null ? shownStaticItems.get(slot) : entry.content();
-        GUIActionManager.INSTANCE.executeButtonActions(button, player,
+        ObjectButton button = entry == null ? shownStaticItems.get(slot) : menu.getContentButton(entry.content());
+        if (button == null) {
+            return true;
+        }
+        button.clickEvent(player,
                 new GUIActionContext(this, inventory, type, slot, menuId, menuId,
                         entry == null ? null : entry.skill(), entry == null ? null : entry.attribute(),
                         bypassPermission));
@@ -124,13 +128,10 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private List<MenuContent> loadContents(Map<String, List<Integer>> layoutSlots) {
-        ConfigurationSection contents = config.getConfigurationSection("contents");
-        if (contents == null) {
-            return List.of();
-        }
         List<MenuContent> result = new ArrayList<>();
-        for (String id : contents.getKeys(false)) {
-            ConfigurationSection section = contents.getConfigurationSection(id);
+        for (ObjectMenuContent content : menu.getContents().values()) {
+            String id = content.getId();
+            ConfigurationSection section = content.getConfig();
             if (section == null) {
                 continue;
             }
@@ -203,23 +204,14 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private void renderStaticItems(String[] args,
                                    Map<String, List<Integer>> layoutSlots) {
-        ConfigurationSection items = config.getConfigurationSection("items");
-        if (items == null) {
-            return;
-        }
-        for (String id : items.getKeys(false)) {
-            ConfigurationSection definition = items.getConfigurationSection(id);
+        for (ObjectButton button : menu.getButtons().values()) {
+            String id = button.getId();
+            ConfigurationSection definition = button.getConfig();
             if (definition == null) {
                 continue;
             }
-            boolean hidden = definition.getBoolean("hide-on-first-page", false) && page == 0
-                    || definition.getBoolean("hide-on-last-page", false) && page == maximumPage;
-            ConfigurationSection displayed = hidden
-                    ? definition.getConfigurationSection("hidden-item")
-                    : definition.getConfigurationSection("item");
-            if (displayed == null && !hidden) {
-                displayed = definition;
-            }
+            boolean hidden = button.isHidden(page, maximumPage);
+            ConfigurationSection displayed = button.getDisplayConfig(hidden);
             if (displayed == null) {
                 continue;
             }
@@ -230,7 +222,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 }
                 setItem(slot, item.clone());
                 if (!hidden) {
-                    shownStaticItems.put(slot, definition);
+                    shownStaticItems.put(slot, button);
                 }
             }
         }
@@ -319,24 +311,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private Map<String, List<Integer>> layoutSlots(List<String> layout) {
-        Map<String, List<Integer>> result = new LinkedHashMap<>();
-        for (int row = 0; row < layout.size(); row++) {
-            for (int column = 0; column < 9; column++) {
-                String symbol = String.valueOf(layout.get(row).charAt(column));
-                result.computeIfAbsent(symbol, ignored -> new ArrayList<>())
-                        .add(row * 9 + column);
-            }
-        }
-        return result;
+        return menu.layoutSlots(layout);
     }
 
-    private List<Integer> symbolSlots(String id,
-                                      Map<String, List<Integer>> layoutSlots) {
-        if (id.length() != 1) {
-            throw new IllegalArgumentException("Menu '" + menuId
-                    + "' layout entry '" + id + "' must be one character");
-        }
-        return layoutSlots.getOrDefault(id, List.of());
+    private List<Integer> symbolSlots(String id, Map<String, List<Integer>> layoutSlots) {
+        return menu.symbolSlots(id, layoutSlots);
     }
 
     private List<String> normalizedList(ConfigurationSection section, String path) {

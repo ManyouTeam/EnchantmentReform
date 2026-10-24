@@ -82,7 +82,7 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         }
         setMaximumPage(Math.max(0, (enchantments.size() - 1) / enchantmentSlots.size()));
         int size = config.getInt("size", 54);
-        title = CommonUtil.modifyString(player, config.getString("title", "{lang:enchantment-menu-title}"),
+        title = CommonUtil.modifyString(player, config.getString("title", "{lang:enchantment-menu-title} &8• &7{page}/{pages}"),
                 "page", String.valueOf(getPage() + 1),
                 "pages", String.valueOf(getMaximumPage() + 1));
         if (inv == null) {
@@ -112,7 +112,8 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
     @Override
     public void openPage(int page) {
         setPage(page);
-        constructGUI();
+        inv = null;
+        openGUI();
     }
 
     @Override
@@ -312,7 +313,8 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
             supportedItemsFilter = values.get(nextIndex);
         }
         page = 0;
-        constructGUI();
+        inv = null;
+        openGUI();
     }
 
     private String displayRarityFilter() {

@@ -6,13 +6,15 @@ import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
-import cn.superiormc.enchantmentreform.managers.GUIActionManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
+import cn.superiormc.enchantmentreform.objects.buttons.ObjectButton;
+import cn.superiormc.enchantmentreform.objects.menus.ObjectSkillMenu;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.objects.skills.SkillSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -23,7 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,19 +36,21 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
 
     private final String returnMenuId;
 
+    private final ObjectSkillMenu menu;
+
     private final ConfigurationSection config;
 
-    private final List<Integer> sourceSlots = new ArrayList<>();
+    private final List<Integer> sourceSlots;
 
-    private final List<Integer> attributeSlots = new ArrayList<>();
+    private final List<Integer> attributeSlots;
 
-    private final List<Integer> rewardSlots = new ArrayList<>();
+    private final List<Integer> rewardSlots;
 
-    private final Map<Integer, String> sourceStaticSlots = new LinkedHashMap<>();
+    private final Map<Integer, String> sourceStaticSlots;
 
-    private final Map<Integer, String> rewardStaticSlots = new LinkedHashMap<>();
+    private final Map<Integer, String> rewardStaticSlots;
 
-    private final Map<Integer, ConfigurationSection> actions = new LinkedHashMap<>();
+    private final Map<Integer, ObjectButton> actions = new LinkedHashMap<>();
 
     private final Map<Integer, ObjectCustomAttribute> shownAttributes = new LinkedHashMap<>();
 
@@ -70,8 +73,13 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
         super(player);
         this.skill = skill;
         this.returnMenuId = returnMenuId;
-        this.config = ConfigManager.configManager.getSection("menu.skill-detail");
-        parseLayouts();
+        this.menu = (ObjectSkillMenu) ConfigManager.configManager.getMenuObject("skill-detail");
+        this.config = menu.getConfig();
+        this.sourceSlots = menu.getSourceSlots();
+        this.attributeSlots = menu.getAttributeSlots();
+        this.rewardSlots = menu.getRewardSlots();
+        this.sourceStaticSlots = menu.getSourceStaticSlots();
+        this.rewardStaticSlots = menu.getRewardStaticSlots();
     }
 
     @Override
@@ -133,7 +141,11 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
             openGUI();
             return true;
         }
-        GUIActionManager.INSTANCE.executeButtonActions(actions.get(slot), player,
+        ObjectButton button = actions.get(slot);
+        if (button == null) {
+            return true;
+        }
+        button.clickEvent(player,
                 new GUIActionContext(this, inventory, type, slot, "skill-detail", returnMenuId,
                         skill, null, bypassPermission));
         return true;
@@ -161,58 +173,6 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
         return config;
     }
 
-    private void parseLayouts() {
-        parseLayout(config.getStringList("layout"), config.getString("source-symbol", "S"),
-                sourceSlots, sourceStaticSlots, false);
-        parseAttributeSlots(config.getStringList("layout"),
-                config.getString("attribute-symbol", "A"));
-        List<String> rewardLayout = config.getStringList("reward-layout");
-        if (rewardLayout.isEmpty()) {
-            rewardLayout = config.getStringList("layout");
-        }
-        parseLayout(rewardLayout, config.getString("reward-symbol", "R"),
-                rewardSlots, rewardStaticSlots, true);
-    }
-
-    private void parseAttributeSlots(List<String> layout, String symbol) {
-        for (int rowIndex = 0; rowIndex < layout.size(); rowIndex++) {
-            String row = layout.get(rowIndex);
-            for (int column = 0; column < 9; column++) {
-                if (column < row.length()
-                        && String.valueOf(row.charAt(column)).equals(symbol)) {
-                    int slot = rowIndex * 9 + column;
-                    attributeSlots.add(slot);
-                    sourceStaticSlots.remove(slot);
-                }
-            }
-        }
-    }
-
-    private void parseLayout(List<String> layout, String symbol, List<Integer> entrySlots,
-                             Map<Integer, String> staticSlots, boolean snake) {
-        boolean vertical = snake && config.getBoolean("reward-vertical", false);
-        int rewardBand = 0;
-        for (int band = 0; band < (vertical ? 9 : layout.size()); band++) {
-            List<Integer> rowEntries = new ArrayList<>();
-            for (int offset = 0; offset < (vertical ? layout.size() : 9); offset++) {
-                int rowIndex = vertical ? offset : band;
-                int column = vertical ? band : offset;
-                String row = layout.get(rowIndex);
-                String value = column < row.length() ? String.valueOf(row.charAt(column)) : " ";
-                int slot = rowIndex * 9 + column;
-                if (value.equals(symbol)) {
-                    rowEntries.add(slot);
-                } else if (!value.isBlank() && !value.equals(".")) {
-                    staticSlots.put(slot, value);
-                }
-            }
-            if (snake && rowEntries.size() > 1 && rewardBand++ % 2 == 1) {
-                Collections.reverse(rowEntries);
-            }
-            entrySlots.addAll(rowEntries);
-        }
-    }
-
     private List<Integer> currentEntrySlots() {
         return view == View.SOURCES ? sourceSlots : rewardSlots;
     }
@@ -226,7 +186,8 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
             if (entry.getKey() >= inv.getSize()) {
                 continue;
             }
-            ConfigurationSection button = config.getConfigurationSection("buttons." + entry.getValue());
+            ObjectButton object = menu.getButton(entry.getValue());
+            ConfigurationSection button = object == null ? null : object.getConfig();
             if (button == null) {
                 continue;
             }
@@ -241,7 +202,7 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
                 setItem(entry.getKey(), buildItem(shown, args));
             }
             if (!hidden && !entry.getValue().equals(config.getString("view-symbol", "V"))) {
-                actions.put(entry.getKey(), button);
+                actions.put(entry.getKey(), object);
             }
         }
     }
