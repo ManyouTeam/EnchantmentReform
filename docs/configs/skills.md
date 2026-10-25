@@ -43,6 +43,32 @@ rewards:
 
 The top-level `icon` is an optional menu icon using the standard item configuration format. Free-menu skill content uses it when `use-skill-icon` is enabled (default `true`), falling back to `EXPERIENCE_BOTTLE` when no icon is configured. The menu's `item.material` can override it, while `item.name` and `item.lore` provide shared display text. See [Free-menu icon configuration](menus.md#skill-and-attribute-icons) for skill and attribute examples side by side.
 
+## Per-skill progress feedback
+
+Global defaults remain in `config.yml` under `skills.feedback.experience`. Each skill file supports the same root `progress-feedback` section as UltimateQuest. Omitted fields inherit global settings. Bundled skills now specify their own BossBar colors.
+
+```yaml
+progress-feedback:
+  enabled: true
+  cooldown-ticks: 5
+  display: BOSS_BAR
+  actionbar: '[actionbar]&b{skill} &a+{gained} XP &7{experience}/{required_experience}[/actionbar]'
+  bossbar:
+    title: '{lang:skill-xp-gain}'
+    color: BLUE
+    style: SOLID
+  sound:
+    name: 'minecraft:entity.experience_orb.pickup'
+    volume: 0.25
+    pitch: 1.35
+```
+
+To change only the color, configure only `progress-feedback.bossbar.color`. `display` supports `BOSS_BAR`, `ACTION_BAR`, and `BOTH`; an empty sound name mutes it. Set `progress-feedback: false` or `progress-feedback.enabled: false` to disable this skill's XP feedback without affecting XP, level messages, or rewards. Global `skills.feedback.experience.enabled: false` always disables all XP feedback.
+
+Cooldown is shared per player and measured in ticks (20 ticks per second); `0` disables it. XP still counts during cooldown. When an event advances several skills, shared cooldown allows only one to display feedback. Existing skill placeholders remain available, including `{skill}`, `{name}`, `{level}`, `{experience}`, `{required_experience}`, `{progress}` (percentage), and `{gained}`. Apply changes with `/enchantmentreform reload`.
+
+BossBar supports seven colors: `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, and `WHITE`. Some of the eleven bundled skills reuse colors.
+
 ## XP sources
 
 Sources reuse [TriggerManager triggers](triggers.md) and the same [power conditions](power-conditions/README.md):

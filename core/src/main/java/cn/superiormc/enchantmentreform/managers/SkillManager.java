@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -286,7 +287,9 @@ public final class SkillManager extends AbstractManager {
                     continue;
                 }
                 PowerContext counted = source.settle(context, quantity);
-                if (counted == null) continue;
+                if (counted == null) {
+                    continue;
+                }
                 double amount = counted.triggerData().extra(BuiltinContextKeys.COUNT_AMOUNT).orElse(0D);
                 grantSourceExperience(player, skill, source, counted, amount);
             }
@@ -413,12 +416,20 @@ public final class SkillManager extends AbstractManager {
         playConfiguredSound(player, "skills.feedback.level-up.sound");
     }
 
+    private String progressFeedbackString(ConfigurationSection settings, String path, String fallback) {
+        return settings.getString("progress-feedback." + path,
+                ConfigManager.configManager.getString("skills.feedback.experience." + path, fallback));
+    }
+
     private void sendExperienceFeedback(Player player, SkillDefinition skill, double gained, long now) {
-        if (!ConfigManager.configManager.getBoolean("skills.feedback.experience.enabled")) {
+        ConfigurationSection settings = skill.settings();
+        if (!ConfigManager.configManager.getBoolean("skills.feedback.experience.enabled")
+                || !settings.getBoolean("progress-feedback", true)
+                || !settings.getBoolean("progress-feedback.enabled", true)) {
             return;
         }
-        long cooldown = Math.max(0L, ConfigManager.configManager.getInt(
-                "skills.feedback.experience.cooldown-ticks", 5)) * 50L;
+        long cooldown = Math.max(0L, settings.getInt("progress-feedback.cooldown-ticks",
+                ConfigManager.configManager.getInt("skills.feedback.experience.cooldown-ticks", 5))) * 50L;
         FeedbackState state = feedbackStates.computeIfAbsent(player.getUniqueId(), ignored -> new FeedbackState());
         synchronized (state) {
             if (now - state.lastAt < cooldown) {
@@ -432,32 +443,32 @@ public final class SkillManager extends AbstractManager {
         System.arraycopy(progressPlaceholders, 0, placeholders, 0, progressPlaceholders.length);
         placeholders[progressPlaceholders.length] = "gained";
         placeholders[progressPlaceholders.length + 1] = MathUtil.formatNumber(gained);
-        String display = ConfigManager.configManager.getString(
-                        "skills.feedback.experience.display", "BOSS_BAR")
+        String display = progressFeedbackString(settings, "display", "BOSS_BAR")
                 .trim().toUpperCase(Locale.ROOT).replace('-', '_');
-        if (display.equals("BOSS_BAR") || display.equals("BOSSBAR") || display.equals("BOTH")) {
-            String title = ConfigManager.configManager.getString(
-                    "skills.feedback.experience.bossbar.title", "{lang:skill-xp-gain}");
+        if (Set.of("BOSS_BAR", "BOSSBAR", "BOTH").contains(display)) {
+            String title = progressFeedbackString(settings, "bossbar.title", "{lang:skill-xp-gain}");
             if (!title.isBlank()) {
-                EnchantmentReform.methodUtil.sendBossBar(
-                        player,
-                        CommonUtil.modifyString(player, title, placeholders),
-                        (float) Math.max(0.0D, Math.min(1.0D, percent / 100.0D)),
-                        ConfigManager.configManager.getString(
-                                "skills.feedback.experience.bossbar.color", "BLUE"),
-                        ConfigManager.configManager.getString(
-                                "skills.feedback.experience.bossbar.style", "SOLID"),
-                        "skill-experience");
+                String message = "[bossbar=" + progressFeedbackString(settings, "bossbar.color", "BLUE")
+                        + "," + progressFeedbackString(settings, "bossbar.style", "SOLID")
+                        + "," + Math.max(0D, Math.min(1D, percent / 100D)) + "]"
+                        + CommonUtil.modifyString(player, title, placeholders) + "[/bossbar]";
+                TextUtil.sendMessage(player, message, "skill-experience");
             }
         }
-        if (display.equals("ACTION_BAR") || display.equals("ACTIONBAR") || display.equals("BOTH")) {
-            String message = ConfigManager.configManager.getString(
-                    "skills.feedback.experience.actionbar", "");
+        if (Set.of("ACTION_BAR", "ACTIONBAR", "BOTH").contains(display)) {
+            String message = progressFeedbackString(settings, "actionbar", "");
             if (!message.isBlank()) {
                 TextUtil.sendMessage(player, CommonUtil.modifyString(player, message, placeholders));
             }
         }
-        playConfiguredSound(player, "skills.feedback.experience.sound");
+        String sound = progressFeedbackString(settings, "sound.name", "");
+        if (!sound.isBlank()) {
+            player.playSound(player.getLocation(), sound,
+                    (float) Math.max(0D, settings.getDouble("progress-feedback.sound.volume",
+                            ConfigManager.configManager.getDouble("skills.feedback.experience.sound.volume", 1D))),
+                    (float) Math.max(0D, settings.getDouble("progress-feedback.sound.pitch",
+                            ConfigManager.configManager.getDouble("skills.feedback.experience.sound.pitch", 1D))));
+        }
     }
 
     private void playConfiguredSound(Player player, String path) {

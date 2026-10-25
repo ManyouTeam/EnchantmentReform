@@ -5,6 +5,10 @@ permission: ''
 title: '{lang:enchantment-menu-title} &8• &7{page}/{pages}'
 size: 54
 enchantment-symbol: E
+# Wrapped description lines per item page. Whole levels stay together; <= 0 disables paging.
+description-max-lines: 20
+# Appended only when an enchantment has more than one description page.
+description-page-format: '{lang:enchantment-menu-description-page}'
 rarity-sort-rule:
   - COMMON
   - UNCOMMON

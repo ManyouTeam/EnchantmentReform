@@ -427,6 +427,7 @@ skills:
   level-up-message: '{lang:skill-level-up}'
   feedback:
     experience:
+      # Global switch. Individual skills can override fields under progress-feedback.
       enabled: true
       # Prevents movement and rapid block breaks from producing feedback every tick.
       cooldown-ticks: 5

@@ -124,6 +124,8 @@ The catalogue uses a dedicated format instead of `contents` and `items`.
 | `title` | Catalogue title. Supports `{page}` and `{pages}`. |
 | `size` | Inventory size, default `54`. It should match the layout and be a multiple of nine. |
 | `enchantment-symbol` | Character used for enchantment entries in `layout`; default `E`. |
+| `description-max-lines` | Maximum rendered description lines per group; default `20`. Counts lines after `enchantment-description.wrap-length` wrapping. Zero or negative values disable description paging. |
+| `description-page-format` | Page and click hint appended when several description groups exist; defaults to `{lang:enchantment-menu-description-page}`. Leave empty to hide it. |
 | `rarity-sort-rule` | Rarity order. Unlisted rarities follow listed entries and are then sorted by name. |
 | `layout` | Places enchantments and buttons. `.` and spaces are empty; other characters refer to `buttons`. |
 | `enchantment-item` | Item template for every enchantment entry. |
@@ -135,13 +137,17 @@ The catalogue uses a dedicated format instead of `contents` and `items`.
 
 ### Enchantment-entry placeholders
 
+Descriptions are grouped by whole levels. With ten rendered lines per level and a limit of twenty, the initial group shows levels 1–2; clicking the same item with either mouse button shows levels 3–4. After the last group, clicking cycles back to the first. Each enchantment remembers its own group independently. Only the `{level-descriptions}` text counts toward the limit, excluding fixed information and the paging hint. A single level longer than the limit occupies one complete group. Entries enable this feature only when their lore uses `{level-descriptions}`.
+
 Use these in `enchantment-item`. The `name` field ultimately replaces only `{name}` and `{key}`; place the other placeholders in `lore` or other item fields. `{description}` and `{level-descriptions}` can be empty for vanilla enchantments without a custom description.
 
 | Placeholder | Meaning |
 | --- | --- |
 | `{name}` | Enchantment display name. |
 | `{description}` | Localized description of a custom enchantment at its maximum level. |
-| `{level-descriptions}` | Localized descriptions for each custom enchantment level, from 1 through the maximum. |
+| `{level-descriptions}` | Complete localized level descriptions in the current group. |
+| `{description_page}` / `{description_pages}` | Current description group and total groups, starting at one and independent of catalogue pages. |
+| `{level_start}` / `{level_end}` | First and last levels shown in this group; also available in `description-page-format`. |
 | `{max_level}` | Maximum enchantment level. |
 | `{rarity}` | Localized rarity name. |
 | `{weight}` | Enchantment selection weight. |

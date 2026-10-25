@@ -5,7 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -392,6 +392,10 @@ public class TextUtil {
     }
 
     public static void sendMessage(Player player, String rawText) {
+        sendMessage(player, rawText, null);
+    }
+
+    public static void sendMessage(Player player, String rawText, String bossBarKey) {
         if (rawText == null || rawText.isEmpty()) {
             return;
         }
@@ -432,13 +436,11 @@ public class TextUtil {
         // bossbar
         for (TagResult tag : parseArgTag(rawText, "bossbar")) {
             BossBarData data = parseBossBar(tag);
-            EnchantmentReform.methodUtil.sendBossBar(
-                    player,
-                    data.title,
-                    data.progress,
-                    data.color,
-                    data.style
-            );
+            if (bossBarKey == null) {
+                EnchantmentReform.methodUtil.sendBossBar(player, data.title, data.progress, data.color, data.style);
+            } else {
+                EnchantmentReform.methodUtil.sendBossBar(player, data.title, data.progress, data.color, data.style, bossBarKey);
+            }
             sentAny = true;
         }
 

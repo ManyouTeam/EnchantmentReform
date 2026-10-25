@@ -21,6 +21,32 @@ icon:
 
 顶层 `icon` 是可选的菜单图标，使用通用物品配置格式。自由菜单的技能内容区通过 `use-skill-icon` 控制是否使用它，默认为 `true`；未配置图标时使用 `EXPERIENCE_BOTTLE`。菜单的 `item.material` 可覆盖图标，`item.name` 和 `item.lore` 用于统一显示文本。技能与属性图标的并列配置示例见[自由菜单图标配置](menus.md#技能与属性图标)。
 
+## 单个技能的进度提示
+
+全局默认值仍在 `config.yml` 的 `skills.feedback.experience`。每个技能文件顶层支持与 UltimateQuest 相同的 `progress-feedback` 配置，未填写的字段继承全局设置。默认技能已分别配置 BossBar 颜色。
+
+```yaml
+progress-feedback:
+  enabled: true
+  cooldown-ticks: 5
+  display: BOSS_BAR
+  actionbar: '[actionbar]&b{skill} &a+{gained} XP &7{experience}/{required_experience}[/actionbar]'
+  bossbar:
+    title: '{lang:skill-xp-gain}'
+    color: BLUE
+    style: SOLID
+  sound:
+    name: 'minecraft:entity.experience_orb.pickup'
+    volume: 0.25
+    pitch: 1.35
+```
+
+只需要改变颜色时，只填写 `progress-feedback.bossbar.color`。`display` 支持 `BOSS_BAR`、`ACTION_BAR`、`BOTH`；音效名称留空关闭音效。`progress-feedback: false` 或 `progress-feedback.enabled: false` 关闭该技能的经验提示，不影响经验、升级与奖励。全局 `skills.feedback.experience.enabled: false` 始终关闭全部经验提示。
+
+提示冷却按玩家共享，单位为 tick（20 tick 为 1 秒），`0` 关闭冷却；冷却期间经验仍正常增加。同一次行为推进多个技能时，共享冷却只允许其中一个显示反馈。文案保留技能现有变量，如 `{skill}`、`{name}`、`{level}`、`{experience}`、`{required_experience}`、`{progress}`（百分比）和 `{gained}`。修改后使用 `/enchantmentreform reload` 生效。
+
+BossBar 支持 `PINK`、`BLUE`、`RED`、`GREEN`、`YELLOW`、`PURPLE`、`WHITE` 七种颜色，11 项内置技能会复用部分颜色。
+
 ## 升级奖励
 
 ```yaml

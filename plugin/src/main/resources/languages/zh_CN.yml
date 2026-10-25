@@ -409,6 +409,7 @@ override-lang:
   enchantment-menu-supported-items: "&8• &7适用物品 &8» &f{supported_items}"
   enchantment-menu-key: "&l&e附魔信息"
   enchantment-menu-level-description: "&8[&e等级 {level}&8] &f{description}"
+  enchantment-menu-description-page: '&7等级 {level_start}-{level_end} &8| &7{description_page}/{description_pages} &e点击查看后续等级'
   enchantment-menu-previous: "&a« 上一页"
   enchantment-menu-next: "&a下一页 »"
   enchantment-menu-page: "&7页码 &8» &f{page}&8/&f{pages}"

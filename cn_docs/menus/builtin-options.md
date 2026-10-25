@@ -124,6 +124,8 @@
 | `title` | 图鉴标题，支持 `{page}` 与 `{pages}`。 |
 | `size` | 背包格数，默认 `54`。应与布局行数对应，并为 9 的倍数。 |
 | `enchantment-symbol` | `layout` 中用于放置附魔条目的字符，默认 `E`。 |
+| `description-max-lines` | 每组等级描述的最大显示行数，默认 `20`；按 `enchantment-description.wrap-length` 换行后计数，设为 `0` 或负数关闭描述分页。 |
+| `description-page-format` | 多组描述时自动追加的页码与点击提示，默认 `{lang:enchantment-menu-description-page}`；留空隐藏提示。 |
 | `rarity-sort-rule` | 稀有度排序顺序。未列出的稀有度排在已列出项之后，再按名称排序。 |
 | `layout` | 定义附魔槽和按钮位置。`.` 与空格为空槽，其他字符从 `buttons` 读取。 |
 | `enchantment-item` | 每个附魔条目的物品模板。 |
@@ -135,13 +137,17 @@
 
 ### 附魔条目占位符
 
+等级描述按完整等级分组。例如每级显示 10 行、上限为 20 行，首次显示 1–2 级，左键或右键再次点击该物品显示 3–4 级，最后一组之后回到第一组。各附魔分别记住当前组，不会因点击其他附魔而互相影响。上限只计算 `{level-descriptions}` 的描述部分，不包含稀有度等固定信息和翻组提示；单个等级本身超限时完整独占一组。只有 lore 使用 `{level-descriptions}` 的条目才会启用这项功能。
+
 用于 `enchantment-item`。其中 `name` 字段最终只会替换 `{name}` 和 `{key}`；下表其余占位符应放在 `lore` 等物品字段。原版附魔若没有自定义描述，`{description}` 和 `{level-descriptions}` 可能为空。
 
 | 占位符 | 显示内容 |
 | --- | --- |
 | `{name}` | 附魔显示名称。 |
 | `{description}` | 自定义附魔最高等级的本地化描述。 |
-| `{level-descriptions}` | 自定义附魔从 1 级到最高等级的逐级描述，按语言文件中的等级描述格式拼接。 |
+| `{level-descriptions}` | 当前组包含的完整等级描述，按语言文件中的等级描述格式拼接。 |
+| `{description_page}` / `{description_pages}` | 当前描述组及描述总组数，从 1 开始，与图鉴目录页码分别计算。 |
+| `{level_start}` / `{level_end}` | 当前组显示的起始和结束等级。这些变量也可用于 `description-page-format`。 |
 | `{max_level}` | 附魔最高等级。 |
 | `{rarity}` | 本地化后的稀有度名称。 |
 | `{weight}` | 附魔出现权重。 |

@@ -409,6 +409,7 @@ override-lang:
   enchantment-menu-supported-items: "&8• &7Applies to &8» &f{supported_items}"
   enchantment-menu-key: "&l&eEnchantment Info"
   enchantment-menu-level-description: "&8[&eLevel {level}&8] &f{description}"
+  enchantment-menu-description-page: '&7Levels {level_start}-{level_end} &8| &7{description_page}/{description_pages} &eClick for next levels'
   enchantment-menu-previous: "&a« Previous"
   enchantment-menu-next: "&aNext »"
   enchantment-menu-page: "&7Page &8» &f{page}&8/&f{pages}"

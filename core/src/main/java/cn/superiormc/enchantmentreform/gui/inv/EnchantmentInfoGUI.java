@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class EnchantmentInfoGUI extends InvGUI implements GUIPageController {
@@ -53,6 +54,12 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
     private final Map<Integer, FilterType> filterSlots = new LinkedHashMap<>();
 
     private final Map<String, Set<Material>> itemTagCache = new LinkedHashMap<>();
+
+    private final Map<Integer, EnchantmentInfoEntry> slotEnchantments = new LinkedHashMap<>();
+
+    private final Map<String, Integer> descriptionPages = new LinkedHashMap<>();
+
+    private final Map<String, Integer> descriptionPageCounts = new LinkedHashMap<>();
 
     private String rarityFilter = ALL_FILTER;
 
@@ -92,6 +99,8 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         }
         slotActions.clear();
         filterSlots.clear();
+        slotEnchantments.clear();
+        descriptionPageCounts.clear();
         renderStaticItems(enchantments.size());
         renderEnchantments(enchantments);
     }
@@ -101,6 +110,16 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         FilterType filterType = filterSlots.get(slot);
         if (filterType != null) {
             cycleFilter(filterType, type.isRightClick() ? -1 : 1);
+            return true;
+        }
+        EnchantmentInfoEntry enchantment = slotEnchantments.get(slot);
+        if (enchantment != null) {
+            int pageCount = descriptionPageCounts.getOrDefault(enchantment.key(), 1);
+            if (pageCount > 1 && (type.isLeftClick() || type.isRightClick())) {
+                int nextPage = (descriptionPages.getOrDefault(enchantment.key(), 0) + 1) % pageCount;
+                descriptionPages.put(enchantment.key(), nextPage);
+                setItem(slot, buildEnchantmentItem(enchantment));
+            }
             return true;
         }
         GUIActionManager.INSTANCE.executeButtonActions(slotActions.get(slot), player,
@@ -187,7 +206,9 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         for (int index = 0; index < enchantmentSlots.size() && first + index < enchantments.size(); index++) {
             int slot = enchantmentSlots.get(index);
             if (slot < inv.getSize()) {
-                setItem(slot, buildEnchantmentItem(enchantments.get(first + index)));
+                EnchantmentInfoEntry enchantment = enchantments.get(first + index);
+                slotEnchantments.put(slot, enchantment);
+                setItem(slot, buildEnchantmentItem(enchantment));
             }
         }
     }
@@ -211,10 +232,29 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
             }
         }
 
-        ItemStack item = buildGuiItem(itemSection,
+        boolean showsLevelDescriptions = itemSection.getStringList("lore").stream()
+                .anyMatch(line -> line.contains("{level-descriptions}"));
+        List<List<String>> pages = showsLevelDescriptions
+                ? paginateLevelDescriptions(levelDescriptions) : List.of(levelDescriptions);
+        int descriptionPage = Math.floorMod(descriptionPages.getOrDefault(enchantment.key(), 0), pages.size());
+        descriptionPages.put(enchantment.key(), descriptionPage);
+        descriptionPageCounts.put(enchantment.key(), pages.size());
+        List<String> currentDescriptions = pages.get(descriptionPage);
+        int firstLevel = currentDescriptions.isEmpty() ? 0 : 1;
+        for (int index = 0; index < descriptionPage; index++) {
+            firstLevel += pages.get(index).size();
+        }
+        int lastLevel = currentDescriptions.isEmpty() ? 0 : firstLevel + currentDescriptions.size() - 1;
+        String pageFormat = config.getString("description-page-format", "{lang:enchantment-menu-description-page}");
+        List<String> extraLore = pages.size() > 1 && !pageFormat.isBlank() ? List.of(pageFormat) : List.of();
+        ItemStack item = buildGuiItem(itemSection, extraLore,
                 "name", name,
                 "description", description,
-                "level-descriptions", String.join("\\n", levelDescriptions),
+                "level-descriptions", String.join("\\n", currentDescriptions),
+                "description_page", String.valueOf(descriptionPage + 1),
+                "description_pages", String.valueOf(pages.size()),
+                "level_start", String.valueOf(firstLevel),
+                "level_end", String.valueOf(lastLevel),
                 "max_level", String.valueOf(enchantment.maxLevel()),
                 "rarity", displayRarity(enchantment),
                 "weight", String.valueOf(weight(enchantment)),
@@ -232,17 +272,43 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         return item;
     }
 
+    private List<List<String>> paginateLevelDescriptions(List<String> descriptions) {
+        int maximumLines = config.getInt("description-max-lines", 20);
+        List<List<String>> pages = new ArrayList<>();
+        List<String> currentPage = new ArrayList<>();
+        long lines = 0;
+        for (String description : descriptions) {
+            int descriptionLines = wrapLore(CommonUtil.modifyList(player, List.of(description))).size();
+            if (maximumLines > 0 && !currentPage.isEmpty() && lines + descriptionLines > maximumLines) {
+                pages.add(List.copyOf(currentPage));
+                currentPage.clear();
+                lines = 0;
+            }
+            currentPage.add(description);
+            lines += descriptionLines;
+        }
+        if (!currentPage.isEmpty() || pages.isEmpty()) {
+            pages.add(List.copyOf(currentPage));
+        }
+        return pages;
+    }
+
     private int resolveWrapLength() {
         return ConfigManager.configManager.getInt("enchantment-description.wrap-length", 30);
     }
 
     private ItemStack buildGuiItem(ConfigurationSection section, String... args) {
+        return buildGuiItem(section, List.of(), args);
+    }
+
+    private ItemStack buildGuiItem(ConfigurationSection section, List<String> extraLore, String... args) {
         ItemStack item = BuildItem.buildItemStack(player, section, args);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return item;
         }
-        List<String> configuredLore = section.getStringList("lore");
+        List<String> configuredLore = new ArrayList<>(section.getStringList("lore"));
+        configuredLore.addAll(extraLore);
         if (configuredLore.isEmpty()) {
             return item;
         }
@@ -421,7 +487,7 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         }
         Set<Material> supported = enchantment.definition().getSupportedItemKeys().stream()
                 .flatMap(tag -> resolveItemTag(normalizeTag(tag), new LinkedHashSet<>()).stream())
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
         return filterItems.stream().anyMatch(supported::contains);
     }
 
@@ -577,7 +643,8 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         }
     }
 
-    private record SupportedItemsFilter(String id, String displayName, List<String> tags) {}
+    private record SupportedItemsFilter(String id, String displayName, List<String> tags) {
+    }
 
     private record EnchantmentInfoEntry(PowerEnchantmentDefinition definition,
                                         Enchantment vanilla) {

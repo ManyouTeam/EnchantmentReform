@@ -21,10 +21,12 @@ public final class SkillDefinition {
         String displayName();
     }
 
-    public record AttributePointsReward(String displayName, int amount) implements SkillReward {}
+    public record AttributePointsReward(String displayName, int amount) implements SkillReward {
+    }
 
     public record AttributeReward(String attribute, String displayName, int amount)
-            implements SkillReward {}
+            implements SkillReward {
+    }
 
     public record AttributesReward(String displayName, Map<String, Integer> attributes)
             implements SkillReward {
@@ -33,10 +35,12 @@ public final class SkillDefinition {
         }
     }
 
-    public record CommandReward(String displayName, String command) implements SkillReward {}
+    public record CommandReward(String displayName, String command) implements SkillReward {
+    }
 
     public record ItemReward(String id, String displayName, ConfigurationSection item)
-            implements SkillReward {}
+            implements SkillReward {
+    }
 
     public record LevelReward(List<SkillReward> rewards) {
         public static final LevelReward EMPTY = new LevelReward(List.of());
@@ -118,6 +122,10 @@ public final class SkillDefinition {
 
     public String id() {
         return id;
+    }
+
+    public ConfigurationSection settings() {
+        return config;
     }
 
     public String name(Player player) {
