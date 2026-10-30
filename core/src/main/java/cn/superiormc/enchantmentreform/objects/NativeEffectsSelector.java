@@ -9,72 +9,64 @@ import java.util.function.Supplier;
 
 public final class NativeEffectsSelector {
 
-    private NativeEffectsSelector() {}
+    private NativeEffectsSelector() {
+    }
 
     public static Object select(ConfigurationSection config, Supplier<String> serverVersion) {
         Object fallback = config.get("effects");
         if (fallback != null && !(fallback instanceof ConfigurationSection)
                 && !(fallback instanceof Map<?, ?>)) {
-            throw new IllegalArgumentException("'effects' must be a section");
+            fallback = null;
         }
         if (!config.contains("effects-by-version")) {
             return fallback;
         }
         Object configured = config.get("effects-by-version");
         if (!(configured instanceof List<?> branches)) {
-            throw new IllegalArgumentException("'effects-by-version' must be a list");
+            return fallback;
         }
         int[] current = branches.isEmpty() ? null : version(serverVersion.get());
-        Object selected = fallback;
-        boolean matched = false;
-        for (int index = 0; index < branches.size(); index++) {
-            String path = "effects-by-version[" + index + "]";
-            if (!(branches.get(index) instanceof Map<?, ?> branch)) {
-                throw new IllegalArgumentException(path + " must be a section");
-            }
-            for (Object key : branch.keySet()) {
-                if (!List.of("versions", "min-version", "max-version", "effects").contains(key)) {
-                    throw new IllegalArgumentException(path + ": unknown field '" + key + "'");
-                }
+        if (current == null) {
+            return fallback;
+        }
+        for (Object entry : branches) {
+            if (!(entry instanceof Map<?, ?> branch)) {
+                continue;
             }
             Object effects = branch.get("effects");
             if (!(effects instanceof Map<?, ?>) && !(effects instanceof ConfigurationSection)) {
-                throw new IllegalArgumentException(path + ".effects must be a section (use {} to clear)");
+                continue;
             }
             Object exact = branch.get("versions");
             Object min = branch.get("min-version");
             Object max = branch.get("max-version");
             if (exact == null && min == null && max == null) {
-                throw new IllegalArgumentException(path + " requires versions, min-version or max-version");
+                continue;
             }
-            try {
-                int[] minimum = min == null ? null : version(min);
-                int[] maximum = max == null ? null : version(max);
-                if (minimum != null && maximum != null && compare(minimum, maximum) > 0) {
-                    throw new IllegalArgumentException("min-version must not exceed max-version");
-                }
-                boolean matches = true;
-                if (exact != null) {
-                    List<?> versions = exact instanceof List<?> list ? list : List.of(exact);
-                    if (versions.isEmpty()) {
-                        throw new IllegalArgumentException("versions must not be empty");
+            int[] minimum = version(min);
+            int[] maximum = version(max);
+            if (min != null && minimum == null || max != null && maximum == null
+                    || minimum != null && maximum != null && compare(minimum, maximum) > 0) {
+                continue;
+            }
+            boolean matches = true;
+            if (exact != null) {
+                List<?> versions = exact instanceof List<?> list ? list : List.of(exact);
+                matches = false;
+                for (Object candidate : versions) {
+                    int[] parsed = version(candidate);
+                    if (parsed != null && compare(current, parsed) == 0) {
+                        matches = true;
                     }
-                    matches = false;
-                    for (Object candidate : versions) {
-                        matches |= compare(current, version(candidate)) == 0;
-                    }
                 }
-                matches &= minimum == null || compare(current, minimum) >= 0;
-                matches &= maximum == null || compare(current, maximum) <= 0;
-                if (matches && !matched) {
-                    selected = effects;
-                    matched = true;
-                }
-            } catch (IllegalArgumentException exception) {
-                throw new IllegalArgumentException(path + ": " + exception.getMessage(), exception);
+            }
+            matches &= minimum == null || compare(current, minimum) >= 0;
+            matches &= maximum == null || compare(current, maximum) <= 0;
+            if (matches) {
+                return effects;
             }
         }
-        return selected;
+        return fallback;
     }
 
     static String currentVersion() {
@@ -92,12 +84,14 @@ public final class NativeEffectsSelector {
     }
 
     static boolean isAtLeast(String current, String minimum) {
-        return compare(version(current), version(minimum)) >= 0;
+        int[] parsedCurrent = version(current);
+        int[] parsedMinimum = version(minimum);
+        return parsedCurrent != null && parsedMinimum != null && compare(parsedCurrent, parsedMinimum) >= 0;
     }
 
     private static int[] version(Object configured) {
-        if (!(configured instanceof String text) || !text.matches("\\d+(\\.\\d+){1,2}")) {
-            throw new IllegalArgumentException("Minecraft versions must be quoted release strings, e.g. '26.3' or '1.21.11': " + configured);
+        if (!(configured instanceof String text) || !text.matches("\\d{1,4}(\\.\\d{1,4}){1,2}")) {
+            return null;
         }
         String[] parts = text.split("\\.");
         int[] result = new int[3];
@@ -110,7 +104,9 @@ public final class NativeEffectsSelector {
     private static int compare(int[] left, int[] right) {
         for (int i = 0; i < left.length; i++) {
             int result = Integer.compare(left[i], right[i]);
-            if (result != 0) return result;
+            if (result != 0) {
+                return result;
+            }
         }
         return 0;
     }

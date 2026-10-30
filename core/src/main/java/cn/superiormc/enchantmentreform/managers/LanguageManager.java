@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class LanguageManager extends AbstractManager {
@@ -19,6 +20,8 @@ public class LanguageManager extends AbstractManager {
     private String serverLanguage = null;
 
     private final Map<String, YamlConfiguration> languageFiles = new HashMap<>();
+
+    private final Map<String, YamlConfiguration> bundledFiles = new HashMap<>();
 
     private YamlConfiguration tempMessageFile;
 
@@ -63,11 +66,6 @@ public class LanguageManager extends AbstractManager {
             for (File file : files) {
                 String lang = file.getName().replace(".yml", "");
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-                YamlConfiguration bundledDefaults = loadInternalLanguage(lang);
-                if (bundledDefaults != null) {
-                    // Keep administrator overrides while exposing newly bundled keys after upgrades.
-                    config.setDefaults(bundledDefaults);
-                }
                 languageFiles.put(lang.toLowerCase(), config);
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded language: " + lang + ".yml!");
             }
@@ -91,8 +89,9 @@ public class LanguageManager extends AbstractManager {
         String text = config.getString(key);
 
         if (text == null) {
-            if (tempMessageFile.getString(key) != null) {
-                text = tempMessageFile.getString(key);
+            String bundled = bundledLanguage(lang).getString(key);
+            if (bundled != null || tempMessageFile.getString(key) != null) {
+                text = bundled != null ? bundled : tempMessageFile.getString(key);
                 config.set(key, text);
                 saveLanguageFile(lang, config);
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §cAdded new language key: " + key + " for " + lang);
@@ -169,7 +168,10 @@ public class LanguageManager extends AbstractManager {
 
         List<String> list = config.getStringList(path);
         if (list.isEmpty()) {
-            List<String> temp = tempMessageFile.getStringList(path);
+            List<String> temp = bundledLanguage(lang).getStringList(path);
+            if (temp.isEmpty()) {
+                temp = tempMessageFile.getStringList(path);
+            }
             if (!temp.isEmpty()) {
                 config.set(path, temp);
                 saveLanguageFile(lang, config);
@@ -180,6 +182,15 @@ public class LanguageManager extends AbstractManager {
             }
         }
         return list;
+    }
+
+    private YamlConfiguration bundledLanguage(String language) {
+        return bundledFiles.computeIfAbsent(language, key -> {
+            String[] parts = key.replace('-', '_').split("_", 2);
+            String resource = parts.length == 2 ? parts[0] + "_" + parts[1].toUpperCase(Locale.ROOT) : key;
+            YamlConfiguration loaded = loadInternalLanguage(resource);
+            return loaded == null ? new YamlConfiguration() : loaded;
+        });
     }
 
     private YamlConfiguration loadInternalLanguage(String language) {

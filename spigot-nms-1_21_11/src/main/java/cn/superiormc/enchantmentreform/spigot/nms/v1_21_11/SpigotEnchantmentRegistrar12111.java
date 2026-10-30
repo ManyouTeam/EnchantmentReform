@@ -42,16 +42,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-/**
- * Native custom-enchantment registrar for Spigot 1.21.11 (CraftBukkit v1_21_R7).
- *
- * <p>This class is compiled against Mojang mappings and remapped to Spigot mappings
- * by SpecialSource. Do not move it into the API-only Spigot module.</p>
- */
 public final class SpigotEnchantmentRegistrar12111 {
 
     private static final MinecraftServer SERVER;
@@ -102,12 +95,11 @@ public final class SpigotEnchantmentRegistrar12111 {
                     continue;
                 }
 
-                HolderSet.Named<Item> supportedSet = itemTagResolver.requireTag(
-                        definition.getSupportedItems(), definition.getFileName(), "supported-items");
-                HolderSet.Named<Item> primarySet = definition.getPrimaryItems() == null
+                HolderSet<Item> supportedSet = itemTagResolver.itemSet(
+                        definition.getSupportedItems(), HolderSet.direct(List.of()));
+                HolderSet<Item> primarySet = definition.getPrimaryItems() == null
                         ? supportedSet
-                        : itemTagResolver.requireTag(
-                                definition.getPrimaryItems(), definition.getFileName(), "primary-items");
+                        : itemTagResolver.itemSet(definition.getPrimaryItems(), supportedSet);
 
                 TagKey<Enchantment> exclusiveTag = customEnchantmentTag(
                         "exclusive_set/" + definition.getKey().value());
@@ -212,12 +204,9 @@ public final class SpigotEnchantmentRegistrar12111 {
             normalized.put(key, normalizeNativeValue(entry.getKey(), entry.getValue(), operations));
         }
 
-        Function<String, RuntimeException> errorFactory = message ->
-                new IllegalArgumentException(definition.getFileName()
-                        + ".yml: invalid native enchantment effects: " + message);
         return EnchantmentEffectComponents.CODEC
                 .parse(operations, normalized)
-                .getOrThrow(errorFactory);
+                .result().orElse(DataComponentMap.EMPTY);
     }
 
     private static Object normalizeNativeValue(String key,
@@ -262,26 +251,18 @@ public final class SpigotEnchantmentRegistrar12111 {
         if (configured.size() == 1 && configured.getFirst().startsWith("#")) {
             TagKey<Enchantment> tag = TagKey.create(
                     ENCHANTMENTS.key(), identifier(configured.getFirst().substring(1)));
-            HolderSet.Named<Enchantment> set = ENCHANTMENTS.get(tag).orElseThrow(() ->
-                    new IllegalArgumentException(definition.getFileName()
-                            + ".yml: unknown exclusive enchantment tag '"
-                            + configured.getFirst() + "'"));
-            set.forEach(holders::add);
+            ENCHANTMENTS.get(tag).ifPresent(set -> set.forEach(holders::add));
             return List.copyOf(holders);
         }
 
-        if (configured.stream().anyMatch(value -> value.startsWith("#"))) {
-            throw new IllegalArgumentException(definition.getFileName()
-                    + ".yml: exclusive-with cannot mix tags and enchantment keys");
-        }
-
         for (String id : configured) {
-            Holder.Reference<Enchantment> holder = ENCHANTMENTS
-                    .get(enchantmentKey(id))
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            definition.getFileName()
-                                    + ".yml: unknown exclusive enchantment '" + id + "'"));
-            holders.add(holder);
+            if (id.startsWith("#")) {
+                TagKey<Enchantment> tag = TagKey.create(
+                        ENCHANTMENTS.key(), identifier(id.substring(1)));
+                ENCHANTMENTS.get(tag).ifPresent(set -> set.forEach(holders::add));
+                continue;
+            }
+            ENCHANTMENTS.get(enchantmentKey(id)).ifPresent(holders::add);
         }
         return List.copyOf(holders);
     }
@@ -412,27 +393,29 @@ public final class SpigotEnchantmentRegistrar12111 {
             }
         }
 
-        private HolderSet.Named<Item> requireTag(String configured,
-                                                 String fileName,
-                                                 String path) {
+        private HolderSet<Item> itemSet(String configured, HolderSet<Item> fallback) {
+            if (configured == null || configured.isBlank()) {
+                return fallback;
+            }
             String key = normalizeTag(configured);
             if (definitions.containsKey(key)) {
                 resolve(key);
             }
             TagKey<Item> tagKey = TagKey.create(ITEMS.key(), identifier(key));
-            return ITEMS.get(tagKey).orElseThrow(() ->
-                    new IllegalArgumentException(fileName + ".yml: " + path
-                            + " references unknown item tag '" + configured + "'"));
+            HolderSet.Named<Item> set = ITEMS.get(tagKey).orElse(null);
+            return set == null || set.size() == 0 ? fallback : set;
         }
 
         private List<Holder<Item>> resolve(String tag) {
+            if (!tag.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                return List.of();
+            }
             List<Holder<Item>> cached = resolved.get(tag);
             if (cached != null) {
                 return cached;
             }
             if (!resolving.add(tag)) {
-                throw new IllegalArgumentException(
-                        "Circular supported-items tag reference: " + tag);
+                return List.of();
             }
 
             ConfigurationSection definition = definitions.get(tag);
@@ -445,22 +428,23 @@ public final class SpigotEnchantmentRegistrar12111 {
             for (String configured : definition.getStringList("values")) {
                 if (configured.startsWith("#")) {
                     String referenced = normalizeTag(configured.substring(1));
+                    if (!referenced.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                        continue;
+                    }
                     if (definitions.containsKey(referenced)) {
                         contents.addAll(resolve(referenced));
                     } else {
                         TagKey<Item> vanillaTag = TagKey.create(
                                 ITEMS.key(), identifier(referenced));
-                        HolderSet.Named<Item> named = ITEMS.get(vanillaTag).orElseThrow(() ->
-                                new IllegalArgumentException(tag
-                                        + " references unknown item tag #" + referenced));
-                        named.forEach(contents::add);
+                        ITEMS.get(vanillaTag).ifPresent(named -> named.forEach(contents::add));
                     }
                 } else {
-                    Identifier itemId = identifier(configured);
-                    Holder.Reference<Item> holder = ITEMS.get(itemId).orElseThrow(() ->
-                            new IllegalArgumentException(tag
-                                    + " references unknown item " + configured));
-                    contents.add(holder);
+                    String normalized = configured.contains(":") ? configured : "minecraft:" + configured;
+                    if (!normalized.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                        continue;
+                    }
+                    Identifier itemId = identifier(normalized);
+                    ITEMS.get(itemId).ifPresent(contents::add);
                 }
             }
 
@@ -473,9 +457,12 @@ public final class SpigotEnchantmentRegistrar12111 {
 
         private static String normalizeTag(String value) {
             if (value == null || value.isBlank()) {
-                throw new IllegalArgumentException("Item tag key cannot be empty");
+                return "";
             }
             String normalized = value.strip().toLowerCase(Locale.ROOT);
+            if (normalized.startsWith("#")) {
+                normalized = normalized.substring(1);
+            }
             return normalized.contains(":")
                     ? normalized
                     : "enchantmentreform:" + normalized;

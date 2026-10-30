@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/** Explicit counting capabilities of the built-in triggers. */
 public enum CountMode {
     EVENTS("events", null, Set.of()),
     ITEMS("items", null, Set.of("fish", "block_drop_item", "piglin_barter", "trade", "purchase", "kill")),
@@ -55,8 +54,7 @@ public enum CountMode {
 
     public static CountMode read(String trigger, String value) {
         return Arrays.stream(values()).filter(mode -> mode.id.equals(value) && mode.supports(trigger))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Trigger " + trigger
-                        + " does not support count: " + value + "; supported: " + supported(trigger)));
+                .findFirst().orElse(EVENTS);
     }
 
     public BigDecimal quantity(PowerContext context) {

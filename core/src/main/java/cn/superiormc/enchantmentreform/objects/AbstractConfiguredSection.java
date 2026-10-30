@@ -7,6 +7,8 @@ import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.MathUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Ints;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
@@ -14,6 +16,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.concurrent.ThreadLocalRandom;
@@ -91,17 +94,17 @@ public abstract class AbstractConfiguredSection<C> {
     }
 
     public int getInt(String path, int defaultValue) {
-        return evaluateInt(resolveString(rawValue(path, 1), String.valueOf(defaultValue), null, null, 1));
+        return evaluateInt(resolveString(rawValue(path, 1), String.valueOf(defaultValue), null, null, 1), defaultValue);
     }
 
     public int getInt(String path, int defaultValue, int level) {
-        return evaluateInt(resolveString(rawValue(path, level), String.valueOf(defaultValue), null, null, level));
+        return evaluateInt(resolveString(rawValue(path, level), String.valueOf(defaultValue), null, null, level), defaultValue);
     }
 
     public int getInt(String path, int defaultValue, PowerContext context, String... args) {
         int level = context == null ? 1 : context.level();
         return evaluateInt(resolveString(rawValue(path, level), String.valueOf(defaultValue),
-                context == null ? null : context.player(), castContext(context), level, args));
+                context == null ? null : context.player(), castContext(context), level, args), defaultValue);
     }
 
     public double getDouble(String path) {
@@ -114,13 +117,13 @@ public abstract class AbstractConfiguredSection<C> {
     }
 
     public double getDouble(String path, double defaultValue, int level, String... args) {
-        return evaluate(resolveString(rawValue(path, level), String.valueOf(defaultValue), null, null, level, args));
+        return evaluate(resolveString(rawValue(path, level), String.valueOf(defaultValue), null, null, level, args), defaultValue);
     }
 
     public double getDouble(String path, double defaultValue, PowerContext context, String... args) {
         int level = context == null ? 1 : context.level();
         return evaluate(resolveString(rawValue(path, level), String.valueOf(defaultValue),
-                context == null ? null : context.player(), castContext(context), level, args));
+                context == null ? null : context.player(), castContext(context), level, args), defaultValue);
     }
 
     public String getId() {
@@ -272,42 +275,57 @@ public abstract class AbstractConfiguredSection<C> {
     }
 
     private double evaluate(String expression) {
+        return evaluate(expression, 0.0D);
+    }
+
+    private double evaluate(String expression, double defaultValue) {
         if (expression == null || expression.isBlank()) {
-            return 0.0D;
+            return defaultValue;
         }
         String value = expression.trim();
         int separator = value.indexOf('~');
         if (separator > 0 && separator < value.length() - 1) {
-            try {
-                double lower = Double.parseDouble(value.substring(0, separator).trim());
-                double upper = Double.parseDouble(value.substring(separator + 1).trim());
-                return ThreadLocalRandom.current().nextDouble(Math.min(lower, upper), Math.max(lower, upper) + Math.ulp(Math.max(lower, upper)));
-            } catch (NumberFormatException ignored) {
-                // A formula may legitimately contain an unsupported '~'; let the formula parser handle it.
+            Double first = Doubles.tryParse(value.substring(0, separator).trim());
+            Double second = Doubles.tryParse(value.substring(separator + 1).trim());
+            if (first == null || second == null || !Double.isFinite(first) || !Double.isFinite(second)) {
+                return defaultValue;
             }
+            double lower = Math.min(first, second);
+            double upper = Math.max(first, second);
+            if (lower == upper) {
+                return lower;
+            }
+            if (!Double.isFinite(upper - lower)) {
+                return defaultValue;
+            }
+            double bound = upper + Math.ulp(upper);
+            return ThreadLocalRandom.current().nextDouble(lower, Double.isFinite(bound) ? bound : upper);
         }
-        return MathUtil.doCalculate(value);
+        OptionalDouble result = MathUtil.tryCalculate(value);
+        return result.isPresent() && Double.isFinite(result.getAsDouble()) ? result.getAsDouble() : defaultValue;
     }
 
     private int evaluateInt(String expression) {
+        return evaluateInt(expression, 0);
+    }
+
+    private int evaluateInt(String expression, int defaultValue) {
         if (expression == null || expression.isBlank()) {
-            return 0;
+            return defaultValue;
         }
         String value = expression.trim();
         int separator = value.indexOf('~');
         if (separator > 0 && separator < value.length() - 1) {
-            try {
-                int first = Integer.parseInt(value.substring(0, separator).trim());
-                int second = Integer.parseInt(value.substring(separator + 1).trim());
+            Integer first = Ints.tryParse(value.substring(0, separator).trim());
+            Integer second = Ints.tryParse(value.substring(separator + 1).trim());
+            if (first != null && second != null) {
                 int lower = Math.min(first, second);
                 int upper = Math.max(first, second);
                 long range = (long) upper - lower + 1L;
                 return (int) (lower + ThreadLocalRandom.current().nextLong(range));
-            } catch (NumberFormatException ignored) {
-                // Non-integer ranges retain getDouble's continuous-range semantics before truncation.
             }
         }
-        return (int) evaluate(value);
+        return (int) evaluate(value, defaultValue);
     }
 
     private int levelOf(C context) {

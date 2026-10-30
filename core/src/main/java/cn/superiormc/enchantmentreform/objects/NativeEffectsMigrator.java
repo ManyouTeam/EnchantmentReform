@@ -24,7 +24,8 @@ public final class NativeEffectsMigrator {
     private static final Set<String> OPAQUE_FIELDS = Set.of(
             "nbt", "custom_data", "entity_data", "components");
 
-    private NativeEffectsMigrator() {}
+    private NativeEffectsMigrator() {
+    }
 
     public static Map<String, Object> migrate(Map<String, Object> effects, String serverVersion) {
         if (effects.isEmpty() || !NativeEffectsSelector.isAtLeast(serverVersion, "26.3")) {
@@ -57,7 +58,7 @@ public final class NativeEffectsMigrator {
                 && !input.containsKey("type");
         for (Map.Entry<?, ?> entry : input.entrySet()) {
             if (!(entry.getKey() instanceof String key)) {
-                throw new IllegalArgumentException(path + ": effects map keys must be strings");
+                continue;
             }
             Object value = entry.getValue();
             // Arbitrary NBT/component payloads are not native effect schemas.
@@ -102,14 +103,22 @@ public final class NativeEffectsMigrator {
 
     private static Map<String, Object> migrateDamageTags(Map<?, ?> predicate, boolean legacy) {
         Map<String, Object> result = new LinkedHashMap<>();
-        predicate.forEach((key, value) -> result.put((String) key, value));
+        predicate.forEach((key, value) -> {
+            if (key instanceof String text) {
+                result.put(text, value);
+            }
+        });
         if (predicate.get("tags") instanceof List<?> tags) {
             List<Object> converted = new ArrayList<>(tags.size());
             for (Object value : tags) {
                 if (value instanceof Map<?, ?> tag && tag.get("id") instanceof String id
                         && !id.startsWith("#") && (legacy || KNOWN_DAMAGE_TAGS.contains(namespaced(id)))) {
                     Map<String, Object> copy = new LinkedHashMap<>();
-                    tag.forEach((key, nested) -> copy.put((String) key, nested));
+                    tag.forEach((key, nested) -> {
+                        if (key instanceof String text) {
+                            copy.put(text, nested);
+                        }
+                    });
                     copy.put("id", "#" + namespaced(id));
                     converted.add(copy);
                 } else {
@@ -122,9 +131,8 @@ public final class NativeEffectsMigrator {
     }
 
     private static void rename(Map<String, Object> value, String oldKey, String newKey, String path) {
-        if (!value.containsKey(oldKey)) return;
-        if (value.containsKey(newKey) && !java.util.Objects.equals(value.get(oldKey), value.get(newKey))) {
-            throw new IllegalArgumentException(path + ": conflicting '" + oldKey + "' and '" + newKey + "'");
+        if (!value.containsKey(oldKey)) {
+            return;
         }
         value.putIfAbsent(newKey, value.remove(oldKey));
     }

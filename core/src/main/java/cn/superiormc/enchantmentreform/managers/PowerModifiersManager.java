@@ -115,13 +115,19 @@ public final class PowerModifiersManager extends AbstractManager {
             if (section == null) {
                 continue;
             }
-            getModifier(section).apply(context);
+            AbstractPowerModifier modifier = getModifier(section);
+            if (modifier != null) {
+                modifier.apply(context);
+            }
         }
     }
 
     private AbstractPowerModifier getModifier(ConfigurationSection section) {
         return modifierInstances.computeIfAbsent(section, current -> {
-            ModifierFactory factory = modifiers.getRequired(current.getString("type", ""));
+            ModifierFactory factory = modifiers.get(current.getString("type", ""));
+            if (factory == null) {
+                return null;
+            }
             AbstractPowerModifier created = factory.create(current);
             lifecycleInstances.add(created);
             return created;

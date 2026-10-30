@@ -340,7 +340,11 @@ public class AbilityManager extends AbstractManager {
     private AbstractAbility toAction(ConfigurationSection section) {
         return abilityInstances.computeIfAbsent(section, current -> {
             String type = current.getString("type", "");
-            AbstractAbility created = abilities.getRequired(type).create(current);
+            AbilityFactory factory = abilities.get(type);
+            if (factory == null) {
+                return null;
+            }
+            AbstractAbility created = factory.create(current);
             lifecycleInstances.add(created);
             return created;
         });

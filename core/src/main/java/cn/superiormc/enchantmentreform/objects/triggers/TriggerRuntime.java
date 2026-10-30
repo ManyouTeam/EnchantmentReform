@@ -4,8 +4,8 @@ import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.api.trigger.AbstractTrigger;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerResult;
-import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import cn.superiormc.enchantmentreform.managers.PowerManager;
+import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
@@ -13,6 +13,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
@@ -21,12 +23,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Map;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public final class TriggerRuntime {
@@ -83,7 +86,10 @@ public final class TriggerRuntime {
     public void rememberProjectileSources(Projectile projectile,
                                           Collection<TrackedPowerSource> sources) {
         if (projectile != null) {
-            pendingProjectileSources.put(projectile.getUniqueId(), copySources(sources));
+            UUID projectileId = projectile.getUniqueId();
+            List<TrackedPowerSource> captured = copySources(sources);
+            pendingProjectileSources.put(projectileId, captured);
+            SchedulerUtil.runTaskLater(() -> pendingProjectileSources.remove(projectileId, captured), 1L);
         }
     }
 
@@ -117,50 +123,130 @@ public final class TriggerRuntime {
     }
 
     public int countTargets(UUID player) {
+        return countTargets(player, null);
+    }
+
+    public int countTargets(UUID player, Entity pendingTarget) {
         if (player == null) {
             return 0;
         }
-        return (int) mobTargets.values().stream()
-                .filter(TargetRecord::monster)
-                .filter(target -> player.equals(target.playerId()))
-                .count();
+        Player targetPlayer = Bukkit.getPlayer(player);
+        if (targetPlayer == null || !targetPlayer.isOnline() || targetPlayer.isDead()) {
+            clearPlayerTargets(player);
+            return 0;
+        }
+        UUID pendingId = pendingTarget == null ? null : pendingTarget.getUniqueId();
+        int count = pendingTarget instanceof Monster ? 1 : 0;
+        for (Map.Entry<UUID, TargetRecord> entry : mobTargets.entrySet()) {
+            UUID mobId = entry.getKey();
+            TargetRecord record = entry.getValue();
+            if (!record.monster() || !player.equals(record.playerId()) || mobId.equals(pendingId)) {
+                continue;
+            }
+            Entity entity = Bukkit.getEntity(mobId);
+            if (!(entity instanceof Monster monster) || !monster.isValid() || monster.isDead()
+                    || !monster.getWorld().equals(targetPlayer.getWorld())) {
+                mobTargets.remove(mobId, record);
+                continue;
+            }
+            if (EnchantmentReform.isFolia && !Bukkit.isOwnedByCurrentRegion(monster)) {
+                SchedulerUtil.runSync(monster, () -> {
+                    if (!isCurrentTarget(monster, targetPlayer)) {
+                        mobTargets.remove(mobId, record);
+                    }
+                });
+            } else if (!isCurrentTarget(monster, targetPlayer)) {
+                mobTargets.remove(mobId, record);
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    private boolean isCurrentTarget(Monster monster, Player player) {
+        if (!monster.isValid() || monster.isDead() || !player.isOnline() || player.isDead()
+                || !monster.getWorld().equals(player.getWorld())) {
+            return false;
+        }
+        LivingEntity target = monster.getTarget();
+        return target != null && player.getUniqueId().equals(target.getUniqueId());
+    }
+
+    public void refreshTarget(Entity entity) {
+        if (!(entity instanceof Monster monster)) {
+            return;
+        }
+        UUID mobId = monster.getUniqueId();
+        TargetRecord record = mobTargets.get(mobId);
+        if (record != null && !record.monster()) {
+            return;
+        }
+        if (monster.isValid() && !monster.isDead()
+                && monster.getTarget() instanceof Player player && isCurrentTarget(monster, player)) {
+            rememberTarget(mobId, player.getUniqueId(), true);
+        } else if (record != null) {
+            mobTargets.remove(mobId, record);
+        }
+    }
+
+    public void clearPlayerTargets(UUID playerId) {
+        mobTargets.values().removeIf(target -> playerId.equals(target.playerId()));
     }
 
     public void trackProjectile(Player player, Projectile projectile, ItemStack item, EquipmentSlot slot,
                                 Collection<TrackedPowerSource> sources) {
-        writeFiringSlot(projectile, slot);
-        stopTrackingProjectile(projectile);
-        Projectile[] active = {projectile};
-        SchedulerUtil[] task = new SchedulerUtil[1];
-        task[0] = SchedulerUtil.runTaskTimer(projectile, () -> {
-            Projectile current = active[0];
-            if (current == null || !current.isValid() || current.isDead() || current.isOnGround()) {
-                if (current != null) {
-                    stopTrackingProjectile(current);
-                } else {
-                    task[0].cancel();
-                }
-                return;
-            }
-            Entity shooter = current.getShooter() instanceof Entity entity ? entity : player;
-            manager.dispatch(TriggerRuntime.ProjectileTick.class,
-                    new ProjectileTick(player, shooter, current, item, slot, copySources(sources), currentTick,
-                            result -> {
-                        if (result.cancelled()) {
-                            stopTrackingProjectile(current);
-                        } else if (result.skillEntity() instanceof Projectile replacement) {
-                            transferTrackedProjectile(current, replacement);
-                            active[0] = replacement;
-                        } else if (result.skillEntity() != null) {
-                            stopTrackingProjectile(current);
-                        }
-                    }));
-        }, 1L, 1L);
         UUID shooterId = projectile.getShooter() instanceof Entity shooter
                 ? shooter.getUniqueId() : player.getUniqueId();
-        projectiles.put(projectile.getUniqueId(),
-                new TrackedProjectile(player.getUniqueId(), shooterId, item, slot,
-                        copySources(sources), task[0]));
+        trackProjectile(player, projectile, item, slot, sources, shooterId);
+    }
+
+    private void trackProjectile(Player player, Projectile projectile, ItemStack item, EquipmentSlot slot,
+                                 Collection<TrackedPowerSource> sources, UUID shooterId) {
+        writeFiringSlot(projectile, slot);
+        stopTrackingProjectile(projectile);
+        UUID projectileId = projectile.getUniqueId();
+        AtomicBoolean retired = new AtomicBoolean();
+        SchedulerUtil[] task = new SchedulerUtil[1];
+        task[0] = SchedulerUtil.runTaskTimer(projectile, () -> {
+            TrackedProjectile tracked = projectiles.get(projectileId);
+            if (tracked == null || tracked.task() != task[0]) {
+                task[0].cancel();
+                return;
+            }
+            if (!projectile.isValid() || projectile.isDead() || projectile.isOnGround()) {
+                stopTrackingProjectile(projectile);
+                return;
+            }
+            Entity shooter = projectile.getShooter() instanceof Entity entity ? entity : player;
+            manager.dispatch(TriggerRuntime.ProjectileTick.class,
+                    new ProjectileTick(player, shooter, projectile, item, slot, copySources(sources), currentTick,
+                            result -> {
+                        if (result.cancelled()) {
+                            stopTrackingProjectile(projectile);
+                        } else if (result.skillEntity() instanceof Projectile replacement) {
+                            transferTrackedProjectile(projectile, replacement, tracked);
+                        } else if (result.skillEntity() != null) {
+                            stopTrackingProjectile(projectile);
+                        }
+                    }));
+        }, () -> {
+            retired.set(true);
+            TrackedProjectile tracked = projectiles.get(projectileId);
+            if (tracked != null && tracked.task() == task[0]) {
+                projectiles.remove(projectileId, tracked);
+            }
+            pendingProjectileSources.remove(projectileId);
+        }, 1L, 1L);
+        if (task[0] == null) {
+            return;
+        }
+        TrackedProjectile tracked = new TrackedProjectile(player.getUniqueId(), shooterId, item, slot,
+                copySources(sources), task[0]);
+        projectiles.put(projectileId, tracked);
+        if (retired.get() && projectiles.remove(projectileId, tracked)) {
+            task[0].cancel();
+        }
     }
 
     /** Compatibility path for abilities that launch a projectile outside an EntityShootBowEvent. */
@@ -170,29 +256,31 @@ public final class TriggerRuntime {
     }
 
     public TrackedProjectile stopTrackingProjectile(Projectile projectile) {
-        TrackedProjectile tracked = projectiles.remove(projectile.getUniqueId());
+        return stopTrackingProjectile(projectile.getUniqueId());
+    }
+
+    private TrackedProjectile stopTrackingProjectile(UUID projectileId) {
+        pendingProjectileSources.remove(projectileId);
+        TrackedProjectile tracked = projectiles.remove(projectileId);
         if (tracked != null) {
             tracked.task().cancel();
         }
         return tracked;
     }
 
-    private void transferTrackedProjectile(Projectile previous, Projectile replacement) {
+    private void transferTrackedProjectile(Projectile previous, Projectile replacement, TrackedProjectile tracked) {
         if (previous.getUniqueId().equals(replacement.getUniqueId())) {
             return;
         }
-        TrackedProjectile tracked = projectiles.remove(previous.getUniqueId());
-        if (tracked == null) {
+        stopTrackingProjectile(previous);
+        Player player = Bukkit.getPlayer(tracked.ownerId());
+        if (player == null || !player.isOnline()) {
+            stopTrackingProjectile(replacement);
             return;
-        }
-        TrackedProjectile replaced = projectiles.remove(replacement.getUniqueId());
-        if (replaced != null && replaced.task() != tracked.task()) {
-            replaced.task().cancel();
         }
         UUID shooterId = replacement.getShooter() instanceof Entity shooter
                 ? shooter.getUniqueId() : tracked.shooterId();
-        projectiles.put(replacement.getUniqueId(), new TrackedProjectile(
-                tracked.ownerId(), shooterId, tracked.item(), tracked.slot(), tracked.sources(), tracked.task()));
+        trackProjectile(player, replacement, tracked.item(), tracked.slot(), tracked.sources(), shooterId);
     }
 
     /**
@@ -229,17 +317,31 @@ public final class TriggerRuntime {
     }
 
     public EquipmentSlot findSlot(Player player, ItemStack item) {
-        if (player.getInventory().getItemInMainHand() == item) return EquipmentSlot.HAND;
-        if (player.getInventory().getItemInOffHand() == item) return EquipmentSlot.OFF_HAND;
-        if (player.getInventory().getHelmet() == item) return EquipmentSlot.HEAD;
-        if (player.getInventory().getChestplate() == item) return EquipmentSlot.CHEST;
-        if (player.getInventory().getLeggings() == item) return EquipmentSlot.LEGS;
-        if (player.getInventory().getBoots() == item) return EquipmentSlot.FEET;
+        if (player.getInventory().getItemInMainHand() == item) {
+            return EquipmentSlot.HAND;
+        }
+        if (player.getInventory().getItemInOffHand() == item) {
+            return EquipmentSlot.OFF_HAND;
+        }
+        if (player.getInventory().getHelmet() == item) {
+            return EquipmentSlot.HEAD;
+        }
+        if (player.getInventory().getChestplate() == item) {
+            return EquipmentSlot.CHEST;
+        }
+        if (player.getInventory().getLeggings() == item) {
+            return EquipmentSlot.LEGS;
+        }
+        if (player.getInventory().getBoots() == item) {
+            return EquipmentSlot.FEET;
+        }
         return EquipmentSlot.HAND;
     }
 
     public void clearEntity(UUID entityId) {
         mobTargets.remove(entityId);
+        clearPlayerTargets(entityId);
+        stopTrackingProjectile(entityId);
         PowerManager.powerManager.onEntityUnload(entityId);
     }
 
@@ -248,9 +350,11 @@ public final class TriggerRuntime {
             EnchantmentReform.methodUtil.clearBossBars(player);
         }
         UUID playerId = player.getUniqueId();
-        mobTargets.values().removeIf(target -> playerId.equals(target.playerId()));
+        clearPlayerTargets(playerId);
         projectiles.entrySet().removeIf(entry -> {
-            if (!entry.getValue().ownerId().equals(playerId)) return false;
+            if (!entry.getValue().ownerId().equals(playerId)) {
+                return false;
+            }
             entry.getValue().task().cancel();
             return true;
         });

@@ -15,6 +15,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -75,14 +76,11 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
                                           ConfigurationSection raritySettings,
                                           boolean vanillaOverride) {
         super(fileName, (vanillaOverride ? "vanilla_enchantments/" : "enchantments/")
-                + fileName + ".yml", config, vanillaOverride);
+                + fileName + ".yml", normalizeConfiguration(fileName, config, vanillaOverride), vanillaOverride);
         this.vanillaOverride = vanillaOverride;
 
         String defaultKey = vanillaOverride ? "minecraft:" + fileName : fileName;
         this.key = EnchantmentKey.parse(config.getString("key", defaultKey));
-        if (vanillaOverride && !"minecraft".equals(key.namespace())) {
-            throw error("Vanilla enchantment overrides must use the minecraft namespace");
-        }
 
         this.rarity = EnchantmentRarity.resolve(
                 config.getString("rarity", "COMMON"), raritySettings);
@@ -97,53 +95,154 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
             this.supportedItemKeys = stringOrList("supported-items");
             this.primaryItemKeys = stringOrList("primary-items");
         } else {
-            this.supportedItemKeys = List.of(require("supported-items"));
+            String supportedItems = optionalString("supported-items");
+            this.supportedItemKeys = supportedItems == null ? List.of() : List.of(supportedItems);
             String primaryItems = optionalString("primary-items");
             this.primaryItemKeys = primaryItems == null ? List.of() : List.of(primaryItems);
         }
-        this.exclusiveWith = stringOrList("exclusive-with");
+        this.exclusiveWith = stringOrList("exclusive-with").stream()
+                .filter(value -> !value.equals(key.asString()))
+                .toList();
 
-        Object selectedEffects;
-        Map<String, Object> resolvedEffects;
-        try {
-            selectedEffects = NativeEffectsSelector.select(config, NativeEffectsSelector::currentVersion);
-            if (config.contains("auto-migrate-effects") && !config.isBoolean("auto-migrate-effects")) {
-                throw new IllegalArgumentException("'auto-migrate-effects' must be a boolean");
-            }
-            resolvedEffects = copyEffects(selectedEffects);
-            if (!resolvedEffects.isEmpty() && config.getBoolean("auto-migrate-effects", true)) {
-                resolvedEffects = Map.copyOf(NativeEffectsMigrator.migrate(
-                        resolvedEffects, NativeEffectsSelector.currentVersion()));
-            }
-        } catch (IllegalArgumentException exception) {
-            throw error(exception.getMessage());
+        Object selectedEffects = NativeEffectsSelector.select(config, NativeEffectsSelector::currentVersion);
+        Map<String, Object> resolvedEffects = copyEffects(selectedEffects);
+        if (!resolvedEffects.isEmpty() && config.getBoolean("auto-migrate-effects", true)) {
+            resolvedEffects = Map.copyOf(NativeEffectsMigrator.migrate(
+                    resolvedEffects, NativeEffectsSelector.currentVersion()));
         }
         this.nativeEffectsConfigured = selectedEffects != null;
         this.nativeEffects = resolvedEffects;
 
         ConfigurationSection raritySection = rarity.settings();
-        this.weight = rangedInt(
-                "weight", inheritedInt(raritySection, "weight", 10), 1, 1024);
+        this.weight = registryInt("weight", raritySection, 10, 1, 1024);
         this.maxLevel = config.contains("max-level")
                 ? rangedInt("max-level", 1, 1, 255)
                 : vanillaOverride ? 0 : 1;
-        this.anvilCost = rangedInt(
-                "anvil-cost", inheritedInt(raritySection, "anvil-cost", 1),
-                0, Integer.MAX_VALUE);
+        this.anvilCost = registryInt("anvil-cost", raritySection, 1, 0, Integer.MAX_VALUE);
         this.minimumCost = new ObjectCustomEnchantment.EnchantmentCost(
-                inheritedInt("minimum-cost.base", raritySection, 1),
-                inheritedInt("minimum-cost.per-level", raritySection, 0));
+                registryInt("minimum-cost.base", raritySection, 1, 0, Integer.MAX_VALUE),
+                registryInt("minimum-cost.per-level", raritySection, 0, 0, Integer.MAX_VALUE));
         this.maximumCost = new ObjectCustomEnchantment.EnchantmentCost(
-                inheritedInt("maximum-cost.base", raritySection, 1),
-                inheritedInt("maximum-cost.per-level", raritySection, 0));
+                registryInt("maximum-cost.base", raritySection, 1, 0, Integer.MAX_VALUE),
+                registryInt("maximum-cost.per-level", raritySection, 0, 0, Integer.MAX_VALUE));
 
-        this.obtainingSources = normalizeList(stringOrList("obtaining-sources"));
-        if (config.contains("conditions")
-                && !config.isConfigurationSection("conditions")) {
-            throw error("'conditions' must be a section");
-        }
+        this.obtainingSources = normalizeList(stringOrList("obtaining-sources")).stream()
+                .filter(VALID_OBTAINING_SOURCES::contains)
+                .toList();
         this.conditions = config.getConfigurationSection("conditions");
         this.conditionsByLevel = resolveConditionsByLevel(this.conditions);
+    }
+
+    private static YamlConfiguration normalizeConfiguration(
+            String fileName, YamlConfiguration config, boolean vanillaOverride) {
+        for (String path : List.of("enabled", "allow-duplicate", "auto-migrate-effects")) {
+            if (config.contains(path) && !config.isBoolean(path)) {
+                config.set(path, null);
+            }
+        }
+        for (String path : List.of("variables", "powers", "conditions", "minimum-cost", "maximum-cost")) {
+            if (config.contains(path) && !config.isConfigurationSection(path)) {
+                config.set(path, null);
+            }
+        }
+        for (String path : List.of("name", "description", "rarity")) {
+            if (config.contains(path) && !config.isString(path)) {
+                config.set(path, null);
+            }
+        }
+        String defaultId = fileName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_");
+        if (defaultId.isBlank()) {
+            defaultId = "unnamed";
+        }
+        String namespace = vanillaOverride ? "minecraft" : "enchantmentreform";
+        String configuredKey = normalizeReference(config.get("key"), namespace, false);
+        if (configuredKey == null || vanillaOverride && !configuredKey.startsWith("minecraft:")) {
+            configuredKey = namespace + ":" + defaultId;
+        }
+        config.set("key", configuredKey);
+        for (String path : List.of("supported-items", "primary-items", "exclusive-with", "obtaining-sources")) {
+            Object raw = config.get(path);
+            List<?> entries = raw instanceof List<?> list ? list : raw == null ? List.of() : List.of(raw);
+            List<String> valid = new ArrayList<>();
+            for (Object entry : entries) {
+                String reference = "obtaining-sources".equals(path)
+                        ? entry instanceof String text && !text.isBlank() ? text.strip() : null
+                        : normalizeReference(entry, "minecraft", true);
+                if (reference != null) {
+                    valid.add(reference);
+                }
+            }
+            if (raw instanceof String && !valid.isEmpty()) {
+                config.set(path, valid.getFirst());
+            } else if (raw instanceof List<?> && (!valid.isEmpty() || entries.isEmpty())) {
+                config.set(path, valid);
+            } else {
+                config.set(path, null);
+            }
+            if (!vanillaOverride && !"exclusive-with".equals(path)
+                    && !"obtaining-sources".equals(path) && config.isList(path)) {
+                config.set(path, valid.isEmpty() ? null : valid.getFirst());
+            }
+        }
+        for (String path : List.of("execution-priority", "weight", "max-level", "anvil-cost",
+                "minimum-cost.base", "minimum-cost.per-level", "maximum-cost.base", "maximum-cost.per-level")) {
+            int minimum = "weight".equals(path) || "max-level".equals(path) ? 1
+                    : "execution-priority".equals(path) ? Integer.MIN_VALUE : 0;
+            int maximum = "weight".equals(path) ? 1024 : "max-level".equals(path) ? 255 : Integer.MAX_VALUE;
+            if (config.contains(path) && (!config.isInt(path)
+                    || config.getInt(path) < minimum || config.getInt(path) > maximum)) {
+                config.set(path, null);
+            }
+        }
+        Object rawSlots = config.get("active-slots");
+        List<?> slots = rawSlots instanceof List<?> list ? list
+                : rawSlots instanceof String text ? List.of(text) : List.of();
+        List<String> validSlots = new ArrayList<>();
+        for (Object value : slots) {
+            if (!(value instanceof String text)) {
+                continue;
+            }
+            String slot = text.strip().toUpperCase(Locale.ROOT).replace('-', '_');
+            slot = switch (slot) {
+                case "MAINHAND", "MAIN_HAND" -> "HAND";
+                case "OFFHAND" -> "OFF_HAND";
+                default -> slot;
+            };
+            if (List.of("ANY", "ARMOR", "HAND", "OFF_HAND", "HEAD", "CHEST", "LEGS", "FEET").contains(slot)) {
+                validSlots.add(slot);
+            }
+        }
+        if (!validSlots.isEmpty()) {
+            config.set("active-slots", validSlots);
+        } else if (!vanillaOverride) {
+            config.set("active-slots", List.of("ANY"));
+        } else if (!(rawSlots instanceof List<?> list && list.isEmpty())) {
+            config.set("active-slots", null);
+        }
+        return config;
+    }
+
+    private static String normalizeReference(Object value, String defaultNamespace, boolean allowTag) {
+        if (!(value instanceof String text) || text.isBlank()) {
+            return null;
+        }
+        String reference = text.strip().toLowerCase(Locale.ROOT);
+        boolean tag = allowTag && reference.startsWith("#");
+        if (tag) {
+            reference = reference.substring(1);
+        }
+        if (!reference.contains(":")) {
+            reference = defaultNamespace + ":" + reference;
+        }
+        if (!reference.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+            return null;
+        }
+        return (tag ? "#" : "") + reference;
+    }
+
+    private int registryInt(String path, ConfigurationSection inherited, int fallback, int minimum, int maximum) {
+        int value = inheritedInt(path, inherited, fallback);
+        return value < minimum || value > maximum ? fallback : value;
     }
 
     public final String getTranslationKey() {
@@ -288,8 +387,10 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
             return true;
         }
         PowerConditionsManager manager = PowerConditionsManager.powerConditions;
-        return manager != null && manager.getPlayerConditions().matches(
-                conditions, player, context);
+        if (manager == null) {
+            return false;
+        }
+        return manager.getPlayerConditions().matches(conditions, player, context);
     }
 
     /**
@@ -330,39 +431,34 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
         for (String key : configured.getKeys(false)) {
             ConfigurationSection child = configured.getConfigurationSection(key);
             if (child == null) {
-                throw error("Each 'conditions' entry must be a section");
+                configured.set(key, null);
+                continue;
             }
             if (child.contains("type")) {
                 directConditions = true;
                 continue;
             }
-            int level;
-            try {
-                level = Integer.parseInt(key);
-            } catch (NumberFormatException exception) {
-                throw error("A grouped 'conditions' key must be a positive enchantment level: "
-                        + key);
+            if (!key.matches("[0-9]{1,9}")) {
+                configured.set(key, null);
+                continue;
             }
+            int level = Integer.parseInt(key);
             if (level < 1 || level > getMaxLevel()) {
-                throw error("A grouped 'conditions' level must be between 1 and "
-                        + getMaxLevel() + ": " + level);
+                configured.set(key, null);
+                continue;
             }
             levelConditions = true;
         }
         if (directConditions && levelConditions) {
-            throw error("'conditions' cannot mix named conditions with level groups");
+            for (String key : List.copyOf(configured.getKeys(false))) {
+                ConfigurationSection child = configured.getConfigurationSection(key);
+                if (child != null && !child.contains("type")) {
+                    configured.set(key, null);
+                }
+            }
+            return null;
         }
         return levelConditions ? configured : null;
-    }
-
-    /** Validates fields that can only be checked after every enchantment file has been read. */
-    public final void validateConfiguration(Set<String> availableCustomEnchantments) {
-        validateExclusiveEnchantments(availableCustomEnchantments);
-        for (String source : obtainingSources) {
-            if (!VALID_OBTAINING_SOURCES.contains(source)) {
-                throw error("Unknown obtaining source '" + source + "'");
-            }
-        }
     }
 
     public final Map<String, Object> getNativeEffects() {
@@ -393,14 +489,19 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
     }
 
     private Map<String, Object> copyEffects(Object selected) {
-        if (selected == null) return Map.of();
+        if (selected == null) {
+            return Map.of();
+        }
         if (selected instanceof ConfigurationSection section) {
             return Map.copyOf(copySection(section));
         }
         Map<String, Object> result = new LinkedHashMap<>();
         for (Map.Entry<?, ?> entry : ((Map<?, ?>) selected).entrySet()) {
             if (!(entry.getKey() instanceof String key)) {
-                throw error("effects map keys must be strings");
+                continue;
+            }
+            if (entry.getValue() == null) {
+                continue;
             }
             result.put(key, copyYamlValue(entry.getValue()));
         }
@@ -426,7 +527,7 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
             Map<String, Object> result = new LinkedHashMap<>();
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 if (!(entry.getKey() instanceof String childKey)) {
-                    throw error("effects map keys must be strings");
+                    continue;
                 }
                 result.put(childKey, copyYamlValue(entry.getValue()));
             }
@@ -436,44 +537,6 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
             return list.stream().map(this::copyYamlValue).toList();
         }
         return value;
-    }
-
-    private void validateExclusiveEnchantments(Set<String> availableCustomEnchantments) {
-        long tagCount = exclusiveWith.stream().filter(value -> value.startsWith("#")).count();
-        if (tagCount > 0) {
-            if (exclusiveWith.size() != 1) {
-                throw error("'exclusive-with' cannot mix an enchantment tag with other entries");
-            }
-            parseReference(exclusiveWith.getFirst().substring(1), "exclusive enchantment tag");
-            return;
-        }
-
-        for (String configuredReference : exclusiveWith) {
-            EnchantmentKey reference = parseReference(
-                    configuredReference, "exclusive enchantment");
-            String referenceKey = reference.asString();
-            if (referenceKey.equals(key.asString())) {
-                throw error("'exclusive-with' cannot reference itself ('" + referenceKey + "')");
-            }
-            if (availableCustomEnchantments.contains(referenceKey)) {
-                continue;
-            }
-            if ("enchantmentreform".equals(reference.namespace())) {
-                throw error("'exclusive-with' references missing enchantment '"
-                        + referenceKey + "'");
-            }
-            // External entries, including vanilla enchantments, are not available while
-            // Paper is bootstrapping its registries. Looking them up here would initialize
-            // org.bukkit.Registry too early and permanently poison that class in the JVM.
-        }
-    }
-
-    private EnchantmentKey parseReference(String raw, String description) {
-        try {
-            return EnchantmentKey.parse(raw);
-        } catch (IllegalArgumentException exception) {
-            throw error("Invalid " + description + " '" + raw + "'");
-        }
     }
 
     private String resolveRegistryDescription(YamlConfiguration registryLanguage) {

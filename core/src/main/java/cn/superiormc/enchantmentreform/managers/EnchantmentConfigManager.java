@@ -4,12 +4,17 @@ import cn.superiormc.enchantmentreform.objects.ObjectCustomEnchantment;
 import cn.superiormc.enchantmentreform.objects.PowerEnchantmentDefinition;
 import cn.superiormc.enchantmentreform.objects.VanillaEnchantmentOverride;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -75,11 +80,9 @@ public final class EnchantmentConfigManager extends AbstractManager {
                     rejectedDefinitions++;
                 }
             }
-            rejectedDefinitions += validateDefinitions();
             if (rejectedDefinitions > 0) {
                 infoLogger.accept("Skipped " + rejectedDefinitions
-                        + " invalid enchantment " + (rejectedDefinitions == 1 ? "definition" : "definitions")
-                        + "; see the errors above.");
+                        + " unreadable enchantment " + (rejectedDefinitions == 1 ? "definition." : "definitions."));
             }
             infoLogger.accept("Loaded " + enchantments.size()
                     + (enchantments.size() == 1 ? " enchantment." : " enchantments."));
@@ -119,7 +122,8 @@ public final class EnchantmentConfigManager extends AbstractManager {
                 + (vanillaPowerCount == 1 ? " vanilla enchantment." : " vanilla enchantments."));
     }
 
-    private void loadEnchantment(Path file, ConfigurationSection raritySettings) throws Exception {
+    private void loadEnchantment(Path file, ConfigurationSection raritySettings)
+            throws IOException, InvalidConfigurationException {
         String fileName = toLogicalFileName(file);
         YamlConfiguration config = new YamlConfiguration();
         config.load(file.toFile());
@@ -129,9 +133,7 @@ public final class EnchantmentConfigManager extends AbstractManager {
             return;
         }
         String enchantmentId = enchantment.getKey().asString().toLowerCase(Locale.ROOT);
-        if (enchantments.putIfAbsent(enchantmentId, enchantment) != null) {
-            throw new IllegalArgumentException("Duplicate enchantment id: " + enchantmentId);
-        }
+        enchantments.putIfAbsent(enchantmentId, enchantment);
     }
 
     private boolean loadEnchantmentSafely(Path file,
@@ -139,8 +141,7 @@ public final class EnchantmentConfigManager extends AbstractManager {
         try {
             loadEnchantment(file, raritySettings);
             return true;
-        } catch (Throwable throwable) {
-            reportDefinitionError(file, throwable);
+        } catch (IOException | InvalidConfigurationException exception) {
             return false;
         }
     }
@@ -171,16 +172,15 @@ public final class EnchantmentConfigManager extends AbstractManager {
     }
 
     private void loadVanillaEnchantment(Path file,
-                                        ConfigurationSection raritySettings) throws Exception {
+                                        ConfigurationSection raritySettings)
+            throws IOException, InvalidConfigurationException {
         String fileName = toLogicalFileName(file);
         YamlConfiguration config = new YamlConfiguration();
         config.load(file.toFile());
         VanillaEnchantmentOverride enchantment = new VanillaEnchantmentOverride(
                 fileName, config, registryLanguage, raritySettings);
         String key = enchantment.getKey().asString();
-        if (vanillaEnchantments.putIfAbsent(key, enchantment) != null) {
-            throw new IllegalArgumentException("Duplicate vanilla enchantment key: " + key);
-        }
+        vanillaEnchantments.putIfAbsent(key, enchantment);
     }
 
     private boolean loadVanillaEnchantmentSafely(Path file,
@@ -188,72 +188,9 @@ public final class EnchantmentConfigManager extends AbstractManager {
         try {
             loadVanillaEnchantment(file, raritySettings);
             return true;
-        } catch (Throwable throwable) {
-            reportDefinitionError(file, throwable);
+        } catch (IOException | InvalidConfigurationException exception) {
             return false;
         }
-    }
-
-    private int validateDefinitions() {
-        int rejectedDefinitions = 0;
-        boolean removedDefinitions;
-        do {
-            Set<String> availableCustomEnchantments = Set.copyOf(enchantments.keySet());
-            List<String> invalidCustomEnchantments = new ArrayList<>();
-            List<String> invalidVanillaEnchantments = new ArrayList<>();
-
-            for (Map.Entry<String, ObjectCustomEnchantment> entry : enchantments.entrySet()) {
-                try {
-                    entry.getValue().validateConfiguration(availableCustomEnchantments);
-                } catch (Throwable throwable) {
-                    reportValidationError(entry.getValue(), throwable);
-                    invalidCustomEnchantments.add(entry.getKey());
-                }
-            }
-            for (Map.Entry<String, VanillaEnchantmentOverride> entry
-                    : vanillaEnchantments.entrySet()) {
-                if (!entry.getValue().isEnabled()) {
-                    continue;
-                }
-                try {
-                    entry.getValue().validateConfiguration(availableCustomEnchantments);
-                } catch (Throwable throwable) {
-                    reportValidationError(entry.getValue(), throwable);
-                    invalidVanillaEnchantments.add(entry.getKey());
-                }
-            }
-
-            invalidCustomEnchantments.forEach(enchantments::remove);
-            invalidVanillaEnchantments.forEach(vanillaEnchantments::remove);
-            int removedThisPass = invalidCustomEnchantments.size()
-                    + invalidVanillaEnchantments.size();
-            rejectedDefinitions += removedThisPass;
-            removedDefinitions = removedThisPass > 0;
-        } while (removedDefinitions);
-        return rejectedDefinitions;
-    }
-
-    private void reportDefinitionError(Path file, Throwable throwable) {
-        Path normalizedFile = file.toAbsolutePath().normalize();
-        String fileName = normalizedFile.startsWith(dataDirectory)
-                ? dataDirectory.relativize(normalizedFile).toString().replace('\\', '/')
-                : normalizedFile.toString();
-        errorLogger.accept("Invalid enchantment configuration " + fileName + ": "
-                + errorReason(throwable) + ". This definition will be skipped.", throwable);
-    }
-
-    private void reportValidationError(PowerEnchantmentDefinition definition,
-                                       Throwable throwable) {
-        errorLogger.accept("Invalid enchantment configuration " + definition.getConfigName()
-                + ": " + errorReason(throwable)
-                + ". This definition will be skipped.", throwable);
-    }
-
-    private String errorReason(Throwable throwable) {
-        String message = throwable.getMessage();
-        return message == null || message.isBlank()
-                ? throwable.getClass().getSimpleName()
-                : message;
     }
 
     private YamlConfiguration loadRegistryLanguage() {

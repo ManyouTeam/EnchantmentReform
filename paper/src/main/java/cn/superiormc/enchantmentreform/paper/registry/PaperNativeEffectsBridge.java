@@ -2,6 +2,8 @@ package cn.superiormc.enchantmentreform.paper.registry;
 
 import cn.superiormc.enchantmentreform.objects.ObjectCustomEnchantment;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
+import io.papermc.paper.registry.tag.TagKey;
+import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,17 +12,9 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
-/**
- * Injects the native enchantment effect component map that Paper's public
- * {@link EnchantmentRegistryEntry.Builder} API does not currently expose.
- *
- * <p>The bridge deliberately runs inside the registry compose callback. It
- * only fills the internal builder before Paper builds and freezes the entry;
- * it never thaws or mutates an already-frozen registry.</p>
- */
 final class PaperNativeEffectsBridge {
 
     private static final String PAPER_ENTRY_CLASS =
@@ -30,7 +24,32 @@ final class PaperNativeEffectsBridge {
     private static final String REGISTRY_OPS_CLASS = "net.minecraft.resources.RegistryOps";
     private static final String JAVA_OPS_CLASS = "com.mojang.serialization.JavaOps";
 
-    private PaperNativeEffectsBridge() {}
+    private PaperNativeEffectsBridge() {
+    }
+
+    static void applyExclusiveTag(EnchantmentRegistryEntry.Builder builder, TagKey<Enchantment> tag) {
+        try {
+            ClassLoader loader = builder.getClass().getClassLoader();
+            Object conversions = read(findField(builder.getClass(), "conversions"), builder);
+            Object lookup = invokeCompatible(conversions, "lookup");
+            Class<?> registries = Class.forName("io.papermc.paper.registry.PaperRegistries", false, loader);
+            Object registryKey = invokeStaticCompatible(registries, "registryToNms", tag.registryKey());
+            Object registryInfo = ((Optional<?>) invokeCompatible(lookup, "lookup", registryKey)).orElseThrow();
+            Class<?> holderGetter = Class.forName("net.minecraft.core.HolderGetter", false, loader);
+            Object getter = holderGetter.isInstance(registryInfo)
+                    ? registryInfo : invokeCompatible(registryInfo, "getter");
+            if (getter.getClass().getName().equals("net.minecraft.core.registries.ConcurrentHolderGetter")) {
+                getter = read(findField(getter.getClass(), "original"), getter);
+            }
+            Object nativeTag = invokeStaticCompatible(registries, "toNms", tag);
+            Object set = invokeCompatible(getter, "getOrThrow", nativeTag);
+            Field field = findField(builder.getClass(), "exclusiveWith");
+            field.setAccessible(true);
+            field.set(builder, set);
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Failed to access Paper enchantment exclusivity", exception);
+        }
+    }
 
     static void apply(EnchantmentRegistryEntry.Builder builder, ObjectCustomEnchantment definition) {
         if (!definition.hasNativeEffects()) {
@@ -48,7 +67,9 @@ final class PaperNativeEffectsBridge {
             Object lookup = invokeCompatible(conversions, "lookup");
             Object registryOps = createRegistryOps(loader, lookup);
             Object effects = decodeEffects(loader, registryOps, source, nativeEffects);
-            setEffects(builder, effects);
+            if (effects != null) {
+                setEffects(builder, effects);
+            }
         } catch (InvocationTargetException exception) {
             Throwable cause = exception.getCause();
             if (cause instanceof RuntimeException runtimeException) {
@@ -106,10 +127,7 @@ final class PaperNativeEffectsBridge {
         Object codec = componentsClass.getField("CODEC").get(null);
         Object dataResult = invokeCompatible(codec, "parse", registryOps,
                 namespacedComponentKeys(nativeEffects, registryOps));
-        Function<String, RuntimeException> errorFactory = message ->
-                new IllegalArgumentException(source
-                        + ".yml: invalid native enchantment effects: " + message);
-        return invokeCompatible(dataResult, "getOrThrow", errorFactory);
+        return ((Optional<?>) invokeCompatible(dataResult, "result")).orElse(null);
     }
 
     private static Map<String, Object> namespacedComponentKeys(
@@ -217,14 +235,30 @@ final class PaperNativeEffectsBridge {
         if (!type.isPrimitive()) {
             return type;
         }
-        if (type == int.class) return Integer.class;
-        if (type == boolean.class) return Boolean.class;
-        if (type == double.class) return Double.class;
-        if (type == float.class) return Float.class;
-        if (type == long.class) return Long.class;
-        if (type == byte.class) return Byte.class;
-        if (type == short.class) return Short.class;
-        if (type == char.class) return Character.class;
+        if (type == int.class) {
+            return Integer.class;
+        }
+        if (type == boolean.class) {
+            return Boolean.class;
+        }
+        if (type == double.class) {
+            return Double.class;
+        }
+        if (type == float.class) {
+            return Float.class;
+        }
+        if (type == long.class) {
+            return Long.class;
+        }
+        if (type == byte.class) {
+            return Byte.class;
+        }
+        if (type == short.class) {
+            return Short.class;
+        }
+        if (type == char.class) {
+            return Character.class;
+        }
         return type;
     }
 }

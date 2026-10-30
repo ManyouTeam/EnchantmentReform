@@ -10,7 +10,9 @@ import cn.superiormc.enchantmentreform.power.BlockBreakProtectionUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +32,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityRemoveEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -37,6 +40,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PiglinBarterEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInputEvent;
@@ -53,6 +57,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.world.EntitiesUnloadEvent;
 
 public class EnchantmentPowerListener implements Listener {
 
@@ -145,6 +150,31 @@ public class EnchantmentPowerListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onTarget(EntityTargetEvent event) {
         dispatch(EntityTargetEvent.class, event);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onTargetMonitor(EntityTargetEvent event) {
+        if (!(event.getEntity() instanceof Monster monster)) {
+            return;
+        }
+        SchedulerUtil.runSync(monster, () -> triggerManager.runtime().refreshTarget(monster));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onChangedWorld(PlayerChangedWorldEvent event) {
+        triggerManager.runtime().clearPlayerTargets(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityRemove(EntityRemoveEvent event) {
+        triggerManager.runtime().clearEntity(event.getEntity().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntitiesUnload(EntitiesUnloadEvent event) {
+        for (Entity entity : event.getEntities()) {
+            triggerManager.runtime().clearEntity(entity.getUniqueId());
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

@@ -2,8 +2,16 @@ package cn.superiormc.enchantmentreform.managers;
 
 import cn.superiormc.enchantmentreform.api.registry.KeyedRegistry;
 import cn.superiormc.enchantmentreform.objects.AbstractConfiguredSection;
+import cn.superiormc.enchantmentreform.objects.ObjectSingleCondition;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
-import cn.superiormc.enchantmentreform.objects.conditions.*;
+import cn.superiormc.enchantmentreform.objects.conditions.AbstractCheckCondition;
+import cn.superiormc.enchantmentreform.objects.conditions.ConditionAny;
+import cn.superiormc.enchantmentreform.objects.conditions.ConditionBiome;
+import cn.superiormc.enchantmentreform.objects.conditions.ConditionNot;
+import cn.superiormc.enchantmentreform.objects.conditions.ConditionPermission;
+import cn.superiormc.enchantmentreform.objects.conditions.ConditionPlaceholder;
+import cn.superiormc.enchantmentreform.objects.conditions.ConditionWorld;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -36,7 +44,10 @@ public class ConditionManager<S extends AbstractConfiguredSection<C>, C> {
             return false;
         }
         AbstractCheckCondition<S, C> checkCondition = conditions.get(normalize(condition.getString("type")));
-        return checkCondition != null && checkCondition.checkCondition(condition, player, context);
+        if (checkCondition == null) {
+            return true;
+        }
+        return checkCondition.checkCondition(condition, player, context);
     }
 
     public boolean checkBoolean(S condition, Player player) {
@@ -44,17 +55,17 @@ public class ConditionManager<S extends AbstractConfiguredSection<C>, C> {
     }
 
     /** Evaluates all named normal conditions in a section. */
-    public boolean matches(org.bukkit.configuration.ConfigurationSection section, Player player, C context) {
+    public boolean matches(ConfigurationSection section, Player player, C context) {
         if (section == null) {
             return true;
         }
         for (String key : section.getKeys(false)) {
-            org.bukkit.configuration.ConfigurationSection single = section.getConfigurationSection(key);
+            ConfigurationSection single = section.getConfigurationSection(key);
             if (single == null || !single.contains("type")) {
-                return false;
+                continue;
             }
             @SuppressWarnings("unchecked")
-            S condition = (S) new cn.superiormc.enchantmentreform.objects.ObjectSingleCondition(
+            S condition = (S) new ObjectSingleCondition(
                     single, powerContext(context, player), player);
             if (!checkBoolean(condition, player, context)) {
                 return false;
@@ -64,17 +75,17 @@ public class ConditionManager<S extends AbstractConfiguredSection<C>, C> {
     }
 
     /** Evaluates whether any named normal condition in a section matches. */
-    public boolean matchesAny(org.bukkit.configuration.ConfigurationSection section, Player player, C context) {
+    public boolean matchesAny(ConfigurationSection section, Player player, C context) {
         if (section == null) {
             return true;
         }
         for (String key : section.getKeys(false)) {
-            org.bukkit.configuration.ConfigurationSection single = section.getConfigurationSection(key);
+            ConfigurationSection single = section.getConfigurationSection(key);
             if (single == null || !single.contains("type")) {
                 continue;
             }
             @SuppressWarnings("unchecked")
-            S condition = (S) new cn.superiormc.enchantmentreform.objects.ObjectSingleCondition(
+            S condition = (S) new ObjectSingleCondition(
                     single, powerContext(context, player), player);
             if (checkBoolean(condition, player, context)) {
                 return true;

@@ -125,7 +125,9 @@ public final class PowerVariables {
         if (value instanceof List<?> list) {
             List<Object> result = new ArrayList<>(list.size());
             for (Object entry : list) {
-                result.add(copyValue(entry));
+                if (entry != null) {
+                    result.add(copyValue(entry));
+                }
             }
             return List.copyOf(result);
         }

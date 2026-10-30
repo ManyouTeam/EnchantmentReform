@@ -13,10 +13,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 
-/** Session-scoped repeatable batches for powers and skill experience sources. */
 public final class CountBatch {
 
-    private record Key(UUID player, EquipmentSlot slot) { }
+    private record Key(UUID player, EquipmentSlot slot) {
+    }
 
     private final BigDecimal every;
 
@@ -33,11 +33,11 @@ public final class CountBatch {
         try {
             BigDecimal value = new BigDecimal(String.valueOf(configured)).stripTrailingZeros();
             if (value.signum() <= 0 || value.compareTo(CountMode.MAXIMUM) > 0 || value.scale() > CountMode.SCALE) {
-                throw new IllegalArgumentException("count-every must be positive, with at most six decimal places");
+                return null;
             }
             return value;
         } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("Invalid count-every: " + configured, exception);
+            return null;
         }
     }
 

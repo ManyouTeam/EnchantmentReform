@@ -10,11 +10,16 @@ import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
 import io.papermc.paper.registry.event.RegistryEvents;
 import io.papermc.paper.registry.event.RegistryEntryAddEvent;
+import io.papermc.paper.registry.event.RegistryComposeEvent;
 import io.papermc.paper.registry.keys.EnchantmentKeys;
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys;
 import io.papermc.paper.registry.set.RegistryKeySet;
 import io.papermc.paper.registry.set.RegistrySet;
 import io.papermc.paper.registry.tag.TagKey;
+import io.papermc.paper.registry.tag.Tag;
+import io.papermc.paper.tag.PostFlattenTagRegistrar;
+import io.papermc.paper.tag.PreFlattenTagRegistrar;
+import io.papermc.paper.tag.TagEntry;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -26,15 +31,15 @@ import org.bukkit.inventory.ItemType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
 
 public final class PaperEnchantmentRegistrar {
 
-    private PaperEnchantmentRegistrar() {}
+    private PaperEnchantmentRegistrar() {
+    }
 
     public static void bind(BootstrapContext context,
                             Collection<ObjectCustomEnchantment> definitions,
@@ -42,12 +47,30 @@ public final class PaperEnchantmentRegistrar {
                             ConfigurationSection supportedItemsConfig) {
         List<ObjectCustomEnchantment> snapshot = List.copyOf(definitions);
         List<VanillaEnchantmentOverride> vanillaSnapshot = List.copyOf(vanillaDefinitions);
+        List<PowerEnchantmentDefinition> allDefinitions = new ArrayList<>(snapshot);
+        allDefinitions.addAll(vanillaSnapshot);
+        Map<TagKey<ItemType>, List<TagEntry<ItemType>>> itemTags = new LinkedHashMap<>();
+        Map<TagKey<ItemType>, RegistryKeySet<ItemType>> itemDefaults = new LinkedHashMap<>();
+        Map<TagKey<ItemType>, Collection<TypedKey<ItemType>>> resolvedItemTags = new LinkedHashMap<>();
+        boolean[] itemTagsReady = {false};
+        for (PowerEnchantmentDefinition definition : allDefinitions) {
+            if (!definition.isEnabled()) {
+                continue;
+            }
+            if (!definition.isVanillaOverride() || definition.has("supported-items")) {
+                configuredItemTag(definition, "supported-items", null, itemTags, itemDefaults);
+            }
+            if (definition.has("primary-items")) {
+                configuredItemTag(definition, "primary-items", null, itemTags, itemDefaults);
+            }
+        }
         context.getLifecycleManager().registerEventHandler(
                 RegistryEvents.ENCHANTMENT.entryAdd().newHandler(event -> {
                     String eventKey = event.key().key().asString();
                     for (VanillaEnchantmentOverride definition : vanillaSnapshot) {
                         if (definition.getKey().asString().equals(eventKey)) {
-                            applyVanillaOverride(event, definition);
+                            applyVanillaOverride(event, definition, itemTags, itemDefaults,
+                                    resolvedItemTags, itemTagsReady[0]);
                             if (!definition.isEnabled()) {
                                 context.getLogger().info("Disabled vanilla enchantment {}.", eventKey);
                             }
@@ -60,10 +83,11 @@ public final class PaperEnchantmentRegistrar {
                     for (ObjectCustomEnchantment definition : snapshot) {
                         TypedKey<Enchantment> key = key(definition);
                         event.registry().register(key, builder -> {
+                            RegistryKeySet<ItemType> empty = RegistrySet.keySet(RegistryKey.ITEM, List.of());
                             builder.description(coloredDescription(definition))
-                                    .supportedItems(event.getOrCreateTag(TagKey.create(
-                                            RegistryKey.ITEM, Key.key(stripTagPrefix(
-                                                    definition.getSupportedItems())))))
+                                    .supportedItems(itemSet(configuredItemTag(
+                                            definition, "supported-items", empty, itemTags, itemDefaults),
+                                            empty, resolvedItemTags, itemTagsReady[0], event::getOrCreateTag))
                                     .weight(definition.getWeight())
                                     .maxLevel(definition.getMaxLevel())
                                     .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(
@@ -75,9 +99,10 @@ public final class PaperEnchantmentRegistrar {
                                     .anvilCost(definition.getAnvilCost())
                                     .activeSlots(parseSlots(definition.getActiveSlots()));
                             if (definition.getPrimaryItems() != null) {
-                                builder.primaryItems(event.getOrCreateTag(TagKey.create(
-                                        RegistryKey.ITEM,
-                                        Key.key(stripTagPrefix(definition.getPrimaryItems())))));
+                                builder.primaryItems(itemSet(configuredItemTag(
+                                        definition, "primary-items", builder.supportedItems(),
+                                        itemTags, itemDefaults), builder.supportedItems(),
+                                        resolvedItemTags, itemTagsReady[0], event::getOrCreateTag));
                             }
                             RegistryKeySet<Enchantment> exclusive = exclusiveSet(event, definition);
                             if (exclusive != null) {
@@ -88,8 +113,20 @@ public final class PaperEnchantmentRegistrar {
                     }
                 }));
         context.getLifecycleManager().registerEventHandler(
-                LifecycleEvents.TAGS.postFlatten(RegistryKey.ITEM).newHandler(event ->
-                        registerConfiguredItemTags(event.registrar(), supportedItemsConfig)));
+                LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM).newHandler(event -> {
+                    registerConfiguredItemTags(event.registrar(), supportedItemsConfig);
+                    itemTags.forEach(event.registrar()::setTag);
+                }));
+        context.getLifecycleManager().registerEventHandler(
+                LifecycleEvents.TAGS.postFlatten(RegistryKey.ITEM).newHandler(event -> {
+                    applyItemDefaults(event.registrar(), itemDefaults);
+                    resolvedItemTags.clear();
+                    resolvedItemTags.putAll(event.registrar().getAllTags());
+                    itemTagsReady[0] = true;
+                }));
+        context.getLifecycleManager().registerEventHandler(
+                LifecycleEvents.TAGS.preFlatten(RegistryKey.ENCHANTMENT).newHandler(event ->
+                        registerExclusiveTags(event.registrar(), allDefinitions)));
         context.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT).newHandler(event -> {
                     for (ObjectCustomEnchantment definition : snapshot) {
@@ -103,8 +140,49 @@ public final class PaperEnchantmentRegistrar {
                 }));
     }
 
+    private static void applyItemDefaults(
+            PostFlattenTagRegistrar<ItemType> registrar,
+            Map<TagKey<ItemType>, RegistryKeySet<ItemType>> defaults) {
+        for (Map.Entry<TagKey<ItemType>, RegistryKeySet<ItemType>> entry : defaults.entrySet()) {
+            TagKey<ItemType> tag = entry.getKey();
+            if (registrar.hasTag(tag) && !registrar.getTag(tag).isEmpty()) {
+                continue;
+            }
+            RegistryKeySet<ItemType> fallback = entry.getValue();
+            Collection<TypedKey<ItemType>> values;
+            if (fallback instanceof Tag<ItemType> fallbackTag) {
+                values = registrar.hasTag(fallbackTag.tagKey())
+                        ? registrar.getTag(fallbackTag.tagKey()) : List.of();
+            } else {
+                values = fallback == null ? List.of() : fallback.values();
+            }
+            registrar.setTag(tag, values);
+        }
+    }
+
+    private static void registerExclusiveTags(
+            PreFlattenTagRegistrar<Enchantment> registrar,
+            Collection<PowerEnchantmentDefinition> definitions) {
+        for (PowerEnchantmentDefinition definition : definitions) {
+            if (!definition.isEnabled() || definition.getExclusiveWith().isEmpty()) {
+                continue;
+            }
+            List<TagEntry<Enchantment>> entries = new ArrayList<>();
+            for (String value : definition.getExclusiveWith()) {
+                if (value.startsWith("#")) {
+                    entries.add(TagEntry.tagEntry(TagKey.create(
+                            RegistryKey.ENCHANTMENT, Key.key(stripTagPrefix(value))), false));
+                } else {
+                    entries.add(TagEntry.valueEntry(EnchantmentKeys.create(Key.key(value)), false));
+                }
+            }
+            registrar.setTag(TagKey.create(RegistryKey.ENCHANTMENT,
+                    configurationTagKey(definition, "exclusive-with")), entries);
+        }
+    }
+
     private static void registerConfiguredItemTags(
-            io.papermc.paper.tag.PostFlattenTagRegistrar<ItemType> registrar,
+            PreFlattenTagRegistrar<ItemType> registrar,
             ConfigurationSection supportedItemsConfig) {
         ConfigurationSection tags = supportedItemsConfig == null
                 ? null : supportedItemsConfig.getConfigurationSection("tags");
@@ -115,54 +193,31 @@ public final class PaperEnchantmentRegistrar {
         for (String id : tags.getKeys(false)) {
             ConfigurationSection definition = tags.getConfigurationSection(id);
             if (definition != null) {
-                definitions.put(normalizeTag(definition.getString("key", id)), definition);
-            }
-        }
-        Map<String, Collection<TypedKey<ItemType>>> resolved = new LinkedHashMap<>();
-        for (String tag : definitions.keySet()) {
-            Collection<TypedKey<ItemType>> values = resolveConfiguredTag(
-                    tag, definitions, resolved, new LinkedHashSet<>(), registrar);
-            registrar.setTag(TagKey.create(RegistryKey.ITEM, Key.key(tag)), values);
-        }
-    }
-
-    private static Collection<TypedKey<ItemType>> resolveConfiguredTag(
-            String tag,
-            Map<String, ConfigurationSection> definitions,
-            Map<String, Collection<TypedKey<ItemType>>> resolved,
-            Set<String> resolving,
-            io.papermc.paper.tag.PostFlattenTagRegistrar<ItemType> registrar) {
-        Collection<TypedKey<ItemType>> cached = resolved.get(tag);
-        if (cached != null) {
-            return cached;
-        }
-        if (!resolving.add(tag)) {
-            throw new IllegalArgumentException("Circular supported-items tag reference: " + tag);
-        }
-        LinkedHashSet<TypedKey<ItemType>> values = new LinkedHashSet<>();
-        ConfigurationSection definition = definitions.get(tag);
-        if (definition != null) {
-            for (String value : definition.getStringList("values")) {
-                if (value.startsWith("#")) {
-                    String referenced = normalizeTag(value.substring(1));
-                    if (definitions.containsKey(referenced)) {
-                        values.addAll(resolveConfiguredTag(
-                                referenced, definitions, resolved, resolving, registrar));
-                    } else {
-                        TagKey<ItemType> key = TagKey.create(RegistryKey.ITEM, Key.key(referenced));
-                        if (registrar.hasTag(key)) {
-                            values.addAll(registrar.getTag(key));
-                        }
-                    }
-                } else {
-                    values.add(TypedKey.create(RegistryKey.ITEM, Key.key(value)));
+                String key = normalizeTag(definition.getString("key", id));
+                if (key.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                    definitions.put(key, definition);
                 }
             }
         }
-        resolving.remove(tag);
-        Collection<TypedKey<ItemType>> result = List.copyOf(values);
-        resolved.put(tag, result);
-        return result;
+        for (Map.Entry<String, ConfigurationSection> entry : definitions.entrySet()) {
+            List<TagEntry<ItemType>> values = new ArrayList<>();
+            for (String value : entry.getValue().getStringList("values")) {
+                boolean tag = value.startsWith("#");
+                String reference = tag ? normalizeTag(value.substring(1))
+                        : value.contains(":") ? value : "minecraft:" + value;
+                if (!reference.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                    continue;
+                }
+                if (tag) {
+                    values.add(TagEntry.tagEntry(TagKey.create(
+                            RegistryKey.ITEM, Key.key(reference)), false));
+                } else {
+                    values.add(TagEntry.valueEntry(TypedKey.create(
+                            RegistryKey.ITEM, Key.key(reference)), false));
+                }
+            }
+            registrar.setTag(TagKey.create(RegistryKey.ITEM, Key.key(entry.getKey())), values);
+        }
     }
 
     private static String normalizeTag(String value) {
@@ -172,7 +227,11 @@ public final class PaperEnchantmentRegistrar {
 
     private static void applyVanillaOverride(
             RegistryEntryAddEvent<Enchantment, EnchantmentRegistryEntry.Builder> event,
-            VanillaEnchantmentOverride definition) {
+            VanillaEnchantmentOverride definition,
+            Map<TagKey<ItemType>, List<TagEntry<ItemType>>> itemTags,
+            Map<TagKey<ItemType>, RegistryKeySet<ItemType>> itemDefaults,
+            Map<TagKey<ItemType>, Collection<TypedKey<ItemType>>> resolvedItemTags,
+            boolean itemTagsReady) {
         EnchantmentRegistryEntry.Builder builder = event.builder();
         if (!definition.isEnabled()) {
             builder.supportedItems(RegistrySet.keySet(RegistryKey.ITEM, List.of()))
@@ -185,12 +244,21 @@ public final class PaperEnchantmentRegistrar {
             builder.description(coloredDescription(definition));
         }
         if (definition.has("supported-items")) {
-            builder.supportedItems(itemSet(event, definition.stringOrList("supported-items"),
-                    definition, "supported-items"));
+            RegistryKeySet<ItemType> fallback = builder.supportedItems();
+            builder.supportedItems(itemSet(configuredItemTag(
+                    definition, "supported-items", fallback, itemTags, itemDefaults),
+                    fallback, resolvedItemTags, itemTagsReady && !definition.getSupportedItemKeys().isEmpty(),
+                    event::getOrCreateTag));
         }
         if (definition.has("primary-items")) {
-            builder.primaryItems(itemSet(event, definition.stringOrList("primary-items"),
-                    definition, "primary-items"));
+            RegistryKeySet<ItemType> fallback = builder.primaryItems();
+            if (fallback == null) {
+                fallback = builder.supportedItems();
+            }
+            builder.primaryItems(itemSet(configuredItemTag(
+                    definition, "primary-items", fallback, itemTags, itemDefaults),
+                    fallback, resolvedItemTags, itemTagsReady && !definition.getPrimaryItemKeys().isEmpty(),
+                    event::getOrCreateTag));
         }
         if (definition.has("weight")) {
             builder.weight(definition.getConfig().getInt("weight"));
@@ -200,13 +268,13 @@ public final class PaperEnchantmentRegistrar {
         }
         if (definition.has("minimum-cost")) {
             builder.minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(
-                    definition.getConfig().getInt("minimum-cost.base"),
-                    definition.getConfig().getInt("minimum-cost.per-level")));
+                    definition.getConfig().getInt("minimum-cost.base", builder.minimumCost().baseCost()),
+                    definition.getConfig().getInt("minimum-cost.per-level", builder.minimumCost().additionalPerLevelCost())));
         }
         if (definition.has("maximum-cost")) {
             builder.maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(
-                    definition.getConfig().getInt("maximum-cost.base"),
-                    definition.getConfig().getInt("maximum-cost.per-level")));
+                    definition.getConfig().getInt("maximum-cost.base", builder.maximumCost().baseCost()),
+                    definition.getConfig().getInt("maximum-cost.per-level", builder.maximumCost().additionalPerLevelCost())));
         }
         if (definition.has("anvil-cost")) {
             builder.anvilCost(definition.getConfig().getInt("anvil-cost"));
@@ -215,7 +283,12 @@ public final class PaperEnchantmentRegistrar {
             builder.activeSlots(parseSlots(definition.stringOrList("active-slots")));
         }
         if (definition.has("exclusive-with")) {
-            builder.exclusiveWith(exclusiveSet(event, definition));
+            if (definition.getExclusiveWith().isEmpty()) {
+                builder.exclusiveWith(RegistrySet.keySet(RegistryKey.ENCHANTMENT, List.of()));
+            } else {
+                PaperNativeEffectsBridge.applyExclusiveTag(builder, TagKey.create(
+                        RegistryKey.ENCHANTMENT, configurationTagKey(definition, "exclusive-with")));
+            }
         }
         if (definition.hasNativeEffects()) {
             PaperNativeEffectsBridge.apply(builder, definition.getFileName(),
@@ -224,46 +297,46 @@ public final class PaperEnchantmentRegistrar {
     }
 
     private static RegistryKeySet<ItemType> itemSet(
-            RegistryEntryAddEvent<Enchantment, EnchantmentRegistryEntry.Builder> event,
-            List<String> values,
-            VanillaEnchantmentOverride definition,
-            String path) {
-        if (definition.getConfig().get(path) instanceof String && values.size() == 1) {
-            return event.getOrCreateTag(TagKey.create(
-                    RegistryKey.ITEM, Key.key(stripTagPrefix(values.getFirst()))));
+            TagKey<ItemType> selected,
+            RegistryKeySet<ItemType> fallback,
+            Map<TagKey<ItemType>, Collection<TypedKey<ItemType>>> resolved,
+            boolean ready,
+            Function<TagKey<ItemType>, Tag<ItemType>> resolver) {
+        if (ready && resolved.getOrDefault(selected, List.of()).isEmpty()) {
+            return fallback;
         }
-        if (values.stream().anyMatch(value -> value.startsWith("#"))) {
-            throw vanillaError(definition, path + " cannot mix a tag with item keys");
-        }
-        List<TypedKey<ItemType>> keys = values.stream()
-                .map(Key::key)
-                .map(key -> TypedKey.create(RegistryKey.ITEM, key))
-                .toList();
-        return RegistrySet.keySet(RegistryKey.ITEM, keys);
+        return resolver.apply(selected);
     }
 
-    private static RegistryKeySet<Enchantment> exclusiveSet(
-            RegistryEntryAddEvent<Enchantment, EnchantmentRegistryEntry.Builder> event,
-            VanillaEnchantmentOverride definition) {
-        List<String> values = definition.stringOrList("exclusive-with");
-        if (values.size() == 1 && values.getFirst().startsWith("#")) {
-            return event.getOrCreateTag(TagKey.create(
-                    RegistryKey.ENCHANTMENT, Key.key(stripTagPrefix(values.getFirst()))));
+    private static TagKey<ItemType> configuredItemTag(
+            PowerEnchantmentDefinition definition,
+            String path,
+            RegistryKeySet<ItemType> fallback,
+            Map<TagKey<ItemType>, List<TagEntry<ItemType>>> itemTags,
+            Map<TagKey<ItemType>, RegistryKeySet<ItemType>> itemDefaults) {
+        List<String> values = definition.stringOrList(path);
+        boolean tagReference = definition.getConfig().get(path) instanceof String;
+        List<TagEntry<ItemType>> entries = new ArrayList<>();
+        for (String value : values) {
+            if (tagReference || value.startsWith("#")) {
+                entries.add(TagEntry.tagEntry(TagKey.create(
+                        RegistryKey.ITEM, Key.key(stripTagPrefix(value))), false));
+            } else {
+                entries.add(TagEntry.valueEntry(TypedKey.create(
+                        RegistryKey.ITEM, Key.key(value)), false));
+            }
         }
-        if (values.stream().anyMatch(value -> value.startsWith("#"))) {
-            throw vanillaError(definition, "exclusive-with cannot mix a tag with enchantment keys");
+        TagKey<ItemType> tag = TagKey.create(RegistryKey.ITEM, configurationTagKey(definition, path));
+        itemTags.put(tag, entries);
+        if (!values.isEmpty()) {
+            itemDefaults.put(tag, fallback);
         }
-        List<TypedKey<Enchantment>> keys = values.stream()
-                .map(Key::key)
-                .map(EnchantmentKeys::create)
-                .toList();
-        return RegistrySet.keySet(RegistryKey.ENCHANTMENT, keys);
+        return tag;
     }
 
-    private static IllegalArgumentException vanillaError(
-            VanillaEnchantmentOverride definition, String message) {
-        return new IllegalArgumentException("vanilla_enchantments/"
-                + definition.getFileName() + ".yml: " + message);
+    private static Key configurationTagKey(PowerEnchantmentDefinition definition, String path) {
+        return Key.key("enchantmentreform", "configuration/" + path + "/"
+                + definition.getKey().namespace() + "/" + definition.getKey().value());
     }
 
     private static TypedKey<Enchantment> key(ObjectCustomEnchantment definition) {
@@ -324,7 +397,7 @@ public final class PaperEnchantmentRegistrar {
     }
 
     private static RegistryKeySet<Enchantment> exclusiveSet(
-            io.papermc.paper.registry.event.RegistryComposeEvent<Enchantment,
+            RegistryComposeEvent<Enchantment,
                     EnchantmentRegistryEntry.Builder> event,
             ObjectCustomEnchantment definition) {
         List<String> values = definition.getExclusiveWith();
@@ -333,17 +406,10 @@ public final class PaperEnchantmentRegistrar {
         }
         if (values.size() == 1 && values.getFirst().startsWith("#")) {
             return event.getOrCreateTag(TagKey.create(
-                    RegistryKey.ENCHANTMENT, Key.key(stripTagPrefix(values.getFirst()))));
+                    RegistryKey.ENCHANTMENT, configurationTagKey(definition, "exclusive-with")));
         }
-        if (values.stream().anyMatch(value -> value.startsWith("#"))) {
-            throw new IllegalArgumentException(definition.getFileName()
-                    + ".yml: exclusive-with cannot mix a tag with enchantment keys");
-        }
-        List<TypedKey<Enchantment>> keys = values.stream()
-                .map(Key::key)
-                .map(EnchantmentKeys::create)
-                .toList();
-        return RegistrySet.keySet(RegistryKey.ENCHANTMENT, keys);
+        return event.getOrCreateTag(TagKey.create(
+                RegistryKey.ENCHANTMENT, configurationTagKey(definition, "exclusive-with")));
     }
 
     private static String stripTagPrefix(String value) {

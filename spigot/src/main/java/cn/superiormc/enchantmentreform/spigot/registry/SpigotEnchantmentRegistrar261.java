@@ -20,18 +20,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-/**
- * Native custom-enchantment registration for named-mapped Spigot 26.2.
- *
- * <p>Spigot 26.2 exposes Mojang-named server classes at runtime, but the public
- * API still does not provide a writable enchantment registry. This registrar is
- * therefore reflection-only and runs during {@code JavaPlugin#onLoad()}.</p>
- */
 public final class SpigotEnchantmentRegistrar261 {
 
     private SpigotEnchantmentRegistrar261() {
@@ -169,10 +161,6 @@ public final class SpigotEnchantmentRegistrar261 {
                                          Object exclusiveSet)
                 throws ReflectiveOperationException {
             List<Object> supportedHolders = itemTags.resolve(definition.getSupportedItems());
-            if (supportedHolders.isEmpty()) {
-                throw new IllegalArgumentException(definition.getFileName()
-                        + ".yml: supported-items resolved to an empty item set");
-            }
 
             List<Object> primaryHolders = definition.getPrimaryItems() == null
                     ? supportedHolders
@@ -249,10 +237,8 @@ public final class SpigotEnchantmentRegistrar261 {
                     registryOps);
             Object dataResult = invokeCompatible(codec, "parse", registryOps, input);
 
-            Function<String, RuntimeException> errorFactory = message ->
-                    new IllegalArgumentException(definition.getFileName()
-                            + ".yml: invalid native enchantment effects: " + message);
-            return invokeCompatible(dataResult, "getOrThrow", errorFactory);
+            Object effects = optionalValue(invokeCompatible(dataResult, "result"));
+            return effects == null ? staticField(dataComponentMapClass, "EMPTY") : effects;
         }
 
         private Map<String, Object> namespacedComponentKeys(Map<String, Object> effects,
@@ -319,20 +305,22 @@ public final class SpigotEnchantmentRegistrar261 {
                         identifier(normalizeKey(configured.getFirst().substring(1), "minecraft")));
                 Object set = getOptional(enchantmentRegistry, tagKey);
                 if (set == null) {
-                    throw new IllegalArgumentException(definition.getFileName()
-                            + ".yml: unknown exclusive enchantment tag '"
-                            + configured.getFirst() + "'");
+                    return directHolderSet(List.of());
                 }
                 return set;
             }
 
-            if (configured.stream().anyMatch(value -> value.startsWith("#"))) {
-                throw new IllegalArgumentException(definition.getFileName()
-                        + ".yml: exclusive-with cannot mix tags and enchantment keys");
-            }
-
             List<Object> exclusiveHolders = new ArrayList<>();
             for (String id : configured) {
+                if (id.startsWith("#")) {
+                    Object tagKey = createTagKey(enchantmentRegistryKey,
+                            identifier(normalizeKey(id.substring(1), "minecraft")));
+                    Object set = getOptional(enchantmentRegistry, tagKey);
+                    if (set != null) {
+                        exclusiveHolders.addAll(streamHolderSet(set));
+                    }
+                    continue;
+                }
                 String normalized = normalizeKey(id, "minecraft");
                 Object holder = holders.get(normalized);
                 if (holder == null) {
@@ -340,8 +328,7 @@ public final class SpigotEnchantmentRegistrar261 {
                     holder = getOptional(enchantmentRegistry, key);
                 }
                 if (holder == null) {
-                    throw new IllegalArgumentException(definition.getFileName()
-                            + ".yml: unknown exclusive enchantment '" + id + "'");
+                    continue;
                 }
                 exclusiveHolders.add(holder);
             }
@@ -567,13 +554,15 @@ public final class SpigotEnchantmentRegistrar261 {
 
             private List<Object> resolveTag(String tag)
                     throws ReflectiveOperationException {
+                if (!tag.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                    return List.of();
+                }
                 List<Object> cached = cache.get(tag);
                 if (cached != null) {
                     return cached;
                 }
                 if (!resolving.add(tag)) {
-                    throw new IllegalArgumentException(
-                            "Circular supported-items tag reference: " + tag);
+                    return List.of();
                 }
 
                 try {
@@ -583,7 +572,7 @@ public final class SpigotEnchantmentRegistrar261 {
                         Object tagKey = createTagKey(itemRegistryKey, identifier(tag));
                         Object set = getOptional(itemRegistry, tagKey);
                         if (set == null) {
-                            throw new IllegalArgumentException("Unknown item tag '#" + tag + "'");
+                            return List.of();
                         }
                         holders.addAll(streamHolderSet(set));
                     } else {
@@ -593,16 +582,18 @@ public final class SpigotEnchantmentRegistrar261 {
                                         value.substring(1),
                                         "enchantmentreform")));
                             } else {
-                                Object itemId = identifier(value);
+                                String normalized = normalizeKey(value, "minecraft");
+                                if (!normalized.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                                    continue;
+                                }
+                                Object itemId = identifier(normalized);
                                 Object holder = getOptional(itemRegistry, itemId);
                                 if (holder == null) {
                                     Object key = createResourceKey(itemRegistryKey, itemId);
                                     holder = getOptional(itemRegistry, key);
                                 }
                                 if (holder == null) {
-                                    throw new IllegalArgumentException(
-                                            "Unknown item key '" + value
-                                                    + "' in supported-items tag " + tag);
+                                    continue;
                                 }
                                 holders.add(holder);
                             }
@@ -785,15 +776,33 @@ public final class SpigotEnchantmentRegistrar261 {
     }
 
     private static Class<?> wrap(Class<?> type) {
-        if (!type.isPrimitive()) return type;
-        if (type == int.class) return Integer.class;
-        if (type == boolean.class) return Boolean.class;
-        if (type == double.class) return Double.class;
-        if (type == float.class) return Float.class;
-        if (type == long.class) return Long.class;
-        if (type == byte.class) return Byte.class;
-        if (type == short.class) return Short.class;
-        if (type == char.class) return Character.class;
+        if (!type.isPrimitive()) {
+            return type;
+        }
+        if (type == int.class) {
+            return Integer.class;
+        }
+        if (type == boolean.class) {
+            return Boolean.class;
+        }
+        if (type == double.class) {
+            return Double.class;
+        }
+        if (type == float.class) {
+            return Float.class;
+        }
+        if (type == long.class) {
+            return Long.class;
+        }
+        if (type == byte.class) {
+            return Byte.class;
+        }
+        if (type == short.class) {
+            return Short.class;
+        }
+        if (type == char.class) {
+            return Character.class;
+        }
         return type;
     }
 

@@ -230,7 +230,10 @@ public final class PowerConditionsManager extends AbstractManager {
         }
         for (String key : section.getKeys(false)) {
             ConfigurationSection single = section.getConfigurationSection(key);
-            if (single == null || !matchesSingle(single, playerContext)) {
+            if (single == null) {
+                continue;
+            }
+            if (!matchesSingle(single, playerContext)) {
                 return false;
             }
         }
@@ -255,9 +258,7 @@ public final class PowerConditionsManager extends AbstractManager {
         String type = section.getString("type");
         AbstractPowerCondition condition = type == null ? null : conditions.get(type);
         if (condition == null) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Invalid power condition type '"
-                    + (type == null ? "<missing>" : type) + "' at " + section.getCurrentPath() + ".type");
-            return false;
+            return true;
         }
         return condition.matches(new ObjectSingleCondition(section, context));
     }

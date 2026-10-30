@@ -16,6 +16,10 @@ public record EnchantmentRarity(String id,
                 ? "COMMON"
                 : configuredRarity.strip().toUpperCase(Locale.ROOT).replace('-', '_');
         ConfigurationSection section = findSection(raritySettings, id);
+        if (section == null) {
+            id = "COMMON";
+            section = findSection(raritySettings, id);
+        }
         String prefix = section == null
                 ? ""
                 : section.getString("color-prefix", section.getString("color", ""));

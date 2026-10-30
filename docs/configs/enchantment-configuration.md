@@ -188,6 +188,8 @@ primary-items: enchantmentreform:pickaxe
 
 Depending on the field implementation, a list may also be accepted. Use namespaced keys consistently and confirm the resulting item set in the catalogue.
 
+Missing references are ignored without rejecting the enchantment. Missing enchantments or tags in `exclusive-with` contribute no conflicts; missing items or nested tags in supported-item definitions are skipped. A missing `supported-items` tag gives a custom enchantment an empty item set, while a vanilla override keeps its original supported items. A missing `primary-items` tag falls back to the custom enchantment's supported items, or the vanilla enchantment's original primary items. Unknown `rarity` values fall back to `COMMON`, and unknown obtaining sources are skipped. Invalid field types, out-of-range numbers, invalid keys, slots, condition groups, and counting options fall back to defaults or are skipped in memory. Invalid native effects are ignored; vanilla effects remain unchanged. A file with unparseable YAML is skipped without preventing other enchantments or the server from loading. Files on disk are not rewritten. Restart the server after changing registry settings.
+
 ## Active enchantments
 
 An enchantment becomes active only when its item is in a configured `active-slots` slot. Typical values include:
