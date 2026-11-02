@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
+
 import io.papermc.paper.event.player.PlayerItemCooldownEvent;
 import io.papermc.paper.event.player.PlayerItemGroupCooldownEvent;
 import org.bukkit.entity.Player;

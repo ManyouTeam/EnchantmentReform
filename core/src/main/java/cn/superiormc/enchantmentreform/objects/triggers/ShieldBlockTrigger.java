@@ -1,19 +1,18 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
-import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
-import org.bukkit.Bukkit;
+
+import java.util.Set;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 public final class ShieldBlockTrigger extends EventTrigger<EntityDamageByEntityEvent> {
 
     public ShieldBlockTrigger() {
-        super("shield_block", "on-shield-block", EntityDamageByEntityEvent.class, java.util.Set.of());
+        super("shield_block", "on-shield-block", EntityDamageByEntityEvent.class, Set.of());
     }
 
     @Override
@@ -23,7 +22,7 @@ public final class ShieldBlockTrigger extends EventTrigger<EntityDamageByEntityE
             return;
         }
         Entity direct = event.getDamager();
-        Entity attacker = EnchantmentReform.methodUtil.getDamager(direct);
+        Entity attacker = runtime.getDamager(direct, event);
         if (attacker == null) {
             attacker = direct;
         }

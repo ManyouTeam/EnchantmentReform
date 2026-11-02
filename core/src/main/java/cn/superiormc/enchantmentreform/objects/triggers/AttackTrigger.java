@@ -1,6 +1,5 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
-import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 
 import org.bukkit.entity.Entity;
@@ -21,7 +20,7 @@ public final class AttackTrigger extends EventTrigger<EntityDamageByEntityEvent>
     @Override
     protected void handle(EntityDamageByEntityEvent event, TriggerRuntime runtime) {
         Entity direct = event.getDamager();
-        Entity attacker = EnchantmentReform.methodUtil.getDamager(direct);
+        Entity attacker = runtime.getDamager(direct, event);
         if (attacker == null) {
             attacker = direct;
         }

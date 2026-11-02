@@ -13,4 +13,3 @@ public final class ToggleFlightTrigger extends EventTrigger<PlayerToggleFlightEv
         runtime.fire(this, runtime.base(event.getPlayer(), event));
     }
 }
-

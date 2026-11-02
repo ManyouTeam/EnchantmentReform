@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -30,4 +31,3 @@ public final class TargetTrigger extends EventTrigger<EntityTargetEvent> {
         }
     }
 }
-

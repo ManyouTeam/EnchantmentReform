@@ -16,4 +16,3 @@ public final class BlockDamageTrigger extends EventTrigger<BlockDamageEvent> {
                 .triggerItem(event.getItemInHand(), EquipmentSlot.HAND));
     }
 }
-

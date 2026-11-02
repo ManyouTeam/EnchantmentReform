@@ -10,11 +10,55 @@ import cn.superiormc.enchantmentreform.objects.ObjectPower;
 import cn.superiormc.enchantmentreform.objects.PowerEnchantmentDefinition;
 import cn.superiormc.enchantmentreform.objects.PowerSourceDefinition;
 import cn.superiormc.enchantmentreform.objects.abilities.PowerContext;
-import cn.superiormc.enchantmentreform.objects.triggers.*;
+import cn.superiormc.enchantmentreform.objects.triggers.ActivateTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.AirChangeTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.AttackTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.BlockBreakTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.BlockDamageTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.BlockDropItemTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.BlockPlaceTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.CombustTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ConsumeTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.CreeperExplodeTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.DamageByEntityTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.DamageTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.DeactivateTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.DeathTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.EnchantItemTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ExpChangeTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.FishTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.FoodLevelChangeTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.InputTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.InteractTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ItemDamageTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ItemHeldTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.KillTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.MeleeAttackTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.MoveTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.PiglinBarterTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.PotionEffectTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ProjectileHitTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ProjectileLaunchTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ProjectileTickTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.RegainTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.RespawnTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.RiptideTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ShieldBlockTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ShootBowTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ShootTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.SpawnTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.SwapHandTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.TargetTickTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.TargetTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.TickTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ToggleFlightTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.ToggleSneakTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.TriggerRuntime;
+import cn.superiormc.enchantmentreform.objects.triggers.UntagTrigger;
+import cn.superiormc.enchantmentreform.objects.triggers.VibrationReceiveTrigger;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.power.PowerExecutionResult;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
-import cn.superiormc.enchantmentreform.utils.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,9 +67,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -42,11 +86,13 @@ public final class TriggerManager extends AbstractManager {
 
     private final Map<Plugin, Set<NamespacedKey>> owners = new LinkedHashMap<>();
 
-    private final Map<Class<?>, List<AbstractTrigger<?>>> eventTriggerMap = new LinkedHashMap<>();
+    private final Map<Class<?>, List<AbstractTrigger<?>>> eventTriggers = new LinkedHashMap<>();
 
     private final ActiveEnchantmentManager activeEnchantments;
 
     private final TriggerRuntime runtime;
+
+    private volatile boolean closed;
 
     public TriggerManager() {
         triggerManager = this;
@@ -72,7 +118,6 @@ public final class TriggerManager extends AbstractManager {
         register(new PotionEffectTrigger());
         register(new CombustTrigger());
         register(new RegainTrigger());
-        register(new ExhaustionTrigger());
         register(new TargetTrigger());
         register(new UntagTrigger());
         register(new CreeperExplodeTrigger());
@@ -102,28 +147,26 @@ public final class TriggerManager extends AbstractManager {
         register(new ShieldBlockTrigger());
         register(new PiglinBarterTrigger());
         register(new VibrationReceiveTrigger());
-        if (EnchantmentReform.methodUtil.methodID().equals("paper")) {
-            register(new LoadCrossbowTrigger());
-            register(new KnockbackTrigger());
-            register(new EffectTickTrigger());
-            register(new PhantomPreSpawnTrigger());
-            register(new EndermanAttackPlayerTrigger());
-            register(new WardenAngerTrigger());
-            register(new JumpTrigger());
-            register(new ItemGroupCooldownTrigger());
-            register(new ShieldDisableTrigger());
-            register(new PurchaseTrigger());
-            register(new TradeTrigger());
-            register(new InsideBlockTrigger());
-            register(new BlockBreakProgressUpdateTrigger());
-            register(new NameEntityTrigger());
-            register(new ElytraBoostTrigger());
-            register(new PickupExperienceTrigger());
-            if (CommonUtil.getYearVersion(26, 2, 0)) {
-                register(new LungeTrigger());
-                register(new AttemptSmashAttackTrigger());
-            }
-        }
+        registerOptional("ExhaustionTrigger", true);
+        boolean paper = EnchantmentReform.methodUtil != null && "paper".equals(EnchantmentReform.methodUtil.methodID());
+        registerOptional("LoadCrossbowTrigger", paper);
+        registerOptional("KnockbackTrigger", paper);
+        registerOptional("EffectTickTrigger", paper);
+        registerOptional("PhantomPreSpawnTrigger", paper);
+        registerOptional("EndermanAttackPlayerTrigger", paper);
+        registerOptional("WardenAngerTrigger", paper);
+        registerOptional("JumpTrigger", paper);
+        registerOptional("ItemGroupCooldownTrigger", paper);
+        registerOptional("ShieldDisableTrigger", paper);
+        registerOptional("PurchaseTrigger", paper);
+        registerOptional("TradeTrigger", paper);
+        registerOptional("InsideBlockTrigger", paper);
+        registerOptional("BlockBreakProgressUpdateTrigger", paper);
+        registerOptional("NameEntityTrigger", paper);
+        registerOptional("ElytraBoostTrigger", paper);
+        registerOptional("PickupExperienceTrigger", paper);
+        registerOptional("LungeTrigger", paper);
+        registerOptional("AttemptSmashAttackTrigger", paper);
     }
 
     public synchronized void register(AbstractTrigger<?> trigger) {
@@ -154,14 +197,16 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public synchronized Collection<AbstractTrigger<?>> values() {
-        return triggers.values();
+        return List.copyOf(triggers.values());
     }
 
     public synchronized void unregisterAll(Plugin owner) {
         Set<NamespacedKey> keys = owners.remove(owner);
-        if (keys == null) return;
+        if (keys == null) {
+            return;
+        }
         keys.forEach(triggers::remove);
-        rebuildEventTriggerMap();
+        rebuildEventTriggers();
     }
 
     public void dispatch(String id, Object event) {
@@ -169,29 +214,32 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public void dispatch(NamespacedKey key, Object event) {
-        AbstractTrigger<?> trigger;
-        synchronized (this) {
-            trigger = triggers.get(key);
+        if (closed) {
+            return;
         }
-        if (trigger != null) {
-            trigger.dispatch(event, runtime);
-        }
+        get(key).ifPresent(trigger -> trigger.dispatch(event, runtime));
     }
 
     /** Dispatches only to subscribers of this exact class, preserving listener routing and order. */
     public <E> void dispatch(Class<E> eventClass, E event) {
-        java.util.Objects.requireNonNull(eventClass, "eventClass");
-        eventClass.cast(java.util.Objects.requireNonNull(event, "event"));
-        List<AbstractTrigger<?>> eventTriggers;
-        synchronized (this) {
-            eventTriggers = List.copyOf(eventTriggerMap.getOrDefault(eventClass, List.of()));
+        Objects.requireNonNull(eventClass, "eventClass");
+        eventClass.cast(Objects.requireNonNull(event, "event"));
+        if (closed) {
+            return;
         }
-        for (AbstractTrigger<?> trigger : eventTriggers) {
+        List<AbstractTrigger<?>> selected;
+        synchronized (this) {
+            selected = List.copyOf(eventTriggers.getOrDefault(eventClass, List.of()));
+        }
+        for (AbstractTrigger<?> trigger : selected) {
             trigger.dispatch(event, runtime);
         }
     }
 
     public TriggerResult fire(AbstractTrigger<?> trigger, TriggerData data) {
+        if (closed) {
+            return new TriggerResult();
+        }
         validate(trigger, data);
         TriggerResult result = new TriggerResult();
         List<ActivePowerSource> activePowers = isTrigger(trigger, "interact")
@@ -214,6 +262,9 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public TriggerResult fireActive(AbstractTrigger<?> trigger, TriggerData data, ActivePowerSource active) {
+        if (closed) {
+            return new TriggerResult();
+        }
         if (active == null) {
             throw new IllegalArgumentException("active power source cannot be null");
         }
@@ -227,10 +278,13 @@ public final class TriggerManager extends AbstractManager {
     /** Fires a trigger against sources captured at projectile launch instead of current equipment. */
     public TriggerResult fireTracked(AbstractTrigger<?> trigger, TriggerData data,
                                      Collection<TrackedPowerSource> trackedSources) {
+        if (closed) {
+            return new TriggerResult();
+        }
         validate(trigger, data);
         TriggerResult result = new TriggerResult();
         List<ActivePowerSource> activePowers = trackedSources == null ? List.of() : trackedSources.stream()
-                .filter(java.util.Objects::nonNull)
+                .filter(Objects::nonNull)
                 .map(TrackedPowerSource::active)
                 .toList();
         Map<PowerSourceDefinition, Boolean> duplicateGates = new IdentityHashMap<>();
@@ -265,18 +319,21 @@ public final class TriggerManager extends AbstractManager {
         return activeEnchantments;
     }
 
+    public synchronized Set<Class<?>> eventClasses() {
+        return new LinkedHashSet<>(eventTriggers.keySet());
+    }
+
     public TriggerRuntime runtime() {
         return runtime;
     }
 
-    public void close() {
+    public synchronized void close() {
+        closed = true;
         runtime.close();
         activeEnchantments.clearAll();
         triggers.clear();
-        synchronized (this) {
-            owners.clear();
-            eventTriggerMap.clear();
-        }
+        owners.clear();
+        eventTriggers.clear();
         triggerManager = null;
     }
 
@@ -285,47 +342,46 @@ public final class TriggerManager extends AbstractManager {
         close();
     }
 
-    private void registerOptional(String eventClassName, String triggerClassName) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        try {
-            Class.forName(eventClassName, false, classLoader);
-        } catch (ClassNotFoundException | LinkageError ignored) {
+    private void registerOptional(String name, boolean enabled) {
+        if (!enabled) {
             return;
         }
-
         try {
-            Class<?> triggerClass = Class.forName(triggerClassName, true, classLoader);
-            AbstractTrigger<?> trigger = (AbstractTrigger<?>) triggerClass
-                    .getDeclaredConstructor()
-                    .newInstance();
-            register(trigger);
-        } catch (ReflectiveOperationException | LinkageError | ClassCastException exception) {
-            EnchantmentReform.instance.getLogger().log(
-                    Level.WARNING,
-                    "Could not register optional trigger " + triggerClassName,
-                    exception);
+            Class<?> type = Class.forName("cn.superiormc.enchantmentreform.objects.triggers." + name);
+            register((AbstractTrigger<?>) type.getDeclaredConstructor().newInstance());
+        } catch (ClassNotFoundException | NoClassDefFoundError exception) {
+            // Optional events are absent on older server APIs.
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            if (exception.getCause() instanceof NoClassDefFoundError || exception.getCause() instanceof ClassNotFoundException) {
+                return;
+            }
+            if (ErrorManager.errorManager != null) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Could not register trigger " + name + ": " + exception.getMessage());
+            }
         }
     }
 
     private void registerTrigger(AbstractTrigger<?> trigger) {
-        // Validate all subscriptions before mutating the registry or index.
-        Set<? extends Class<?>> eventClasses = Set.copyOf(trigger.getEventClasses());
-        for (Class<?> eventClass : eventClasses) {
+        if (closed) {
+            throw new IllegalStateException("Trigger manager is closed");
+        }
+        Set<? extends Class<?>> classes = Set.copyOf(trigger.getEventClasses());
+        for (Class<?> eventClass : classes) {
             if (!trigger.eventClass().isAssignableFrom(eventClass)) {
                 throw new IllegalArgumentException("Incompatible event subscription: " + eventClass.getName());
             }
         }
         triggers.register(trigger.key(), trigger);
-        for (Class<?> eventClass : eventClasses) {
-            eventTriggerMap.computeIfAbsent(eventClass, ignored -> new ArrayList<>()).add(trigger);
+        for (Class<?> eventClass : classes) {
+            eventTriggers.computeIfAbsent(eventClass, ignored -> new ArrayList<>()).add(trigger);
         }
     }
 
-    private void rebuildEventTriggerMap() {
-        eventTriggerMap.clear();
+    private void rebuildEventTriggers() {
+        eventTriggers.clear();
         for (AbstractTrigger<?> trigger : triggers.values()) {
             for (Class<?> eventClass : trigger.getEventClasses()) {
-                eventTriggerMap.computeIfAbsent(eventClass, ignored -> new ArrayList<>()).add(trigger);
+                eventTriggers.computeIfAbsent(eventClass, ignored -> new ArrayList<>()).add(trigger);
             }
         }
     }
@@ -350,9 +406,13 @@ public final class TriggerManager extends AbstractManager {
                 && !enchantment.meetsConditions(data.player(), context)) {
             return;
         }
-        if (!power.isEnabled()) return;
+        if (!power.isEnabled()) {
+            return;
+        }
         context = power.prepareTrigger(context);
-        if (context == null) return;
+        if (context == null) {
+            return;
+        }
         Entity skill = data.skillEntity() == null ? data.player() : data.skillEntity();
         boolean allowed;
         if (active.source().isDuplicateAllowed()) {
@@ -423,6 +483,12 @@ public final class TriggerManager extends AbstractManager {
     }
 
     private static NamespacedKey key(String id) {
-        return new NamespacedKey(NAMESPACE, id);
+        Objects.requireNonNull(id, "id");
+        String normalized = id.contains(":") ? id : NAMESPACE + ":" + id;
+        NamespacedKey key = NamespacedKey.fromString(normalized);
+        if (key == null) {
+            throw new IllegalArgumentException("Invalid trigger id: " + id);
+        }
+        return key;
     }
 }

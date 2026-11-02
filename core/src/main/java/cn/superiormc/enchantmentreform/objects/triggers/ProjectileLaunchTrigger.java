@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -23,4 +24,3 @@ public final class ProjectileLaunchTrigger extends EventTrigger<ProjectileLaunch
                 .extra(BuiltinContextKeys.PROJECTILE, event.getEntity()));
     }
 }
-

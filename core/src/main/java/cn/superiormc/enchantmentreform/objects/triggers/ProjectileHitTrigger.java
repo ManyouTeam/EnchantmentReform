@@ -2,6 +2,7 @@ package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -38,7 +39,9 @@ public final class ProjectileHitTrigger extends EventTrigger<ProjectileHitEvent>
                 .source(shooter).skill(event.getEntity()).target(event.getHitEntity())
                 .block(event.getHitBlock()).location(location)
                 .extra(BuiltinContextKeys.PROJECTILE, event.getEntity());
-        if (tracked != null) data.triggerItem(tracked.item(), tracked.slot());
+        if (tracked != null) {
+            data.triggerItem(tracked.item(), tracked.slot());
+        }
         if (tracked == null) {
             runtime.fire(this, data);
         } else {

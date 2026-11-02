@@ -1,8 +1,8 @@
 package cn.superiormc.enchantmentreform.api.trigger;
 
-import org.bukkit.NamespacedKey;
-
 import java.util.Objects;
+
+import org.bukkit.NamespacedKey;
 
 public record ContextKey<T>(NamespacedKey key, Class<T> type) {
 

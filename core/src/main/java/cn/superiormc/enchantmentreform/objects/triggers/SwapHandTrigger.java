@@ -15,4 +15,3 @@ public final class SwapHandTrigger extends EventTrigger<PlayerSwapHandItemsEvent
                 .triggerItem(event.getMainHandItem(), EquipmentSlot.HAND));
     }
 }
-

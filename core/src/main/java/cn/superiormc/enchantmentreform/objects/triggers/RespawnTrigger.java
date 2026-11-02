@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -18,4 +19,3 @@ public final class RespawnTrigger extends EventTrigger<PlayerRespawnEvent> {
                         .block(event.getRespawnLocation().getBlock())), 1L);
     }
 }
-

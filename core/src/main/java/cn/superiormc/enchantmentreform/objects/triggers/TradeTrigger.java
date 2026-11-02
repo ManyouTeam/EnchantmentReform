@@ -1,5 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
+import java.util.List;
+
 import io.papermc.paper.event.player.PlayerTradeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -12,7 +14,7 @@ public final class TradeTrigger extends EventTrigger<PlayerTradeEvent> {
     @Override
     protected void handle(PlayerTradeEvent event, TriggerRuntime runtime) {
         runtime.fire(this, runtime.base(event.getPlayer(), event)
-                .outputItems(java.util.List.of(event.getTrade().getResult()))
+                .outputItems(List.of(event.getTrade().getResult()))
                 .target(event.getMerchant())
                 .location(event.getMerchant().getLocation())
                 .triggerItem(event.getTrade().getResult(), EquipmentSlot.HAND));

@@ -13,4 +13,3 @@ public final class ToggleSneakTrigger extends EventTrigger<PlayerToggleSneakEven
         runtime.fire(this, runtime.base(event.getPlayer(), event));
     }
 }
-

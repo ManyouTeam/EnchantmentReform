@@ -15,4 +15,3 @@ public final class RiptideTrigger extends EventTrigger<PlayerRiptideEvent> {
                 .triggerItem(event.getItem(), EquipmentSlot.HAND));
     }
 }
-

@@ -4,14 +4,15 @@ import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerResult;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.EquipmentSlot;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public final class ShootBowTrigger extends EventTrigger<EntityShootBowEvent> {
 

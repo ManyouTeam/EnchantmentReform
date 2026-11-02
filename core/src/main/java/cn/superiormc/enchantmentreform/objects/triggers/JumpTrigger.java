@@ -14,4 +14,3 @@ public final class JumpTrigger extends EventTrigger<PlayerJumpEvent> {
                 event.getPlayer(), event, event.getFrom(), event.getTo()));
     }
 }
-

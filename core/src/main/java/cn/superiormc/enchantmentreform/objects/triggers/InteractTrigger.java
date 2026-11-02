@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
+
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public final class InteractTrigger extends EventTrigger<PlayerInteractEvent> {
@@ -19,4 +20,3 @@ public final class InteractTrigger extends EventTrigger<PlayerInteractEvent> {
         runtime.fire(this, data);
     }
 }
-

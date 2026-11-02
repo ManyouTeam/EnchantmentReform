@@ -14,4 +14,3 @@ public final class ConsumeTrigger extends EventTrigger<PlayerItemConsumeEvent> {
                 .triggerItem(event.getItem(), event.getHand()));
     }
 }
-

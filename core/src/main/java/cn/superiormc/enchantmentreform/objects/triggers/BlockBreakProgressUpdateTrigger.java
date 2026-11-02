@@ -1,11 +1,10 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import io.papermc.paper.event.block.BlockBreakProgressUpdateEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 public final class BlockBreakProgressUpdateTrigger extends EventTrigger<BlockBreakProgressUpdateEvent> {
 

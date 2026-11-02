@@ -9,19 +9,6 @@ import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -32,20 +19,39 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.persistence.PersistentDataType;
+
 public final class TriggerRuntime {
 
     private static final NamespacedKey FIRING_SLOT_KEY =
-            new NamespacedKey(EnchantmentReform.instance, "firing_slot");
+            new NamespacedKey("enchantmentreform", "firing_slot");
 
     private final TriggerManager manager;
 
     private final Map<UUID, TargetRecord> mobTargets = new ConcurrentHashMap<>();
+
+    private final Map<UUID, UUID> barterPlayers = new ConcurrentHashMap<>();
 
     private final Map<UUID, TrackedProjectile> projectiles = new ConcurrentHashMap<>();
 
     private final Map<UUID, List<TrackedPowerSource>> pendingProjectileSources = new ConcurrentHashMap<>();
 
     private volatile long currentTick;
+
+    private volatile boolean closed;
 
     public TriggerRuntime(TriggerManager manager) {
         this.manager = manager;
@@ -59,7 +65,8 @@ public final class TriggerRuntime {
     }
 
     public TriggerData.Builder movement(Player player, Event event, Location from, Location to) {
-        return base(player, event).movement(from, to).location(to).block(to.getBlock());
+        Location destination = to == null ? from : to;
+        return base(player, event).movement(from, destination).location(destination).block(destination.getBlock());
     }
 
     public TriggerResult fire(AbstractTrigger<?> trigger, TriggerData.Builder data) {
@@ -174,7 +181,7 @@ public final class TriggerRuntime {
     }
 
     public void refreshTarget(Entity entity) {
-        if (!(entity instanceof Monster monster)) {
+        if (closed || !(entity instanceof Monster monster)) {
             return;
         }
         UUID mobId = monster.getUniqueId();
@@ -194,6 +201,15 @@ public final class TriggerRuntime {
         mobTargets.values().removeIf(target -> playerId.equals(target.playerId()));
     }
 
+    public void rememberBarter(UUID piglin, UUID player) {
+        barterPlayers.put(piglin, player);
+    }
+
+    public Player takeBarterPlayer(UUID piglin) {
+        UUID player = barterPlayers.remove(piglin);
+        return player == null ? null : Bukkit.getPlayer(player);
+    }
+
     public void trackProjectile(Player player, Projectile projectile, ItemStack item, EquipmentSlot slot,
                                 Collection<TrackedPowerSource> sources) {
         UUID shooterId = projectile.getShooter() instanceof Entity shooter
@@ -203,6 +219,9 @@ public final class TriggerRuntime {
 
     private void trackProjectile(Player player, Projectile projectile, ItemStack item, EquipmentSlot slot,
                                  Collection<TrackedPowerSource> sources, UUID shooterId) {
+        if (closed) {
+            return;
+        }
         writeFiringSlot(projectile, slot);
         stopTrackingProjectile(projectile);
         UUID projectileId = projectile.getUniqueId();
@@ -214,7 +233,7 @@ public final class TriggerRuntime {
                 task[0].cancel();
                 return;
             }
-            if (!projectile.isValid() || projectile.isDead() || projectile.isOnGround()) {
+            if (closed || !projectile.isValid() || projectile.isDead() || projectile.isOnGround()) {
                 stopTrackingProjectile(projectile);
                 return;
             }
@@ -244,7 +263,7 @@ public final class TriggerRuntime {
         TrackedProjectile tracked = new TrackedProjectile(player.getUniqueId(), shooterId, item, slot,
                 copySources(sources), task[0]);
         projectiles.put(projectileId, tracked);
-        if (retired.get() && projectiles.remove(projectileId, tracked)) {
+        if ((closed || retired.get()) && projectiles.remove(projectileId, tracked)) {
             task[0].cancel();
         }
     }
@@ -304,8 +323,7 @@ public final class TriggerRuntime {
         if (projectile == null) {
             return null;
         }
-        PersistentDataContainer pdc = projectile.getPersistentDataContainer();
-        String stored = pdc.get(FIRING_SLOT_KEY, PersistentDataType.STRING);
+        String stored = projectile.getPersistentDataContainer().get(FIRING_SLOT_KEY, PersistentDataType.STRING);
         if (stored == null) {
             return null;
         }
@@ -317,29 +335,27 @@ public final class TriggerRuntime {
     }
 
     public EquipmentSlot findSlot(Player player, ItemStack item) {
-        if (player.getInventory().getItemInMainHand() == item) {
-            return EquipmentSlot.HAND;
+        PlayerInventory inventory = player.getInventory();
+        for (EquipmentSlot slot : List.of(EquipmentSlot.HAND, EquipmentSlot.OFF_HAND, EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)) {
+            if (inventory.getItem(slot) == item) {
+                return slot;
+            }
         }
-        if (player.getInventory().getItemInOffHand() == item) {
-            return EquipmentSlot.OFF_HAND;
-        }
-        if (player.getInventory().getHelmet() == item) {
-            return EquipmentSlot.HEAD;
-        }
-        if (player.getInventory().getChestplate() == item) {
-            return EquipmentSlot.CHEST;
-        }
-        if (player.getInventory().getLeggings() == item) {
-            return EquipmentSlot.LEGS;
-        }
-        if (player.getInventory().getBoots() == item) {
-            return EquipmentSlot.FEET;
+        for (EquipmentSlot slot : List.of(EquipmentSlot.HAND, EquipmentSlot.OFF_HAND, EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)) {
+            if (item != null && item.equals(inventory.getItem(slot))) {
+                return slot;
+            }
         }
         return EquipmentSlot.HAND;
     }
 
+    public Entity getDamager(Entity direct, EntityDamageEvent event) {
+        return direct == null ? null : EnchantmentReform.methodUtil.getDamager(direct);
+    }
+
     public void clearEntity(UUID entityId) {
         mobTargets.remove(entityId);
+        barterPlayers.remove(entityId);
         clearPlayerTargets(entityId);
         stopTrackingProjectile(entityId);
         PowerManager.powerManager.onEntityUnload(entityId);
@@ -350,6 +366,7 @@ public final class TriggerRuntime {
             EnchantmentReform.methodUtil.clearBossBars(player);
         }
         UUID playerId = player.getUniqueId();
+        barterPlayers.values().removeIf(playerId::equals);
         clearPlayerTargets(playerId);
         projectiles.entrySet().removeIf(entry -> {
             if (!entry.getValue().ownerId().equals(playerId)) {
@@ -363,6 +380,7 @@ public final class TriggerRuntime {
     }
 
     public void close() {
+        closed = true;
         // Avoid linking a lambda to TrackedProjectile for the first time during shutdown.
         // An empty runtime should not need to load that class to clear its state.
         for (TrackedProjectile projectile : projectiles.values()) {
@@ -371,6 +389,7 @@ public final class TriggerRuntime {
         projectiles.clear();
         pendingProjectileSources.clear();
         mobTargets.clear();
+        barterPlayers.clear();
     }
 
     private static List<TrackedPowerSource> copySources(Collection<TrackedPowerSource> sources) {

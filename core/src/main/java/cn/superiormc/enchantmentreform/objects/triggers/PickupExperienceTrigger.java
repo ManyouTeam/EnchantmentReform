@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 
 public final class PickupExperienceTrigger extends EventTrigger<PlayerPickupExperienceEvent> {

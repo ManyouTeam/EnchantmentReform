@@ -4,6 +4,10 @@ import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.Cancellable;
@@ -22,9 +26,6 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class TriggerResult {
 

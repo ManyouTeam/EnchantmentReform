@@ -3,6 +3,7 @@ package cn.superiormc.enchantmentreform.objects.triggers;
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
 import cn.superiormc.enchantmentreform.managers.PowerManager;
+
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 

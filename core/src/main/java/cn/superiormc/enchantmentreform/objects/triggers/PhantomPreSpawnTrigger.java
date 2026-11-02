@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.TriggerResult;
+
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

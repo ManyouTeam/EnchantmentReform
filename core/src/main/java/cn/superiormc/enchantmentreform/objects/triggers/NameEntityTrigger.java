@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
+
 import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

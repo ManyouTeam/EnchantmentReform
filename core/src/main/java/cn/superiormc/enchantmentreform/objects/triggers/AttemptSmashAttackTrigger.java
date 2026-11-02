@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.TriggerResult;
+
 import io.papermc.paper.event.entity.EntityAttemptSmashAttackEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

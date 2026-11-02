@@ -1,10 +1,11 @@
 package cn.superiormc.enchantmentreform.api.trigger;
 
 import cn.superiormc.enchantmentreform.objects.triggers.TriggerRuntime;
-import org.bukkit.NamespacedKey;
 
 import java.util.Objects;
 import java.util.Set;
+
+import org.bukkit.NamespacedKey;
 
 public abstract class AbstractTrigger<E> {
 

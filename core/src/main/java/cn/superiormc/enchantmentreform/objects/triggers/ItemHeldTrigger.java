@@ -17,4 +17,3 @@ public final class ItemHeldTrigger extends EventTrigger<PlayerItemHeldEvent> {
                 .triggerItem(item, EquipmentSlot.HAND));
     }
 }
-

@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -29,4 +30,3 @@ public final class SpawnTrigger extends EventTrigger<Event> {
         }
     }
 }
-

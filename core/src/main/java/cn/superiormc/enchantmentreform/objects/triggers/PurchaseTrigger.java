@@ -2,6 +2,8 @@ package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.TriggerData;
 
+import java.util.List;
+
 import io.papermc.paper.event.player.PlayerPurchaseEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
@@ -15,7 +17,7 @@ public final class PurchaseTrigger extends EventTrigger<PlayerPurchaseEvent> {
     @Override
     protected void handle(PlayerPurchaseEvent event, TriggerRuntime runtime) {
         TriggerData.Builder data = runtime.base(event.getPlayer(), event)
-                .outputItems(java.util.List.of(event.getTrade().getResult()))
+                .outputItems(List.of(event.getTrade().getResult()))
                 .triggerItem(event.getTrade().getResult(), EquipmentSlot.HAND);
         if (event.getMerchant() instanceof Entity merchant) {
             data.target(merchant).location(merchant.getLocation());

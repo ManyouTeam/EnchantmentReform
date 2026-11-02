@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.objects.triggers;
 
 import cn.superiormc.enchantmentreform.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
