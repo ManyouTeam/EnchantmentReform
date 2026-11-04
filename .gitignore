@@ -65,3 +65,8 @@ Desktop.ini
 **/src/test/
 /MODIFICATION_REPORT.md
 /tools/
+
+# Fertilizer Saver configuration
+!/plugin/src/main/resources/enchantments/tools/
+/plugin/src/main/resources/enchantments/tools/*
+!/plugin/src/main/resources/enchantments/tools/fertilizer_saver.yml

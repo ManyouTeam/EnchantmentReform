@@ -10,7 +10,7 @@ powers:
     abilities: {}
 ```
 
-EnchantmentReform 目前注册了 **63 个内置触发器**。
+EnchantmentReform 目前注册了 **82 个内置触发器**。
 
 
 技能来源与能力均可使用 `count` 选择计量单位，使用 `count-every` 按批次结算。支持范围和示例见[计数方式](counting.md)。
@@ -96,6 +96,18 @@ EnchantmentReform 目前注册了 **63 个内置触发器**。
 * [`on-block-place`](triggers/blocks-interactions.md#on-block-place)
 * [`on-inside-block`](triggers/blocks-interactions.md#on-inside-block)
 * [`on-interact`](triggers/blocks-interactions.md#on-interact)
+* [`on-craft-item`](triggers/blocks-interactions.md#on-craft-item)
+* [`on-fertilize-block`](triggers/blocks-interactions.md#on-fertilize-block)
+* [`on-forge-item`](triggers/blocks-interactions.md#on-forge-item)
+* [`on-grindstone-item`](triggers/blocks-interactions.md#on-grindstone-item)
+* [`on-milk-mob`](triggers/blocks-interactions.md#on-milk-mob)
+* [`on-honey-extract`](triggers/blocks-interactions.md#on-honey-extract)
+* [`on-honey-comb-extract`](triggers/blocks-interactions.md#on-honey-comb-extract)
+* [`on-anvil-repair`](triggers/blocks-interactions.md#on-anvil-repair)
+* [`on-anvil-enchant`](triggers/blocks-interactions.md#on-anvil-enchant)
+* [`on-anvil-rename`](triggers/blocks-interactions.md#on-anvil-rename)
+* [`on-brew`](triggers/blocks-interactions.md#on-brew)
+* [`on-cook`](triggers/blocks-interactions.md#on-cook)
 * [`on-consume`](triggers/blocks-interactions.md#on-consume)
 * [`on-name-entity`](triggers/blocks-interactions.md#on-name-entity)
 * [`on-vibration-receive`](triggers/blocks-interactions.md#on-vibration-receive)
@@ -103,6 +115,7 @@ EnchantmentReform 目前注册了 **63 个内置触发器**。
 ### 物品、附魔与装备触发器
 
 * [`on-item-damage`](triggers/items-equipment.md#on-item-damage)
+* [`on-item-broken`](triggers/items-equipment.md#on-item-broken)
 * [`on-item-group-cooldown`](triggers/items-equipment.md#on-item-group-cooldown)
 * [`on-item-held`](triggers/items-equipment.md#on-item-held)
 * [`on-swap-hand`](triggers/items-equipment.md#on-swap-hand)
@@ -125,6 +138,7 @@ EnchantmentReform 目前注册了 **63 个内置触发器**。
 * [`on-food-level-change`](triggers/player-state.md#on-food-level-change)
 * [`on-air-change`](triggers/player-state.md#on-air-change)
 * [`on-exp-change`](triggers/player-state.md#on-exp-change)
+* [`on-gain-level`](triggers/player-state.md#on-gain-level)
 * [`on-pickup-experience`](triggers/player-state.md#on-pickup-experience)
 
 ### 钓鱼与交易触发器
@@ -141,6 +155,10 @@ EnchantmentReform 目前注册了 **63 个内置触发器**。
 * [`on-enderman-attack-player`](triggers/targeting-special.md#on-enderman-attack-player)
 * [`on-phantom-pre-spawn`](triggers/targeting-special.md#on-phantom-pre-spawn)
 * [`on-warden-anger-change`](triggers/targeting-special.md#on-warden-anger-change)
+* [`on-shear`](triggers/targeting-special.md#on-shear)
+* [`on-cut-leash`](triggers/targeting-special.md#on-cut-leash)
+* [`on-breed`](triggers/targeting-special.md#on-breed)
+* [`on-tame`](triggers/targeting-special.md#on-tame)
 
 ## 选择兼容的条件和修改器
 

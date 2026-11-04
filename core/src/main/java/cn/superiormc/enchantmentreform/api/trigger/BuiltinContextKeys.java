@@ -31,6 +31,8 @@ public final class BuiltinContextKeys {
 
     public static final ContextKey<Integer> EFFECTIVE_ITEM_DAMAGE = key("effective_item_damage", Integer.class);
 
+    public static final ContextKey<Integer> LEVELS_GAINED = key("levels_gained", Integer.class);
+
     public static final ContextKey<Double> MOVEMENT_DISTANCE = key("movement_distance", Double.class);
 
     public static final ContextKey<Double> EXHAUSTION_AMOUNT = key("exhaustion_amount", Double.class);

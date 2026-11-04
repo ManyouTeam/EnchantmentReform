@@ -353,6 +353,8 @@ pickup-delay: 20
 
 ## `give_item`
 
+`delivery: REFUND_CONSUMED` 可在 `on-fertilize-block` 中返还本次使用的 1 个骨粉，无需 `item` 配置。保留原骨粉元数据，每次施肥最多返还一次；延迟到事件结束后，取消事件和创造模式不返还。使用能力的 `random` 控制概率。默认 `fertilizer_saver` 附魔为副手锄头，最高 III 级，每级 10% 返还概率。
+
 **用途：**按 ItemFormat 构建物品，并将其给予玩家或掉落在世界中。
 
 **上下文：**`INVENTORY` 发放模式要求目标为玩家；`DROP` 发放模式要求能够解析掉落位置。

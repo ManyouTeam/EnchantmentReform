@@ -131,3 +131,7 @@ abilities:
 ```
 
 A stored remainder of `1` followed by an orb worth `7` produces a total of `8`: two complete groups restore 2 health points and the remaining `2` experience stays in the state pool. The experience orb is removed and the original pickup event is cancelled so the same experience is not also awarded normally.
+
+## `on-gain-level`
+
+Supported `count`: `events`, `levels`. Runs only for positive Minecraft level changes. `events` counts each increase once; `levels` counts the actual gain, so advancing from level 5 to 8 contributes 3. Decreases and unchanged levels do not trigger it. Numeric context `levels_gained` exposes the increase. Available on Paper and Spigot through `PlayerLevelChangeEvent`; plugin changes that bypass this event are not captured.

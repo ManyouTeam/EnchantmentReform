@@ -90,3 +90,7 @@ Runs when a player uses a firework to boost Elytra flight.
 | `PLAYER` / `SOURCE` / `TARGET` | player |
 | `SKILL` | Firework entity |
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | Firework item and event hand |
+
+## `on-item-broken`
+
+Supported `count`: `events`. Runs once when a player's item breaks from durability exhaustion. The trigger item is a snapshot of the broken item; the slot uses the existing slot lookup. Use `TRIGGER_ITEM` matching to restrict item types. For ordinary durability wear, use `item_damage`. Available on Paper and Spigot.

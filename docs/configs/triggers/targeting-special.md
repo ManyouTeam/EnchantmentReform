@@ -94,3 +94,22 @@ Runs when Paper reports a Warden anger change whose target is a player.
 | `SKILL` / `TARGET` | Warden |
 | `LOCATION` | Warden location |
 | Extra context | Old/new anger values remain on `WardenAngerChangeEvent`; mutable `warden_anger` modifier context |
+
+
+## `on-shear`
+
+Supported `count`: `events`. Runs once per matching entity-shearing event. Filter `TARGET` to distinguish sheep (`SHEEP`), mooshrooms (`MOOSHROOM`), and other supported entities. `PLAYER` / `SOURCE` is the player, `TARGET` is the sheared entity, and `LOCATION` is its location. The trigger item and slot are the actual shears and hand. Leash cutting uses the separate `cut_leash` trigger.
+
+## `on-cut-leash`
+
+Supported `count`: `events`. Runs when a player cuts a leash with shears, once per unleashed entity. `PLAYER` / `SOURCE` is the player, `TARGET` is the unleashed entity, and `LOCATION` is its location. The trigger item and slot are the actual shears and hand. Empty-hand unleashing does not trigger it. Requires a server version that supports leash cutting and emits the corresponding player unleash event. Both triggers are available on Paper and Spigot; cancelled events do not count.
+
+## `on-breed`
+
+Supported `count`: `events`. Runs once per matching breeding event attributed to a player. `PLAYER` / `SOURCE` is the recorded breeder; `TARGET` is the newborn entity; `LOCATION` is the newborn's location. Use target entity matching to restrict the animal type.
+
+The trigger item is the recorded breeding item, if present. The event does not supply the original feeding slot, so the slot is absent. Events without a player breeder and cancelled events do not count. Available on Paper and Spigot; animal and breeding coverage depends on the server emitting `EntityBreedEvent`.
+
+## `on-tame`
+
+Supported `count`: `events`. Runs once when a player successfully tames an entity. `PLAYER` / `SOURCE` is the owner, `TARGET` is the tamed entity, and `LOCATION` is its location. Use target entity matching to restrict species. Failed attempts, non-player owners, and cancelled events do not count. The event does not provide the exact taming item or hand, so trigger-item data is absent. Available on Paper and Spigot.

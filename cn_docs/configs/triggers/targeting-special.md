@@ -94,3 +94,22 @@
 | `SKILL` / `TARGET` | 监守者 |
 | `LOCATION` | 监守者所在位置 |
 | 额外上下文 | 旧愤怒值和新愤怒值仍保留在 `WardenAngerChangeEvent` 中；提供可修改的 `warden_anger` 修改器上下文 |
+
+
+## `on-shear`
+
+支持 `count: events`。玩家剪切实体时触发，每次匹配事件计数 1。使用目标实体匹配可区分羊 `SHEEP`、蘑菇牛 `MOOSHROOM` 等。`PLAYER` / `SOURCE` 为玩家，`TARGET` 为被剪切实体，`LOCATION` 为实体位置，触发物品和槽位为实际使用的剪刀和手。剪断栓绳使用独立的 `cut_leash` 触发器。
+
+## `on-cut-leash`
+
+支持 `count: events`。玩家使用剪刀解除栓绳时触发，每个被解除栓绳的实体计数 1。`PLAYER` / `SOURCE` 为玩家，`TARGET` 为被解除栓绳的实体，`LOCATION` 为实体位置，触发物品和槽位为实际使用的剪刀和手。空手解绳不触发。需要服务器版本支持剪断栓绳并发送对应的玩家解绳事件。两个触发器均支持 Paper 和 Spigot，被取消的事件不计数。
+
+## `on-breed`
+
+支持 `count: events`。玩家促成实体繁殖时触发，每次匹配事件计数 1。`PLAYER` / `SOURCE` 为事件记录的繁殖玩家，`TARGET` 为新生实体，`LOCATION` 为新生实体的位置。通过目标实体匹配可限制动物种类。
+
+触发物品为事件记录的繁殖物品（可能缺失）；事件没有提供原始喂食槽位，因此槽位留空。没有玩家繁殖者的事件及被取消的事件不计数。支持 Paper 和 Spigot；动物及繁殖行为的覆盖范围取决于服务器是否发送 `EntityBreedEvent`。
+
+## `on-tame`
+
+支持 `count: events`。玩家成功驯服生物时触发一次。`PLAYER` / `SOURCE` 是驯服玩家，`TARGET` 是被驯服生物，`LOCATION` 是生物位置。可使用目标实体匹配限制生物种类。未成功的驯服尝试、非玩家主人和取消的事件不计数。事件未提供准确的驯服物品和手，因此不填充触发物品及槽位。支持 Paper 和 Spigot。

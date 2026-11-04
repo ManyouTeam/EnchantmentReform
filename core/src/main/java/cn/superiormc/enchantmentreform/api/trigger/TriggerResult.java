@@ -39,6 +39,8 @@ public final class TriggerResult {
 
     private boolean collectDrops;
 
+    private boolean consumableRefundClaimed;
+
     private Double damage;
 
     private Double regainAmount;
@@ -64,6 +66,14 @@ public final class TriggerResult {
     private Double reviveHealth;
 
     private Entity skillEntity;
+
+    public boolean claimConsumableRefund() {
+        if (consumableRefundClaimed) {
+            return false;
+        }
+        consumableRefundClaimed = true;
+        return true;
+    }
 
     public int executedPowers() {
         return executedPowers;

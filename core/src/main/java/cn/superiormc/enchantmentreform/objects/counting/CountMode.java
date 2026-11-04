@@ -13,13 +13,14 @@ import java.util.Set;
 
 public enum CountMode {
     EVENTS("events", null, Set.of()),
-    ITEMS("items", null, Set.of("fish", "block_drop_item", "piglin_barter", "trade", "purchase", "kill")),
-    BLOCKS("blocks", null, Set.of("block_place")),
+    ITEMS("items", null, Set.of("fish", "block_drop_item", "piglin_barter", "trade", "purchase", "kill", "brew", "cook", "craft_item", "forge_item", "grindstone_item", "milk_mob", "honey_extract", "honey_comb_extract", "anvil_repair", "anvil_enchant", "anvil_rename")),
+    BLOCKS("blocks", null, Set.of("block_place", "fertilize_block")),
     DAMAGE("damage", BuiltinContextKeys.FINAL_DAMAGE, Set.of("attack", "melee_attack", "damage", "damage_by_entity")),
     BLOCKED_DAMAGE("blocked_damage", BuiltinContextKeys.ORIGINAL_DAMAGE, Set.of("shield_block")),
     HEALING("healing", BuiltinContextKeys.EFFECTIVE_HEALING, Set.of("regain")),
     DURABILITY("durability", BuiltinContextKeys.EFFECTIVE_ITEM_DAMAGE, Set.of("item_damage")),
     EXPERIENCE("experience", BuiltinContextKeys.ORIGINAL_EXPERIENCE, Set.of("exp_change", "pickup_experience")),
+    LEVELS("levels", BuiltinContextKeys.LEVELS_GAINED, Set.of("gain_level")),
     DISTANCE("distance", BuiltinContextKeys.MOVEMENT_DISTANCE, Set.of("move")),
     EXHAUSTION("exhaustion", BuiltinContextKeys.EXHAUSTION_AMOUNT, Set.of("exhaustion"));
 

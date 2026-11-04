@@ -90,3 +90,7 @@
 | `PLAYER` / `SOURCE` / `TARGET` | 玩家 |
 | `SKILL` | 烟花实体 |
 | `TRIGGER_ITEM` / `TRIGGER_SLOT` | 烟花物品和事件使用的手 |
+
+## `on-item-broken`
+
+支持 `count: events`。玩家物品因耐久耗尽而彻底损坏时触发，每件损坏物品计数一次。触发物品为损坏前的物品快照，槽位由现有物品槽位查找逻辑确定。可使用 `TRIGGER_ITEM` 物品匹配限制物品类型。普通耐久损耗仍使用 `item_damage`。支持 Paper 和 Spigot。

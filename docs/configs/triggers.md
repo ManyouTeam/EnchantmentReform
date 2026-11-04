@@ -10,7 +10,7 @@ powers:
     abilities: {}
 ```
 
-EnchantmentReform currently registers **63 built-in triggers**.
+EnchantmentReform currently registers **82 built-in triggers**.
 
 
 Skill sources and powers use `count` to select a unit and `count-every` for repeatable batches. See [counting modes](counting.md) for support and examples.
@@ -96,6 +96,18 @@ Do not assume the same selector has the same meaning across every trigger. For e
 * [`on-block-place`](triggers/blocks-interactions.md#on-block-place)
 * [`on-inside-block`](triggers/blocks-interactions.md#on-inside-block)
 * [`on-interact`](triggers/blocks-interactions.md#on-interact)
+* [`on-craft-item`](triggers/blocks-interactions.md#on-craft-item)
+* [`on-fertilize-block`](triggers/blocks-interactions.md#on-fertilize-block)
+* [`on-forge-item`](triggers/blocks-interactions.md#on-forge-item)
+* [`on-grindstone-item`](triggers/blocks-interactions.md#on-grindstone-item)
+* [`on-milk-mob`](triggers/blocks-interactions.md#on-milk-mob)
+* [`on-honey-extract`](triggers/blocks-interactions.md#on-honey-extract)
+* [`on-honey-comb-extract`](triggers/blocks-interactions.md#on-honey-comb-extract)
+* [`on-anvil-repair`](triggers/blocks-interactions.md#on-anvil-repair)
+* [`on-anvil-enchant`](triggers/blocks-interactions.md#on-anvil-enchant)
+* [`on-anvil-rename`](triggers/blocks-interactions.md#on-anvil-rename)
+* [`on-brew`](triggers/blocks-interactions.md#on-brew)
+* [`on-cook`](triggers/blocks-interactions.md#on-cook)
 * [`on-consume`](triggers/blocks-interactions.md#on-consume)
 * [`on-name-entity`](triggers/blocks-interactions.md#on-name-entity)
 * [`on-vibration-receive`](triggers/blocks-interactions.md#on-vibration-receive)
@@ -103,6 +115,7 @@ Do not assume the same selector has the same meaning across every trigger. For e
 ### Item, enchanting, and equipment triggers
 
 * [`on-item-damage`](triggers/items-equipment.md#on-item-damage)
+* [`on-item-broken`](triggers/items-equipment.md#on-item-broken)
 * [`on-item-group-cooldown`](triggers/items-equipment.md#on-item-group-cooldown)
 * [`on-item-held`](triggers/items-equipment.md#on-item-held)
 * [`on-swap-hand`](triggers/items-equipment.md#on-swap-hand)
@@ -125,6 +138,7 @@ Do not assume the same selector has the same meaning across every trigger. For e
 * [`on-food-level-change`](triggers/player-state.md#on-food-level-change)
 * [`on-air-change`](triggers/player-state.md#on-air-change)
 * [`on-exp-change`](triggers/player-state.md#on-exp-change)
+* [`on-gain-level`](triggers/player-state.md#on-gain-level)
 * [`on-pickup-experience`](triggers/player-state.md#on-pickup-experience)
 
 ### Fishing and trading triggers
@@ -141,6 +155,10 @@ Do not assume the same selector has the same meaning across every trigger. For e
 * [`on-enderman-attack-player`](triggers/targeting-special.md#on-enderman-attack-player)
 * [`on-phantom-pre-spawn`](triggers/targeting-special.md#on-phantom-pre-spawn)
 * [`on-warden-anger-change`](triggers/targeting-special.md#on-warden-anger-change)
+* [`on-shear`](triggers/targeting-special.md#on-shear)
+* [`on-cut-leash`](triggers/targeting-special.md#on-cut-leash)
+* [`on-breed`](triggers/targeting-special.md#on-breed)
+* [`on-tame`](triggers/targeting-special.md#on-tame)
 
 ## Choosing compatible conditions and modifiers
 

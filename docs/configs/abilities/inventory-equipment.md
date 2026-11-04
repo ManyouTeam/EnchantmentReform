@@ -353,6 +353,8 @@ pickup-delay: 20
 
 ## `give_item`
 
+`delivery: REFUND_CONSUMED` refunds one original bone meal on `on-fertilize-block` without an `item` section. Metadata is preserved; each use can refund at most once. The delayed refund skips cancelled events and creative mode. Use the ability's `random` for probability. Bundled `fertilizer_saver` applies to an off-hand hoe, up to level III, at 10% chance per level.
+
 **Purpose:** Builds an ItemFormat item and either gives it to a player or drops it in the world.
 
 **Context:** `INVENTORY` delivery requires a player target. `DROP` delivery requires a resolved location.
