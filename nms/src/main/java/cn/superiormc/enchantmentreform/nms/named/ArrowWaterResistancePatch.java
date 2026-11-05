@@ -1,7 +1,7 @@
 package cn.superiormc.enchantmentreform.nms.named;
 
-import cn.superiormc.enchantmentreform.nms.NmsLog;
-
+import cn.superiormc.enchantmentreform.managers.ErrorManager;
+import cn.superiormc.enchantmentreform.utils.TextUtil;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
@@ -9,14 +9,18 @@ import net.bytebuddy.asm.AsmVisitorWrapper;
 import net.bytebuddy.jar.asm.ClassReader;
 import net.bytebuddy.jar.asm.ClassVisitor;
 import net.bytebuddy.jar.asm.ClassWriter;
-import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Label;
+import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Trident;
 
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -60,24 +64,47 @@ public final class ArrowWaterResistancePatch {
         try {
             Class<?> target = Class.forName(TARGET);
             // Fail closed if the named ABI or vanilla flight branches have changed.
-            java.lang.reflect.Method tagsMethod;
+            Method tagsMethod;
             try {
                 tagsMethod = target.getMethod("entityTags");
             } catch (NoSuchMethodException ignored) {
                 tagsMethod = target.getMethod("getTags");
             }
-            if (tagsMethod.getReturnType() != java.util.Set.class) {
+            if (tagsMethod.getReturnType() != Set.class) {
                 throw new IllegalStateException("Unrecognized entity tag accessor");
             }
             String tagsOwner = tagsMethod.getDeclaringClass().getName().replace('.', '/');
             String tagsName = tagsMethod.getName();
             Class<?> tracker = Class.forName(TRACKER);
             tracker.getMethod("sendChanges");
-            if (tracker.getDeclaredField("forceStateResync").getType() != boolean.class) {
-                throw new IllegalStateException("Unrecognized tracker resync flag");
-            }
             Class<?> entity = tracker.getDeclaredField("entity").getType();
-            java.lang.reflect.Field velocityField;
+            boolean paperResync;
+            Field positionField = null;
+            try {
+                if (tracker.getDeclaredField("forceStateResync").getType() != boolean.class) {
+                    throw new IllegalStateException("Unrecognized tracker resync flag");
+                }
+                paperResync = true;
+            } catch (NoSuchFieldException ignored) {
+                // Spigot uses the vanilla update gate and absolute-position timeout.
+                if (tracker.getDeclaredField("teleportDelay").getType() != int.class) {
+                    throw new IllegalStateException("Unrecognized tracker teleport delay");
+                }
+                try {
+                    positionField = entity.getField("needsSync");
+                } catch (NoSuchFieldException ignoredPosition) {
+                    positionField = entity.getField("hasImpulse");
+                }
+                if (positionField.getType() != boolean.class) {
+                    throw new IllegalStateException("Unrecognized position sync flag");
+                }
+                paperResync = false;
+            }
+            boolean usePaperResync = paperResync;
+            String positionOwner = positionField == null ? null
+                    : positionField.getDeclaringClass().getName().replace('.', '/');
+            String positionName = positionField == null ? null : positionField.getName();
+            Field velocityField;
             try {
                 velocityField = entity.getField("syncVelocity");
             } catch (NoSuchFieldException ignored) {
@@ -119,7 +146,7 @@ public final class ArrowWaterResistancePatch {
                 throw new IllegalStateException("Unrecognized arrow water/air flight branches");
             }
             instrumentation = ByteBuddyAgent.install();
-            var failure = new java.util.concurrent.atomic.AtomicReference<Throwable>();
+            var failure = new AtomicReference<Throwable>();
             transformer = new AgentBuilder.Default()
                     .disableClassFormatChanges()
                     .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
@@ -138,7 +165,8 @@ public final class ArrowWaterResistancePatch {
                                     .method(named("sendChanges").and(takesArguments(0)),
                                             (instrumentedType, method, visitor, context, pool, writer, reader) ->
                                                     trackingVisitor(visitor, tagsOwner, tagsName, entityDescriptor,
-                                                            velocityOwner, velocityName)));
+                                                            velocityOwner, velocityName, usePaperResync,
+                                                            positionOwner, positionName)));
                         }
                         return builder.visit(
                             new AsmVisitorWrapper.ForDeclaredMethods()
@@ -175,17 +203,19 @@ public final class ArrowWaterResistancePatch {
                 transformer = null;
                 throw new IllegalStateException("Arrow transformation failed", failure.get());
             }
-            NmsLog.info(logger, NmsLog.AQUATIC_ARROW, "enabled (flight and client synchronization).");
-            NmsLog.debug(logger, NmsLog.AQUATIC_ARROW, "entity tag accessor: " + tagsName + ".");
+            TextUtil.sendMessage(null, TextUtil.pluginPrefix()
+                    + " §f[NMS] Aquatic arrow: enabled (flight and client synchronization).");
             return true;
         } catch (Throwable throwable) {
-            NmsLog.warning(logger, NmsLog.AQUATIC_ARROW, "unavailable; patch installation failed.", throwable);
+            ErrorManager.errorManager.sendErrorMessage("§c[NMS] Aquatic arrow: unavailable; patch installation failed: "
+                    + throwable.getClass().getSimpleName() + ": " + throwable.getMessage());
             return false;
         }
     }
 
     private static MethodVisitor trackingVisitor(MethodVisitor visitor, String tagsOwner, String tagsName,
-                                                 String entityDescriptor, String velocityOwner, String velocityName) {
+                                                 String entityDescriptor, String velocityOwner, String velocityName,
+                                                 boolean paperResync, String positionOwner, String positionName) {
         String trackerOwner = TRACKER.replace('.', '/');
         String arrowOwner = TARGET.replace('.', '/');
         return new MethodVisitor(Opcodes.ASM9, visitor) {
@@ -243,8 +273,16 @@ public final class ArrowWaterResistancePatch {
                 super.visitInsn(Opcodes.POP);
                 super.visitLabel(send);
                 super.visitVarInsn(Opcodes.ALOAD, 0);
-                super.visitInsn(Opcodes.ICONST_1);
-                super.visitFieldInsn(Opcodes.PUTFIELD, trackerOwner, "forceStateResync", "Z");
+                if (paperResync) {
+                    super.visitInsn(Opcodes.ICONST_1);
+                    super.visitFieldInsn(Opcodes.PUTFIELD, trackerOwner, "forceStateResync", "Z");
+                } else {
+                    super.visitIntInsn(Opcodes.SIPUSH, 401);
+                    super.visitFieldInsn(Opcodes.PUTFIELD, trackerOwner, "teleportDelay", "I");
+                    loadEntity();
+                    super.visitInsn(Opcodes.ICONST_1);
+                    super.visitFieldInsn(Opcodes.PUTFIELD, positionOwner, positionName, "Z");
+                }
                 loadEntity();
                 super.visitInsn(Opcodes.ICONST_1);
                 super.visitFieldInsn(Opcodes.PUTFIELD, velocityOwner, velocityName, "Z");
@@ -256,11 +294,11 @@ public final class ArrowWaterResistancePatch {
     public static synchronized void uninstall(Logger logger) {
         if (transformer != null) {
             if (!transformer.reset(instrumentation, AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)) {
-                NmsLog.warning(logger, NmsLog.AQUATIC_ARROW, "restoration failed.");
+                ErrorManager.errorManager.sendErrorMessage("§c[NMS] Aquatic arrow: restoration failed.");
                 return;
             }
             transformer = null;
-            NmsLog.info(logger, NmsLog.AQUATIC_ARROW, "restored vanilla behavior.");
+            TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §f[NMS] Aquatic arrow: restored vanilla behavior.");
         }
         instrumentation = null;
         attempted = false;
