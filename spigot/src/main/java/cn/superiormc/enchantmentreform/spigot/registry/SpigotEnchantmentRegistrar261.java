@@ -299,6 +299,15 @@ public final class SpigotEnchantmentRegistrar261 {
                 return directHolderSet(List.of());
             }
 
+            if (configured.contains("*")) {
+                Set<Object> exclusiveHolders = new LinkedHashSet<>(holders.values());
+                try (Stream<?> entries = (Stream<?>) invokeCompatible(enchantmentRegistry, "listElements")) {
+                    entries.forEach(exclusiveHolders::add);
+                }
+                exclusiveHolders.remove(holders.get(definition.getKey().asString()));
+                return directHolderSet(exclusiveHolders);
+            }
+
             if (configured.size() == 1 && configured.getFirst().startsWith("#")) {
                 Object tagKey = createTagKey(
                         enchantmentRegistryKey,

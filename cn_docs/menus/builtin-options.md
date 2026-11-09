@@ -152,7 +152,10 @@
 | `{rarity}` | 本地化后的稀有度名称。 |
 | `{weight}` | 附魔出现权重。 |
 | `{supported_items}` | 适用物品类别名称；无法解析时可能显示标签键或 `-`。 |
+| `{exclusive_with}` | `exclusive-with` 包含 `*` 时显示“所有”；否则列出任一方向互斥的已注册附魔名称，不包含自身，没有时显示“无”。列表读取实际生效的注册表规则，包含标签。 |
 | `{key}` | 附魔的完整键，例如 `minecraft:sharpness`。 |
+
+已有菜单可在 `enchantment-item.lore` 中添加 `- '{lang:enchantment-menu-exclusive-with}'` 来显示互斥关系。默认菜单已包含此行。
 
 ### 附魔图鉴按钮占位符
 

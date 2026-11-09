@@ -165,6 +165,11 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
             List<?> entries = raw instanceof List<?> list ? list : raw == null ? List.of() : List.of(raw);
             List<String> valid = new ArrayList<>();
             for (Object entry : entries) {
+                if ("exclusive-with".equals(path) && entry instanceof String text
+                        && "*".equals(text.strip())) {
+                    valid.add("*");
+                    continue;
+                }
                 String reference = "obtaining-sources".equals(path)
                         ? entry instanceof String text && !text.isBlank() ? text.strip() : null
                         : normalizeReference(entry, "minecraft", true);

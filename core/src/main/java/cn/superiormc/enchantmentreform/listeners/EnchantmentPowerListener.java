@@ -103,9 +103,11 @@ public class EnchantmentPowerListener implements Listener, AutoCloseable {
         if (ignoreCancelled(eventClass) && event instanceof Cancellable cancellable && cancellable.isCancelled()) {
             return false;
         }
-        if (event instanceof PlayerInteractEvent interaction && interaction.isCancelled()
-                && interaction.getAction() != Action.LEFT_CLICK_AIR) {
-            return false;
+        if (event instanceof PlayerInteractEvent interaction) {
+            if (interaction.getAction() == Action.RIGHT_CLICK_AIR) {
+                return interaction.useItemInHand() != Event.Result.DENY;
+            }
+            return !interaction.isCancelled() || interaction.getAction() == Action.LEFT_CLICK_AIR;
         }
         return true;
     }

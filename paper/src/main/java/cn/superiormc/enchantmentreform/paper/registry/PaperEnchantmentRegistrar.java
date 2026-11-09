@@ -31,9 +31,11 @@ import org.bukkit.inventory.ItemType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 public final class PaperEnchantmentRegistrar {
@@ -49,6 +51,7 @@ public final class PaperEnchantmentRegistrar {
         List<VanillaEnchantmentOverride> vanillaSnapshot = List.copyOf(vanillaDefinitions);
         List<PowerEnchantmentDefinition> allDefinitions = new ArrayList<>(snapshot);
         allDefinitions.addAll(vanillaSnapshot);
+        Set<TypedKey<Enchantment>> enchantmentKeys = new LinkedHashSet<>();
         Map<TagKey<ItemType>, List<TagEntry<ItemType>>> itemTags = new LinkedHashMap<>();
         Map<TagKey<ItemType>, RegistryKeySet<ItemType>> itemDefaults = new LinkedHashMap<>();
         Map<TagKey<ItemType>, Collection<TypedKey<ItemType>>> resolvedItemTags = new LinkedHashMap<>();
@@ -66,6 +69,7 @@ public final class PaperEnchantmentRegistrar {
         }
         context.getLifecycleManager().registerEventHandler(
                 RegistryEvents.ENCHANTMENT.entryAdd().newHandler(event -> {
+                    enchantmentKeys.add(event.key());
                     String eventKey = event.key().key().asString();
                     for (VanillaEnchantmentOverride definition : vanillaSnapshot) {
                         if (definition.getKey().asString().equals(eventKey)) {
@@ -77,7 +81,7 @@ public final class PaperEnchantmentRegistrar {
                             break;
                         }
                     }
-                }).filter(key -> "minecraft".equals(key.key().namespace())));
+                }));
         context.getLifecycleManager().registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler(event -> {
                     for (ObjectCustomEnchantment definition : snapshot) {
@@ -126,7 +130,7 @@ public final class PaperEnchantmentRegistrar {
                 }));
         context.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.TAGS.preFlatten(RegistryKey.ENCHANTMENT).newHandler(event ->
-                        registerExclusiveTags(event.registrar(), allDefinitions)));
+                        registerExclusiveTags(event.registrar(), allDefinitions, enchantmentKeys)));
         context.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT).newHandler(event -> {
                     for (ObjectCustomEnchantment definition : snapshot) {
@@ -162,18 +166,27 @@ public final class PaperEnchantmentRegistrar {
 
     private static void registerExclusiveTags(
             PreFlattenTagRegistrar<Enchantment> registrar,
-            Collection<PowerEnchantmentDefinition> definitions) {
+            Collection<PowerEnchantmentDefinition> definitions,
+            Collection<TypedKey<Enchantment>> enchantmentKeys) {
         for (PowerEnchantmentDefinition definition : definitions) {
             if (!definition.isEnabled() || definition.getExclusiveWith().isEmpty()) {
                 continue;
             }
             List<TagEntry<Enchantment>> entries = new ArrayList<>();
-            for (String value : definition.getExclusiveWith()) {
-                if (value.startsWith("#")) {
-                    entries.add(TagEntry.tagEntry(TagKey.create(
-                            RegistryKey.ENCHANTMENT, Key.key(stripTagPrefix(value))), false));
-                } else {
-                    entries.add(TagEntry.valueEntry(EnchantmentKeys.create(Key.key(value)), false));
+            if (definition.getExclusiveWith().contains("*")) {
+                for (TypedKey<Enchantment> key : enchantmentKeys) {
+                    if (!key.key().asString().equals(definition.getKey().asString())) {
+                        entries.add(TagEntry.valueEntry(key, false));
+                    }
+                }
+            } else {
+                for (String value : definition.getExclusiveWith()) {
+                    if (value.startsWith("#")) {
+                        entries.add(TagEntry.tagEntry(TagKey.create(
+                                RegistryKey.ENCHANTMENT, Key.key(stripTagPrefix(value))), false));
+                    } else {
+                        entries.add(TagEntry.valueEntry(EnchantmentKeys.create(Key.key(value)), false));
+                    }
                 }
             }
             registrar.setTag(TagKey.create(RegistryKey.ENCHANTMENT,

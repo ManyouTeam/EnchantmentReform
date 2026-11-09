@@ -641,12 +641,14 @@ type: cooldown
 owner: PLAYER
 seconds: 5
 per-target: true
+not-meet-message: '&cPlease wait {remaining} seconds.'
 ```
 
 ### Behavior and limits
 
 * The key includes owner identity, power identity, and this condition's configuration path; with `per-target: true`, it also includes target identity.
 * This condition changes state; it is not a read-only check.
+* `meet-message` and `not-meet-message` support `{remaining}` for the current cooldown's remaining seconds, rounded up to one decimal place. After acquiring a cooldown, this shows the remaining time of the new cooldown.
 
 ---
 

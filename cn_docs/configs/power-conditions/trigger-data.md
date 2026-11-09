@@ -641,12 +641,14 @@ type: cooldown
 owner: PLAYER
 seconds: 5
 per-target: true
+not-meet-message: '&c还需等待 {remaining} 秒。'
 ```
 
 ### 行为与限制
 
 * 冷却键包含所有者身份、能力身份和此条件的配置路径；启用 `per-target` 时还会包含目标身份。
 * 此条件会修改运行时状态，并不是只读检查。
+* `meet-message` 和 `not-meet-message` 支持 `{remaining}`，表示当前冷却剩余秒数，向上取整到一位小数；成功获取冷却后显示新一轮冷却的剩余时间。
 
 ---
 

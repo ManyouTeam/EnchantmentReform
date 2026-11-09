@@ -29,14 +29,23 @@ plugin:
   registry-restart-required: "&#98FB98[EnchantmentReform] &f附魔注册表的变更需要完整重启服务器后生效!"
   saved: "&#98FB98[EnchantmentReform] &f物品已保存!"
   generated: "&#98FB98[EnchantmentReform] &f已在插件根目录下生成手持物品的物品格式文件!"
+random-book:
+  usage: '&#98FB98[EnchantmentReform] &c用法：/er randombook <玩家> levels <附魔强度> [数量]，或 /er randombook <玩家> all [数量]。'
+  invalid-power: '&#98FB98[EnchantmentReform] &c{value} 不是有效的正整数附魔强度！'
+  invalid-amount: '&#98FB98[EnchantmentReform] &c{value} 不是有效数量，请填写 1-64 的整数！'
+  no-enchantments: '&#98FB98[EnchantmentReform] &c没有可供随机选择的已注册附魔。'
+  no-result: '&#98FB98[EnchantmentReform] &c原版算法在附魔强度 {power} 下未生成有效附魔书，本次未发放任何物品。'
+  failed: '&#98FB98[EnchantmentReform] &c生成附魔书失败，请查看控制台错误信息。'
+  given: '&#98FB98[EnchantmentReform] &f已给予玩家 {player} {amount} 本随机附魔书。'
+
 give-save-item: "&#98FB98[EnchantmentReform] &f已将 {amount} 个已保存物品 {item} 给予玩家 {player}!"
 command-tab:
   type-item-id: "[物品 ID]"
 dupe-removed: "&#98FB98[EnchantmentReform] &f已从您的背包中移除一个非法物品!"
 help:
   main: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。"
-  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。"
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。"
+  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。"
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。"
 override-lang:
   skill-source-farming-breed_animals: '繁殖动物'
   skill-source-farming-breed_animals-desc: '通过繁殖动物获得技能经验。'
@@ -437,6 +446,9 @@ override-lang:
   enchantment-menu-rarity: "&8• &7稀有度 &8» &f{rarity}"
   enchantment-menu-weight: "&8• &7出现权重 &8» &f{weight}"
   enchantment-menu-supported-items: "&8• &7适用物品 &8» &f{supported_items}"
+  enchantment-menu-exclusive-with: "&8• &7互斥附魔 &8» &f{exclusive_with}"
+  enchantment-menu-exclusive-with-none: "无"
+  enchantment-menu-exclusive-with-all: "所有"
   enchantment-menu-key: "&l&e附魔信息"
   enchantment-menu-level-description: "&8[&e等级 {level}&8] &f{description}"
   enchantment-menu-description-page: '&7等级 {level_start}-{level_end} &8| &7{description_page}/{description_pages} &e点击查看后续等级'

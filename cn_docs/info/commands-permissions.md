@@ -46,6 +46,21 @@ enchantmentreform.menu
 
 前两个指令修改基础值。`setattribute` 末尾可加 `-ignore`，以绕过该属性配置的最小值与最大值。Modifier operation 包括 `ADD_VALUE`、`ADD_MULTIPLIED_BASE` 和 `ADD_MULTIPLIED_TOTAL`。四个管理权限都默认授予服务器管理员，权限节点为 `enchantmentreform.` 加对应指令名。
 
+## 随机给予附魔书
+
+```text
+/er randombook <玩家> levels <附魔强度> [数量]
+/er randombook <玩家> all [数量]
+```
+
+例如 `/er randombook Steve levels 30 5` 或 `/er randombook Steve all 5`。目标必须在线，玩家和控制台均可执行。数量默认为 `1`，范围为 `1-64`，每本独立随机生成；背包放不下的书会掉落在目标玩家脚下。
+
+`levels` 调用与 `minecraft:enchant_with_levels` 相同的原版附魔算法，不指定 `options`，从全部已注册附魔中按权重、附魔费用、物品适用性和互斥规则筛选。附魔强度为正整数，例如 `30`；它是算法输入的费用/强度，并非最终附魔等级。一本书可能包含多个相容附魔。如果任一本未生成有效附魔书，整批均不发放。
+
+`all` 从全部已注册附魔（含原版、自定义和其他插件附魔）中等概率选择一种，再在它的正常起始等级至最高等级之间等概率选一级。每本仅有一种附魔，不按权重或获取来源筛选。
+
+权限：`enchantmentreform.randombook`，默认仅管理员拥有。支持在线玩家、模式、附魔强度和数量补全。
+
 ## 重载运行时文件
 
 ```text

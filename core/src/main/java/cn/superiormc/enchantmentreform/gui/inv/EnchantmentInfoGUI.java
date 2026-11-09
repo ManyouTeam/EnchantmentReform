@@ -259,6 +259,7 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
                 "rarity", displayRarity(enchantment),
                 "weight", String.valueOf(weight(enchantment)),
                 "supported_items", displaySupportedItems(enchantment),
+                "exclusive_with", displayExclusiveWith(enchantment),
                 "key", enchantment.key());
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
@@ -432,6 +433,34 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
                     .findFirst().orElse("-");
         }
         return value;
+    }
+
+    private String displayExclusiveWith(EnchantmentInfoEntry enchantment) {
+        if (enchantment.definition() != null && enchantment.definition().getExclusiveWith().contains("*")) {
+            return CommonUtil.parseLang(player, "{lang:enchantment-menu-exclusive-with-all}");
+        }
+        NamespacedKey key = NamespacedKey.fromString(enchantment.key());
+        Enchantment registered = key == null ? null : Registry.ENCHANTMENT.get(key);
+        List<String> names = new ArrayList<>();
+        if (registered != null) {
+            EnchantmentConfigManager manager = EnchantmentConfigManager.getInstance();
+            List<Enchantment> conflicts = new ArrayList<>();
+            for (Enchantment other : Registry.ENCHANTMENT) {
+                if (!registered.getKey().equals(other.getKey())
+                        && (registered.conflictsWith(other) || other.conflictsWith(registered))) {
+                    conflicts.add(other);
+                }
+            }
+            conflicts.sort(Comparator.comparing(other -> other.getKey().toString()));
+            for (Enchantment other : conflicts) {
+                PowerEnchantmentDefinition definition = manager == null
+                        ? null : manager.getDefinition(other.getKey().toString());
+                names.add(displayName(new EnchantmentInfoEntry(definition, other)));
+            }
+        }
+        return names.isEmpty()
+                ? CommonUtil.parseLang(player, "{lang:enchantment-menu-exclusive-with-none}")
+                : String.join("&7, &f", names);
     }
 
     private String displayName(EnchantmentInfoEntry enchantment) {

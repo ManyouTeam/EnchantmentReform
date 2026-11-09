@@ -152,7 +152,10 @@ Use these in `enchantment-item`. The `name` field ultimately replaces only `{nam
 | `{rarity}` | Localized rarity name. |
 | `{weight}` | Enchantment selection weight. |
 | `{supported_items}` | Supported item category names; may fall back to a tag key or `-`. |
+| `{exclusive_with}` | Localized “All” when `exclusive-with` contains `*`; otherwise the names of registered enchantments that conflict in either direction, excluding itself, or localized “None” when empty. Lists use active registry rules, including tags. |
 | `{key}` | Full enchantment key, such as `minecraft:sharpness`. |
+
+Existing menus can show conflicts by adding `- '{lang:enchantment-menu-exclusive-with}'` to `enchantment-item.lore`. The bundled menu includes this line by default.
 
 ### Catalogue-button placeholders
 

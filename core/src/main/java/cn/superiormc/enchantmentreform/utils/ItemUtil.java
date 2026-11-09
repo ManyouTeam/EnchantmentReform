@@ -2,13 +2,24 @@ package cn.superiormc.enchantmentreform.utils;
 
 import cn.superiormc.enchantmentreform.methods.DebuildItem;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import org.bukkit.Material;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.util.Map;
 
 public class ItemUtil {
+
+    public static ItemStack generateEnchantedBook(Enchantment enchantment, int level) {
+        ItemStack enchantedBook = new ItemStack(Material.ENCHANTED_BOOK);
+        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) enchantedBook.getItemMeta();
+        meta.addStoredEnchant(enchantment, level, true);
+        enchantedBook.setItemMeta(meta);
+        return enchantedBook;
+    }
 
     public static boolean isValid(ItemStack item) {
         return item != null && !item.getType().isAir();

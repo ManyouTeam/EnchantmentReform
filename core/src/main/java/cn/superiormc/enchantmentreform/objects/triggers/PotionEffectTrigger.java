@@ -6,6 +6,7 @@ import cn.superiormc.enchantmentreform.utils.CommonUtil;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.potion.PotionEffect;
 
@@ -20,7 +21,10 @@ public final class PotionEffectTrigger extends EventTrigger<EntityPotionEffectEv
         if (!CommonUtil.getYearVersion(26, 2, 0)) {
             return;
         }
-        if (!(event.getEntity() instanceof Player player)) {
+        // 通过 EntityEvent 父类引用调用，避免绑定 EntityPotionEffectEvent 的协变
+        // getEntity() 签名（部分服务端实现缺少该协变覆写，会抛 NoSuchMethodError）
+        Entity potionEntity = ((EntityEvent) event).getEntity();
+        if (!(potionEntity instanceof Player player)) {
             return;
         }
         PotionEffect newEffect = event.getNewEffect();

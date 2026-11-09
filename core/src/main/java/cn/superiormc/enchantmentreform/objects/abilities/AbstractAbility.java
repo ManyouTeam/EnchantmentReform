@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -83,7 +84,7 @@ public abstract class AbstractAbility extends AbstractConfiguredSection<PowerCon
         }
 
         double randomChance = getDouble("random", getDouble("limit.random", 1.0, context), context);
-        if (randomChance < 1.0 && java.util.concurrent.ThreadLocalRandom.current().nextDouble() > randomChance) {
+        if (randomChance < 1.0 && ThreadLocalRandom.current().nextDouble() > randomChance) {
             return false;
         }
 

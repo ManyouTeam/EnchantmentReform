@@ -29,14 +29,23 @@ plugin:
   registry-restart-required: "&#98FB98[EnchantmentReform] &fEnchantment registry changes require a full server restart!"
   saved: "&#98FB98[EnchantmentReform] &fItem saved!"
   generated: "&#98FB98[EnchantmentReform] &fGenerated hold item's item format at plugin config folder, please copy them into your configs!"
+random-book:
+  usage: '&#98FB98[EnchantmentReform] &cUsage: /er randombook <player> levels <power> [amount], or /er randombook <player> all [amount].'
+  invalid-power: '&#98FB98[EnchantmentReform] &c{value} is not a valid positive integer enchanting power!'
+  invalid-amount: '&#98FB98[EnchantmentReform] &c{value} is not a valid amount; enter an integer from 1 to 64!'
+  no-enchantments: '&#98FB98[EnchantmentReform] &cThere are no registered enchantments to choose from.'
+  no-result: '&#98FB98[EnchantmentReform] &cVanilla enchanting produced no valid enchanted book at power {power}. No items were given.'
+  failed: '&#98FB98[EnchantmentReform] &cFailed to generate enchanted books. Check the console for details.'
+  given: '&#98FB98[EnchantmentReform] &fGave {amount} random enchanted books to {player}.'
+
 give-save-item: "&#98FB98[EnchantmentReform] &fGave {amount} of saved item {item} to {player}!"
 command-tab:
   type-item-id: "[item ID]"
 dupe-removed: "&#98FB98[EnchantmentReform] &fAn illegal item from your inventory has been removed!"
 help:
   main: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID."
-  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin."
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player."
+  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin."
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player."
 override-lang:
   skill-source-farming-breed_animals: 'Breed animals'
   skill-source-farming-breed_animals-desc: 'Gain farming XP from breed animals.'
@@ -437,6 +446,9 @@ override-lang:
   enchantment-menu-rarity: "&8• &7Rarity &8» &f{rarity}"
   enchantment-menu-weight: "&8• &7Selection weight &8» &f{weight}"
   enchantment-menu-supported-items: "&8• &7Applies to &8» &f{supported_items}"
+  enchantment-menu-exclusive-with: "&8• &7Conflicts with &8» &f{exclusive_with}"
+  enchantment-menu-exclusive-with-none: "None"
+  enchantment-menu-exclusive-with-all: "All"
   enchantment-menu-key: "&l&eEnchantment Info"
   enchantment-menu-level-description: "&8[&eLevel {level}&8] &f{description}"
   enchantment-menu-description-page: '&7Levels {level_start}-{level_end} &8| &7{description_page}/{description_pages} &eClick for next levels'

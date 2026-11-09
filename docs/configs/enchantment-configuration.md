@@ -166,6 +166,8 @@ Read [Vanilla Enchantment Overrides](vanilla-enchantment-overrides.md) before ch
 
 Registry fields require a full restart after changes. Ensure these fields are valid, otherwise the server may fail while loading the enchantment registry.
 
+Use `exclusive-with: '*'` to conflict with every other registered enchantment, including vanilla enchantments, this plugin's enchantments, and enchantments registered by other plugins. The enchantment itself is excluded, so combining levels of the same enchantment remains possible. The list form `exclusive-with: ['*']` is also supported. Quote `*`; when it appears in a list, other conflict entries are redundant.
+
 ## Runtime fields
 
 | Field       | Purpose                                                                                          |

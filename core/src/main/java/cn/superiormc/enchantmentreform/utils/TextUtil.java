@@ -22,7 +22,7 @@ public class TextUtil {
 
     /** Matches a single color/format token: gradient start, single hex, or a legacy color/format/reset code. */
     private static final Pattern WRAP_COLOR_TOKEN =
-            Pattern.compile("&<#[0-9A-Fa-f]{6}>|[&§]#[0-9A-Fa-f]{6}|[&§][0-9A-Fa-fK-Ok-oRr]");
+            Pattern.compile("§[xX](?:§[0-9A-Fa-f]){6}|&<#[0-9A-Fa-f]{6}>|[&§]#[0-9A-Fa-f]{6}|[&§][0-9A-Fa-fK-Ok-oRr]");
 
     public static String clear(String text) {
         text = SINGLE_HEX_PATTERN.matcher(text).replaceAll("");
@@ -51,6 +51,7 @@ public class TextUtil {
             return result;
         }
 
+        text = applyGradients(text, true);
         WrapStyle style = new WrapStyle();
         List<WrapCharacter> paragraph = new ArrayList<>();
         StringBuilder pendingTokens = new StringBuilder();

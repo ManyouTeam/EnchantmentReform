@@ -17,7 +17,7 @@ Reading guide: [Built-in Menu Options and Placeholders](builtin-options.md) expl
 | Menu ID | File | Purpose | How to open |
 | --- | --- | --- | --- |
 | `main` | `main.yml` | The default hub for skills, attributes, attribute allocation, and the enchantment catalogue. | `/enchantmentreform menu main` |
-| `enchantment-info` | `enchantment-info.yml` | Lists enchantments with level descriptions, rarity, weight, and supported items. It can filter by rarity and item type. | `/enchantmentreform menu enchantment-info` |
+| `enchantment-info` | `enchantment-info.yml` | Lists enchantments with level descriptions, rarity, weight, supported items, and conflicts. It can filter by rarity and item type. | `/enchantmentreform menu enchantment-info` |
 | `skill-info` | `skill-info.yml` | Lists skills with their level, XP, progress, and number of XP sources. | `/enchantmentreform menu skill-info` |
 | `skill-detail` | `skill-detail.yml` | Shows one skill and switches between its XP sources and level-reward path. It also lists available attributes. | Click a skill, or use `/enchantmentreform menu skill-detail <skill-id>` |
 | `attribute-info` | `attribute-info.yml` | A read-only attribute overview with base values, final values, effects, and modifier counts. | `/enchantmentreform menu attribute-info` |

@@ -55,6 +55,8 @@ permissions:
     default: true
   enchantmentreform.reload:
     default: op
+  enchantmentreform.randombook:
+    default: op
   enchantmentreform.setattribute:
     default: op
   enchantmentreform.addattribute:

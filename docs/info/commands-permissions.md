@@ -46,6 +46,21 @@ The permission defaults to all players. Separate legacy GUI subcommands are not 
 
 The first two commands change the base value. The optional `-ignore` suffix on `setattribute` bypasses the attribute's configured minimum and maximum. Modifier operations are `ADD_VALUE`, `ADD_MULTIPLIED_BASE`, and `ADD_MULTIPLIED_TOTAL`. All four management permissions default to operators and use the command name after `enchantmentreform.`.
 
+## Give random enchanted books
+
+```text
+/er randombook <player> levels <power> [amount]
+/er randombook <player> all [amount]
+```
+
+Examples: `/er randombook Steve levels 30 5` and `/er randombook Steve all 5`. Players and the console can target an online player. The amount defaults to `1` and must be between `1` and `64`. Each book is rolled independently. Books that do not fit in the inventory drop at the target player's location.
+
+`levels` calls the vanilla algorithm used by `minecraft:enchant_with_levels` without specifying `options`. It considers all registered enchantments and applies their weights, enchanting costs, item compatibility, and conflicts. Power is a positive integer such as `30`, representing the algorithm's input cost/power rather than the final enchantment level. A book can contain multiple compatible enchantments. If any roll produces no valid enchanted book, the entire batch is withheld.
+
+`all` uniformly selects one enchantment from the entire registered enchantment registry, including vanilla and other plugins' enchantments, then uniformly chooses a level between its normal starting and maximum levels. Each book contains one enchantment. Enchantment weights and acquisition sources do not restrict this mode.
+
+Permission: `enchantmentreform.randombook`, granted to operators by default. Online player names, modes, power, and amounts support tab completion.
+
 ## Reload runtime files
 
 ```text

@@ -181,6 +181,14 @@ Do not mix a tag entry beginning with `#` and direct item keys in the same list.
 
 ## Exclusivity
 
+To conflict with every other registered enchantment while excluding itself, use:
+
+```yaml
+exclusive-with: '*'
+```
+
+The list form `exclusive-with: ['*']` is also supported. Quote the asterisk and restart the server after changing this setting.
+
 Use one enchantment tag:
 
 ```yaml

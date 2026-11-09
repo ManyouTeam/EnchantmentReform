@@ -36,6 +36,7 @@ enchantment-item:
     - '{lang:enchantment-menu-rarity}'
     - '{lang:enchantment-menu-weight}'
     - '{lang:enchantment-menu-supported-items}'
+    - '{lang:enchantment-menu-exclusive-with}'
 
 buttons:
   F:

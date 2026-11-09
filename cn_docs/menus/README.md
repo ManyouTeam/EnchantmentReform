@@ -17,7 +17,7 @@
 | 菜单 ID | 配置文件 | 用途 | 打开方式 |
 | --- | --- | --- | --- |
 | `main` | `main.yml` | 默认主菜单，集中提供技能、属性、属性加点和附魔图鉴入口。 | `/enchantmentreform menu main` |
-| `enchantment-info` | `enchantment-info.yml` | 分页展示全部附魔、各等级描述、稀有度、权重与适用物品，并支持按稀有度和物品类型筛选。 | `/enchantmentreform menu enchantment-info` |
+| `enchantment-info` | `enchantment-info.yml` | 分页展示全部附魔、各等级描述、稀有度、权重、适用物品与互斥关系，并支持按稀有度和物品类型筛选。 | `/enchantmentreform menu enchantment-info` |
 | `skill-info` | `skill-info.yml` | 技能总览，显示每项技能的等级、经验、进度和经验来源数量。 | `/enchantmentreform menu skill-info` |
 | `skill-detail` | `skill-detail.yml` | 单项技能详情，可在经验来源和等级奖励路线之间切换，并显示可用属性。 | 从技能总览点击进入，或使用 `/enchantmentreform menu skill-detail <技能ID>` |
 | `attribute-info` | `attribute-info.yml` | 只读属性总览，显示基础值、最终值、效果与修改器数量。 | `/enchantmentreform menu attribute-info` |

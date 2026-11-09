@@ -1,6 +1,21 @@
 package cn.superiormc.enchantmentreform.managers;
 
-import cn.superiormc.enchantmentreform.commands.*;
+import cn.superiormc.enchantmentreform.commands.AbstractCommand;
+import cn.superiormc.enchantmentreform.commands.MainCommand;
+import cn.superiormc.enchantmentreform.commands.MainCommandTab;
+import cn.superiormc.enchantmentreform.commands.SubAddAttribute;
+import cn.superiormc.enchantmentreform.commands.SubAddAttributeModifier;
+import cn.superiormc.enchantmentreform.commands.SubGenerateItemFormat;
+import cn.superiormc.enchantmentreform.commands.SubGiveSaveItem;
+import cn.superiormc.enchantmentreform.commands.SubHelp;
+import cn.superiormc.enchantmentreform.commands.SubMenu;
+import cn.superiormc.enchantmentreform.commands.SubRandomBook;
+import cn.superiormc.enchantmentreform.commands.SubReload;
+import cn.superiormc.enchantmentreform.commands.SubSaveItem;
+import cn.superiormc.enchantmentreform.commands.SubSetAttribute;
+import cn.superiormc.enchantmentreform.commands.SubSetAttributeModifier;
+import cn.superiormc.enchantmentreform.commands.SubSetSkillMultiplier;
+import cn.superiormc.enchantmentreform.commands.SubSkillProgress;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 
@@ -34,6 +49,7 @@ public final class CommandManager extends AbstractManager {
         registeredCommands.put("help", new SubHelp());
         registeredCommands.put("saveitem", new SubSaveItem());
         registeredCommands.put("givesaveitem", new SubGiveSaveItem());
+        registeredCommands.put("randombook", new SubRandomBook());
         registeredCommands.put("generateitemformat", new SubGenerateItemFormat());
         registeredCommands.put("setattribute", new SubSetAttribute());
         registeredCommands.put("addattribute", new SubAddAttribute());
