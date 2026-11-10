@@ -98,8 +98,6 @@
 
 在 `PlayerInteractEvent` 中执行。
 
-支持左键和右键空气交互。右键空气事件即使因没有方块目标而被 Bukkit 默认标记为取消，仍会触发；若事件明确禁止使用手持物品（`useItemInHand: DENY`），则不会触发右键空气交互。
-
 | 上下文 | 值 |
 | --- | --- |
 | `PLAYER` / `SOURCE` / `SKILL` / `TARGET` | 玩家 |

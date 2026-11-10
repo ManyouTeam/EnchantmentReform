@@ -98,8 +98,6 @@ Supported `count`: `events`.
 
 Runs for `PlayerInteractEvent`.
 
-Supports left- and right-clicking air. Right-click air still triggers when Bukkit marks the event cancelled by default because there is no clicked block. Explicitly denying item use (`useItemInHand: DENY`) prevents right-click air from triggering.
-
 | Context | Value |
 | --- | --- |
 | `PLAYER` / `SOURCE` / `SKILL` / `TARGET` | player |
