@@ -3,12 +3,11 @@ enabled: true
 permission: ''
 
 title: '{lang:enchantment-menu-title} &8• &7{page}/{pages}'
-size: 54
-enchantment-symbol: E
 # Wrapped description lines per item page. Whole levels stay together; <= 0 disables paging.
 description-max-lines: 20
 # Appended only when an enchantment has more than one description page.
 description-page-format: '{lang:enchantment-menu-description-page}'
+# Catalogue rarity order is independent of config.yml tooltip-order.rarity-sort-rule.
 rarity-sort-rule:
   - COMMON
   - UNCOMMON
@@ -17,28 +16,32 @@ rarity-sort-rule:
   - MYTHIC
   - LEGENDARY
   - CURSE
+weight-order: DISABLED
 layout:
   - 'FFFFFFFFF'
-  - 'FEEEEEEEF'
-  - 'FEEEEEEEF'
-  - 'FEEEEEEEF'
-  - 'FEEEEEEEF'
+  - 'FQQQQQQQF'
+  - 'FQQQQQQQF'
+  - 'FQQQQQQQF'
+  - 'FQQQQQQQF'
   - 'PRFISFFNC'
 
-enchantment-item:
-  material: ENCHANTED_BOOK
-  name: '{name}'
-  lore:
-    - '{level-descriptions}'
-    - ' '
-    - '{lang:enchantment-menu-key}'
-    - '{lang:enchantment-menu-max-level}'
-    - '{lang:enchantment-menu-rarity}'
-    - '{lang:enchantment-menu-weight}'
-    - '{lang:enchantment-menu-supported-items}'
-    - '{lang:enchantment-menu-exclusive-with}'
+contents:
+  Q:
+    type: enchantment
+    use-enchantment-icon: true
+    item:
+      name: '{name}'
+      lore:
+        - '{level-descriptions}'
+        - ' '
+        - '{lang:enchantment-menu-key}'
+        - '{lang:enchantment-menu-max-level}'
+        - '{lang:enchantment-menu-rarity}'
+        - '{lang:enchantment-menu-weight}'
+        - '{lang:enchantment-menu-supported-items}'
+        - '{lang:enchantment-menu-exclusive-with}'
 
-buttons:
+items:
   F:
     material: BLACK_STAINED_GLASS_PANE
     name: ' '

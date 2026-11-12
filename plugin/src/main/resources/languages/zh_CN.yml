@@ -75,7 +75,7 @@ override-lang:
   skill-source-enchanting-grind_equipment-desc: '通过砂轮处理获得技能经验。'
   skill-source-mining-craft_tools: '合成工具'
   skill-source-mining-craft_tools-desc: '通过合成工具获得技能经验。'
-  enchantment-fertilizer_saver-name: '&a节肥'
+  enchantment-fertilizer_saver-name: '节肥'
   enchantment-fertilizer_saver-description: '&7副手持有此锄头并用骨粉成功施肥时，每级有 10% 概率返还本次骨粉。'
   menu-back-main: '&b返回主菜单'
   attribute-current-effect: '&f当前效果'

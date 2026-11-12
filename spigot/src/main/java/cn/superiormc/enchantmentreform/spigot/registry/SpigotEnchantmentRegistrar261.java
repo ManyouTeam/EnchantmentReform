@@ -1,5 +1,7 @@
 package cn.superiormc.enchantmentreform.spigot.registry;
 
+import cn.superiormc.enchantmentreform.utils.CommonUtil;
+import cn.superiormc.enchantmentreform.utils.ItemUtil;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomEnchantment;
 import cn.superiormc.enchantmentreform.nms.NmsLog;
 import org.bukkit.Bukkit;
@@ -371,7 +373,7 @@ public final class SpigotEnchantmentRegistrar261 {
             ConfigurationSection rarities = root == null
                     ? null
                     : root.getConfigurationSection("rarity");
-            ConfigurationSection rarity = findSectionIgnoreCase(
+            ConfigurationSection rarity = CommonUtil.findSectionIgnoreCase(
                     rarities,
                     definition.getRarity());
             if (rarity == null) {
@@ -543,10 +545,10 @@ public final class SpigotEnchantmentRegistrar261 {
                     }
                     String configuredKey = section.getString("key", logicalName);
                     customTags.put(
-                            normalizeKey(configuredKey, "enchantmentreform"),
+                            ItemUtil.normalizeItemTag(configuredKey),
                             section);
                     customTags.putIfAbsent(
-                            normalizeKey(logicalName, "enchantmentreform"),
+                            ItemUtil.normalizeItemTag(logicalName),
                             section);
                 }
             }
@@ -556,9 +558,7 @@ public final class SpigotEnchantmentRegistrar261 {
                 if (configured == null || configured.isBlank()) {
                     return List.of();
                 }
-                return resolveTag(normalizeKey(
-                        stripTagPrefix(configured),
-                        "enchantmentreform"));
+                return resolveTag(ItemUtil.normalizeItemTag(configured));
             }
 
             private List<Object> resolveTag(String tag)
@@ -587,9 +587,7 @@ public final class SpigotEnchantmentRegistrar261 {
                     } else {
                         for (String value : custom.getStringList("values")) {
                             if (value.startsWith("#")) {
-                                holders.addAll(resolveTag(normalizeKey(
-                                        value.substring(1),
-                                        "enchantmentreform")));
+                                holders.addAll(resolveTag(ItemUtil.normalizeItemTag(value.substring(1))));
                             } else {
                                 String normalized = normalizeKey(value, "minecraft");
                                 if (!normalized.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
@@ -684,24 +682,6 @@ public final class SpigotEnchantmentRegistrar261 {
         return value instanceof Optional<?> optional ? optional.orElse(null) : value;
     }
 
-    private static ConfigurationSection findSectionIgnoreCase(
-            ConfigurationSection parent,
-            String name) {
-        if (parent == null || name == null) {
-            return null;
-        }
-        ConfigurationSection direct = parent.getConfigurationSection(name);
-        if (direct != null) {
-            return direct;
-        }
-        for (String key : parent.getKeys(false)) {
-            if (key.equalsIgnoreCase(name)) {
-                return parent.getConfigurationSection(key);
-            }
-        }
-        return null;
-    }
-
     private static String normalizeKey(String value, String defaultNamespace) {
         String normalized = value == null
                 ? ""
@@ -709,12 +689,6 @@ public final class SpigotEnchantmentRegistrar261 {
         return normalized.indexOf(':') >= 0
                 ? normalized
                 : defaultNamespace + ':' + normalized;
-    }
-
-    private static String stripTagPrefix(String value) {
-        return value != null && value.startsWith("#")
-                ? value.substring(1)
-                : value;
     }
 
     private static Object construct(Class<?> type, Object... args)

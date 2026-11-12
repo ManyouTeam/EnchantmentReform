@@ -106,7 +106,11 @@ The layout follows EnchantmentSlots' item-lore configuration without any slot fi
 
 When EnchantmentSlots is detected, Item Display is disabled by default because both features can add enchantment lore. EnchantmentReform logs this conflict once; set `force-enabled: true` only when both display paths are intentionally required.
 
-Item Display always sorts its supported enchantments with EnchantmentReform's rarity, weight, and namespaced-key comparator. `lore-prefix` marks generated client lore so `remove-lore-first` can prevent duplicate packet transformations. When `{enchants}` produces content, the outgoing copy hides the vanilla enchantment tooltip. `black-item` accepts normal MatchItemFormat rules, and `at-first-or-last: true` places the configured block before existing lore. Configuration reload updates the display and packet-listener priority. If MythicChanger also applies its rule as a fake change, disable one display path to avoid duplicate descriptions.
+Item Display sorts enchantments using `tooltip-order` in `config.yml`. Showing `{enchants}` hides the vanilla enchantment tooltip.
+
+`lore-prefix` identifies description lines added by the plugin. `remove-lore-first` removes those lines before adding new ones to prevent duplicates. Use MatchItemFormat rules in `black-item` to exclude items. Set `at-first-or-last: true` to place descriptions before existing lore. Reload after making changes.
+
+If MythicChanger also adds enchantment descriptions through Fake Change, disable one of the two displays to avoid duplicates.
 
 ## MythicChanger
 

@@ -82,18 +82,41 @@ On Paper, setting `bypass-enchantment-level-limit` to `true` allows an anvil to 
 
 ### `tooltip-order`
 
-Controls vanilla tooltip order and compatible EnchantmentSlots lore order. Rarities are sorted by `rarity-sort-rule`; enchantments inside a rarity are sorted by weight and key.
+Sets the order of enchantments in item tooltips and EnchantmentSlots descriptions.
+
+| Option | Description |
+| --- | --- |
+| `enabled` | Defaults to `true`, enabling sorting. Item Display always uses this order. |
+| `rarity-sort-rule` | Rarities appear from top to bottom. Unlisted rarities follow, sorted by rarity name. An empty list sorts all rarities by name. |
+| `weight-order` | Defaults to `DESCENDING`, with higher weight first. `ASCENDING` puts lower weight first; `DISABLED` ignores weight. |
+
+Sort priority: rarity → `order` from lowest to highest → weight → full enchantment key.
+
+The catalogue has its own sorting options in `menus/enchantment-info.yml`.
 
 ### `rarity`
 
 Each rarity can provide defaults for:
 
 - display name and color prefix/suffix;
+- default catalogue `icon`;
 - selection weight;
 - anvil cost;
 - minimum and maximum enchanting cost formulas;
 - curse state;
 - rarity-specific trade behavior.
+
+For example, set a default icon for `RARE` enchantments:
+
+```yaml
+rarity:
+  RARE:
+    icon:
+      material: ENCHANTED_BOOK
+      custom-model-data: 123
+```
+
+An enchantment's own `icon` can override these fields.
 
 An enchantment file may override supported registry fields locally.
 

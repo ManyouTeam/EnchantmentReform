@@ -1,12 +1,6 @@
 # 📄 附魔配置
 
 {% hint style="info" %}
-## 想在物品 Lore 中显示附魔描述？
-
-请使用 [EnchantmentSlots](https://www.spigotmc.org/resources/enchantmentslots-add-enchantment-slot-feature-to-your-server-1-20-5.113048/)。
-{% endhint %}
-
-{% hint style="info" %}
 ## 想让生物也能使用附魔？
 
 由于同一套附魔同时作用于生物和玩家时可能不够可靠，此功能已拆分至 [EnchantedMobs](https://www.spigotmc.org/resources/enchantedmobs-dynamic-mob-abilities-and-player-scaling-difficulty-61-built-in-power-1-21-3.133242/)。
@@ -167,6 +161,28 @@ max-level: 5
 修改注册表字段后必须完整重启服务器。请确保这些字段有效，否则服务端可能在加载附魔注册表时启动失败。
 
 `exclusive-with: '*'` 表示与所有其他已注册附魔互斥，包括原版附魔、本插件附魔及其他插件注册的附魔；不包含自身，因此不影响同种附魔合级。也支持列表写法 `exclusive-with: ['*']`。`*` 必须加引号；列表中包含 `*` 时，无需再列出其他互斥项。
+
+## 显示设置
+
+这些选项可写在自定义附魔和原版附魔覆盖配置中。
+
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `order` | `1000` | 显示顺序，值越小越靠前；启用稀有度分组时，在同组内排序。用于图鉴和物品上的附魔提示。 |
+| `show-in-enchantment-gui` | `true` | 是否在附魔图鉴中显示。设为 `false` 不会禁用附魔。 |
+| `icon` | 使用稀有度图标 | 图鉴图标，支持 ItemFormat。 |
+
+```yaml
+order: 10
+show-in-enchantment-gui: true
+icon:
+  material: ENCHANTED_BOOK
+  custom-model-data: 123
+```
+
+图标先读取 `config.yml` 中的 `rarity.<稀有度>.icon`，再使用附魔自己的 `icon`，最后应用菜单的 `contents.<字符>.item`。同名选项以后面的为准。都未配置时显示附魔书。
+
+要保留每个附魔的图标，菜单模板中不要固定 `material`。
 
 ## 运行时字段
 

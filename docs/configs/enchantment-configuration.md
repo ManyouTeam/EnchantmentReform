@@ -1,12 +1,6 @@
 # 📄 Enchantments
 
 {% hint style="info" %}
-## Want to display enchantment description in my lore?
-
-Go to [EnchantmentSlots](https://www.spigotmc.org/resources/enchantmentslots-add-enchantment-slot-feature-to-your-server-1-20-5.113048/).
-{% endhint %}
-
-{% hint style="info" %}
 ## Want mob to be able to use enchantments as well?
 
 Because it is somewhat unreliable for enchantments to work on both mobs and players simultaneously, this function has been separated into [EnchantedMobs](https://www.spigotmc.org/resources/enchantedmobs-dynamic-mob-abilities-and-player-scaling-difficulty-61-built-in-power-1-21-3.133242/).
@@ -167,6 +161,28 @@ Read [Vanilla Enchantment Overrides](vanilla-enchantment-overrides.md) before ch
 Registry fields require a full restart after changes. Ensure these fields are valid, otherwise the server may fail while loading the enchantment registry.
 
 Use `exclusive-with: '*'` to conflict with every other registered enchantment, including vanilla enchantments, this plugin's enchantments, and enchantments registered by other plugins. The enchantment itself is excluded, so combining levels of the same enchantment remains possible. The list form `exclusive-with: ['*']` is also supported. Quote `*`; when it appears in a list, other conflict entries are redundant.
+
+## Display settings
+
+These options work in both custom enchantment files and vanilla override files.
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `order` | `1000` | Display order, with lower values first. When rarity grouping is enabled, applies within each rarity. Used by the catalogue and item tooltips. |
+| `show-in-enchantment-gui` | `true` | Show the enchantment in the catalogue. Setting it to `false` does not disable the enchantment. |
+| `icon` | Rarity icon | Catalogue icon using ItemFormat. |
+
+```yaml
+order: 10
+show-in-enchantment-gui: true
+icon:
+  material: ENCHANTED_BOOK
+  custom-model-data: 123
+```
+
+Icons start with `rarity.<rarity>.icon` in `config.yml`. The enchantment's own `icon` overrides those fields, then the menu's `contents.<character>.item` is applied. Without an icon, the catalogue shows an enchanted book.
+
+Omit `material` from the menu template to keep each enchantment's own icon.
 
 ## Runtime fields
 

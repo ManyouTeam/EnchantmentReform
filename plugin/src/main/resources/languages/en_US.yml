@@ -75,7 +75,7 @@ override-lang:
   skill-source-enchanting-grind_equipment-desc: 'Gain enchanting XP from use a grindstone.'
   skill-source-mining-craft_tools: 'Craft tools'
   skill-source-mining-craft_tools-desc: 'Gain mining XP from craft tools.'
-  enchantment-fertilizer_saver-name: '&aFertilizer Saver'
+  enchantment-fertilizer_saver-name: 'Fertilizer Saver'
   enchantment-fertilizer_saver-description: '&7Hold this hoe in your off hand: successful fertilization has a 10% chance per level to refund the bone meal.'
   menu-back-main: '&bBack to Main Menu'
   attribute-current-effect: '&fCurrent Effect'

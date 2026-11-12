@@ -8,6 +8,7 @@
 
 ```yaml
 enabled: true
+show-in-skill-gui: true
 order: 3
 name: '&b采矿'
 description: '&7挖掘天然方块获得经验。'
@@ -16,6 +17,13 @@ experience-formula: '100 * {level} * {level}'
 icon:
   material: IRON_PICKAXE
 ```
+
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `order` | `1000` | 技能列表中的顺序，值越小越靠前；相同值按技能 ID 排序。 |
+| `show-in-skill-gui` | `true` | 是否在技能总览中显示。隐藏后仍可获得经验和奖励。 |
+
+菜单的 `include`、`exclude` 可进一步筛选技能，但不能显示已隐藏的技能。
 
 `experience-formula` 计算升到下一级需要的经验。`{level}` 是将要达到的等级，`{current_level}` 是当前等级，并支持插件的数学计算格式。
 

@@ -6,7 +6,6 @@ import cn.superiormc.enchantmentreform.gui.action.GUIActionContext;
 import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
-import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttributeModifier;
 import cn.superiormc.enchantmentreform.objects.buttons.ObjectButton;
@@ -20,9 +19,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -227,7 +223,7 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
         if (modifiers.isEmpty()) {
             ConfigurationSection empty = config.getConfigurationSection("no-modifiers-item");
             if (empty != null) {
-                setItem(modifierSlots.get(0), buildItem(empty, baseArgs));
+                setItem(modifierSlots.getFirst(), buildItem(empty, baseArgs));
             }
             return;
         }
@@ -318,19 +314,5 @@ public final class AttributeDetailGUI extends InvGUI implements GUIPageControlle
                 "points", String.valueOf(SkillManager.skillManager.getAttributePoints(player))));
     }
 
-    private ItemStack buildItem(ConfigurationSection section, String[] args) {
-        ItemStack item = BuildItem.buildItemStack(player, section, args);
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return item;
-        }
-        List<String> lore = wrapLore(CommonUtil.modifyList(
-                player, section.getStringList("lore"), args));
-        EnchantmentReform.methodUtil.setItemLore(meta, lore, player);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
-                ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-        item.setItemMeta(meta);
-        return item;
-    }
 
 }

@@ -265,12 +265,11 @@ public final class EnchantmentDescriptionRenderer {
     private static void sort(List<DescriptionEntry> entries, boolean alwaysSort) {
         ConfigManager config = ConfigManager.configManager;
         ConfigurationSection tooltip = config == null ? null : config.getSection("tooltip-order");
-        if (!alwaysSort && !EnchantmentOrderUtil.isEnabled(tooltip)) {
+        if (!alwaysSort && config != null && !config.getBoolean("tooltip-order.enabled", true)) {
             return;
         }
-        ConfigurationSection rarities = config == null ? null : config.getRarities();
         Comparator<PowerEnchantmentDefinition> comparator =
-                EnchantmentOrderUtil.comparator(rarities, tooltip);
+                EnchantmentOrderUtil.comparator(tooltip);
         entries.sort(Comparator.comparing(DescriptionEntry::definition, comparator));
     }
 

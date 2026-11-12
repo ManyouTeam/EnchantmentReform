@@ -141,11 +141,6 @@ public class ConfigManager extends AbstractManager {
                 ObjectMenu menu = switch (id) {
                     case "skill-detail" -> new ObjectSkillMenu(id, section);
                     case "attribute-detail" -> new ObjectAttributeMenu(id, section);
-                    case "enchantment-info" -> {
-                        ObjectMenu enchantmentMenu = new ObjectMenu(id, section, "buttons", false);
-                        enchantmentMenu.initMenu();
-                        yield enchantmentMenu;
-                    }
                     default -> new ObjectMenu(id, section);
                 };
                 if (menuConfigs.putIfAbsent(id, menu) != null) {

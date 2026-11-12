@@ -38,7 +38,6 @@ public final class EnchantmentReformBootstrap implements PluginBootstrap {
                 context,
                 manager.getEnchantments(),
                 manager.getVanillaEnchantments(),
-                raritySettings,
                 tooltipOrderSettings);
     }
 }

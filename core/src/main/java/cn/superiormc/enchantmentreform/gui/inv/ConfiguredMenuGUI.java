@@ -7,7 +7,6 @@ import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
-import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
 import cn.superiormc.enchantmentreform.objects.buttons.ObjectButton;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectMenu;
@@ -20,9 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -154,6 +151,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         List<String> include = normalizedList(content, "include");
         List<String> exclude = normalizedList(content, "exclude");
         return SkillManager.skillManager.getSkills().stream()
+                .filter(skill -> skill.settings().getBoolean("show-in-skill-gui", true))
                 .filter(skill -> include.isEmpty() || include.contains(skill.id()))
                 .filter(skill -> !exclude.contains(skill.id()))
                 .sorted(Comparator.comparingInt(SkillDefinition::order)
@@ -178,7 +176,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                     case "skill" -> attribute.isShownInSkillMenu(skill);
                     default -> true;
                 })
-                .sorted(Comparator.comparing(ObjectCustomAttribute::getId))
+                .sorted(Comparator.comparingInt(ObjectCustomAttribute::getOrder)
+                        .thenComparing(ObjectCustomAttribute::getId))
                 .map(attribute -> new MenuEntry(null, attribute, content)).toList();
     }
 
@@ -262,44 +261,6 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 ? attribute.getConfig().getConfigurationSection("icon") : null;
         return buildTemplatedItem(icon, content.getConfigurationSection("item"),
                 Material.NETHER_STAR, args);
-    }
-
-    private ItemStack buildTemplatedItem(ConfigurationSection base,
-                                         ConfigurationSection template,
-                                         Material fallback, String[] args) {
-        ItemStack item = base == null ? new ItemStack(fallback)
-                : BuildItem.buildItemStack(player, base, args);
-        if (template == null) {
-            return item;
-        }
-        ConfigurationSection materialSource = template.contains("material") ? template : null;
-        if (materialSource != null) {
-            item = BuildItem.buildItemStack(player, template, args);
-        }
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            EnchantmentReform.methodUtil.setItemName(meta, CommonUtil.modifyString(player,
-                    template.getString("name", "&f{name}"), args), player);
-            EnchantmentReform.methodUtil.setItemLore(meta,
-                    wrapLore(CommonUtil.modifyList(player, template.getStringList("lore"), args)), player);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
-                    ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
-
-    private ItemStack buildItem(ConfigurationSection section, String[] args) {
-        ItemStack item = BuildItem.buildItemStack(player, section, args);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && !section.getStringList("lore").isEmpty()) {
-            EnchantmentReform.methodUtil.setItemLore(meta,
-                    wrapLore(CommonUtil.modifyList(player, section.getStringList("lore"), args)), player);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
-                    ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 
     private String[] baseArgs() {

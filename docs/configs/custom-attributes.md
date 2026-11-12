@@ -4,6 +4,7 @@ Every `.yml` file directly under `plugins/EnchantmentReform/attributes` defines 
 
 ```yaml
 enabled: true
+order: 1000
 name: '&cPower Training'
 description: '&8Adds &a{bonus_damage} &8attack damage.'
 
@@ -61,6 +62,7 @@ The top-level `icon` is an optional menu icon using the standard item configurat
 | Field                         | Default         | Description                                                                                                                                                             |
 | ----------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `enabled` | `true` | Whether this attribute is loaded. When false, it is unavailable in menus, commands, and powers. |
+| `order` | `1000` | Menu position: lower values come first, with ties sorted by attribute ID. Also applies to attributes in skill details. |
 | `name`                        | file ID         | Display name; supports `{lang:...}`.                                                                                                                                    |
 | `icon` | none | Optional menu icon using the standard item configuration format. Used by free-menu attribute content with `use-attribute-icon` enabled; the menu's `item.material` can override it. |
 | `description`                 | none            | Optional description; supports `{lang:...}`, `{level}`, and entries from `variables`. In descriptions, `{level}` is the viewing player's current final attribute value. |

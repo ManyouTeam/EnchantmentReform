@@ -82,18 +82,41 @@ anvil:
 
 ### `tooltip-order`
 
-控制原版附魔提示文本的排序，以及兼容的 EnchantmentSlots Lore 排序。不同稀有度按照 `rarity-sort-rule` 排序；同一稀有度中的附魔按照权重和键排序。
+设置物品上附魔提示和 EnchantmentSlots 附魔描述的排列顺序。
+
+| 配置项 | 说明 |
+| --- | --- |
+| `enabled` | 默认 `true`，启用排序。Item Display 始终使用这套顺序。 |
+| `rarity-sort-rule` | 稀有度从上往下排列。未列出的排在后面，按稀有度名称排序；列表为空时全部按稀有度名称排序。 |
+| `weight-order` | 默认 `DESCENDING`，权重大的在前；`ASCENDING` 为权重小的在前；`DISABLED` 不按权重排序。 |
+
+排序顺序为：稀有度 → `order` 从小到大 → 权重 → 完整附魔 key。
+
+图鉴的排序在 `menus/enchantment-info.yml` 中单独设置。
 
 ### `rarity`
 
 每个稀有度都可以提供以下默认值：
 
 - 显示名称和颜色前缀、后缀；
+- 图鉴默认图标 `icon`；
 - 选取权重；
 - 铁砧费用；
 - 最低和最高附魔费用公式；
 - 是否为诅咒；
 - 此稀有度对应的交易行为。
+
+例如，为 `RARE` 附魔设置默认图标：
+
+```yaml
+rarity:
+  RARE:
+    icon:
+      material: ENCHANTED_BOOK
+      custom-model-data: 123
+```
+
+附魔自己的 `icon` 可以覆盖这些选项。
 
 单个附魔文件可以在本地覆盖受支持的注册表字段。
 

@@ -96,6 +96,10 @@ public final class ObjectCustomAttribute extends AbstractPowerSourceDefinition {
         return id;
     }
 
+    public int getOrder() {
+        return config.getInt("order", 1000);
+    }
+
     /** Raw configured name before resolving language placeholders. */
     public String getName() {
         return name;

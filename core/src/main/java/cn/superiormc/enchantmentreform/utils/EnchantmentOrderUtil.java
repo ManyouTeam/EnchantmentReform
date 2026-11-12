@@ -8,65 +8,59 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 public final class EnchantmentOrderUtil {
-
-    private static final String DESCENDING = "DESCENDING";
 
     private EnchantmentOrderUtil() {
     }
 
-    public static boolean isEnabled(ConfigurationSection settings) {
-        return settings == null || settings.getBoolean("enabled", true);
+    public static Comparator<PowerEnchantmentDefinition> comparator(
+            ConfigurationSection sortSettings) {
+        return comparator(sortSettings,
+                PowerEnchantmentDefinition::getRarity,
+                PowerEnchantmentDefinition::getOrder,
+                PowerEnchantmentDefinition::getWeight,
+                definition -> definition.getKey().asString());
     }
 
-    public static Comparator<PowerEnchantmentDefinition> comparator(
-            ConfigurationSection raritySettings,
-            ConfigurationSection tooltipSettings) {
-        boolean weightDescending = readWeightDirection(tooltipSettings).equals(DESCENDING);
-
-        Comparator<PowerEnchantmentDefinition> weightComparator =
-                Comparator.comparingInt(PowerEnchantmentDefinition::getWeight);
-        if (weightDescending) {
-            weightComparator = weightComparator.reversed();
+    public static <T> Comparator<T> comparator(
+            ConfigurationSection sortSettings,
+            Function<T, String> rarity,
+            ToIntFunction<T> order,
+            ToIntFunction<T> weight,
+            Function<T, String> key) {
+        Comparator<T> result = Comparator.comparing(rarity, rarityComparator(sortSettings))
+                .thenComparingInt(order);
+        String weightDirection = readWeightDirection(sortSettings);
+        if (!weightDirection.equals("DISABLED")) {
+            Comparator<T> weightComparator = Comparator.comparingInt(weight);
+            if (weightDirection.equals("DESCENDING")) {
+                weightComparator = weightComparator.reversed();
+            }
+            result = result.thenComparing(weightComparator);
         }
-
-        return Comparator
-                .comparing(PowerEnchantmentDefinition::getRarity,
-                        rarityComparator(raritySettings, tooltipSettings))
-                .thenComparing(weightComparator)
-                .thenComparing(definition -> definition.getKey().asString());
+        return result.thenComparing(key);
     }
 
     public static Comparator<String> rarityComparator(
-            ConfigurationSection raritySettings,
             ConfigurationSection sortSettings) {
-        Map<String, Integer> rarityRanks = createRarityRanks(
-                raritySettings, sortSettings);
+        Map<String, Integer> rarityRanks = createRarityRanks(sortSettings);
         return Comparator
                 .comparingInt((String rarity) -> rarityRank(rarity, rarityRanks))
                 .thenComparing(String.CASE_INSENSITIVE_ORDER);
     }
 
     private static Map<String, Integer> createRarityRanks(
-            ConfigurationSection raritySettings,
             ConfigurationSection sortSettings) {
         List<String> configuredOrder = sortSettings == null
                 ? List.of()
                 : sortSettings.getStringList("rarity-sort-rule");
         Map<String, Integer> result = new LinkedHashMap<>();
 
-        if (!configuredOrder.isEmpty()) {
-            for (String rarity : configuredOrder) {
-                addRarity(result, rarity);
-            }
-            return result;
-        }
-
-        if (raritySettings != null) {
-            for (String rarity : raritySettings.getKeys(false)) {
-                addRarity(result, rarity);
-            }
+        for (String rarity : configuredOrder) {
+            addRarity(result, rarity);
         }
         return result;
     }
@@ -86,18 +80,14 @@ public final class EnchantmentOrderUtil {
     }
 
     private static String readWeightDirection(ConfigurationSection settings) {
-        String configured = settings == null
-                ? DESCENDING
-                : settings.getString("weight-order", DESCENDING);
-        String normalized = configured == null
-                ? DESCENDING
-                : configured.strip().toUpperCase(Locale.ROOT);
-
+        String configured = settings == null ? "DESCENDING" : settings.getString("weight-order", "DESCENDING");
+        String normalized = configured == null ? "DESCENDING" : configured.strip().toUpperCase(Locale.ROOT);
         return switch (normalized) {
             case "ASC", "ASCENDING" -> "ASCENDING";
-            case "DESC", DESCENDING -> DESCENDING;
+            case "DESC", "DESCENDING" -> "DESCENDING";
+            case "DISABLED" -> "DISABLED";
             default -> throw new IllegalArgumentException(
-                    "tooltip-order.weight-order must be ASCENDING or DESCENDING");
+                    "weight-order must be ASCENDING, DESCENDING or DISABLED");
         };
     }
 }

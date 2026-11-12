@@ -106,7 +106,11 @@ enchantment-description:
 
 检测到 EnchantmentSlots 时，Item Display 默认会停用，因为两个功能都可能添加附魔 Lore。EnchantmentReform 只会在控制台提示一次；只有明确需要同时显示时，才将 `force-enabled: true`。
 
-Item Display 始终按照 EnchantmentReform 的稀有度、权重和 NamespacedKey 比较器排列受支持附魔。`lore-prefix` 标记客户端生成的 Lore，`remove-lore-first` 据此避免数据包被重复转换。`{enchants}` 生成内容后，客户端副本会隐藏原版附魔提示。`black-item` 支持普通 MatchItemFormat 规则，`at-first-or-last: true` 会把配置区块放到原 Lore 前方。重载配置会更新显示设置和数据包监听优先级。如果 MythicChanger 也通过规则执行 Fake Change，请关闭其中一种显示途径，避免重复介绍。
+Item Display 按 `config.yml` 的 `tooltip-order` 排列附魔。显示 `{enchants}` 时会隐藏原版附魔提示。
+
+`lore-prefix` 用于识别插件添加的描述行，`remove-lore-first` 用于先清理这些行，避免重复显示。`black-item` 使用 MatchItemFormat 排除物品；`at-first-or-last: true` 会把描述放在原有 Lore 前面。修改后重载即可生效。
+
+如果 MythicChanger 也在通过 Fake Change 添加附魔描述，关闭其中一处，避免重复。
 
 ## MythicChanger
 

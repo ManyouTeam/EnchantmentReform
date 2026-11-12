@@ -1,5 +1,6 @@
 package cn.superiormc.enchantmentreform.objects;
 
+import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Locale;
@@ -15,10 +16,10 @@ public record EnchantmentRarity(String id,
         String id = configuredRarity == null || configuredRarity.isBlank()
                 ? "COMMON"
                 : configuredRarity.strip().toUpperCase(Locale.ROOT).replace('-', '_');
-        ConfigurationSection section = findSection(raritySettings, id);
+        ConfigurationSection section = CommonUtil.findSectionIgnoreCase(raritySettings, id);
         if (section == null) {
             id = "COMMON";
-            section = findSection(raritySettings, id);
+            section = CommonUtil.findSectionIgnoreCase(raritySettings, id);
         }
         String prefix = section == null
                 ? ""
@@ -36,19 +37,5 @@ public record EnchantmentRarity(String id,
         return settings == null ? defaultValue : settings.getInt(path, defaultValue);
     }
 
-    private static ConfigurationSection findSection(ConfigurationSection settings, String rarity) {
-        if (settings == null) {
-            return null;
-        }
-        ConfigurationSection direct = settings.getConfigurationSection(rarity);
-        if (direct != null) {
-            return direct;
-        }
-        for (String key : settings.getKeys(false)) {
-            if (key.equalsIgnoreCase(rarity)) {
-                return settings.getConfigurationSection(key);
-            }
-        }
-        return null;
-    }
+
 }

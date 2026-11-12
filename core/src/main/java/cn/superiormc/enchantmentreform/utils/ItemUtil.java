@@ -10,8 +10,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.util.Map;
+import java.util.Locale;
 
 public class ItemUtil {
+
+    public static String normalizeItemTag(String value) {
+        String normalized = value == null ? "" : value.strip().toLowerCase(Locale.ROOT);
+        if (normalized.startsWith("#")) {
+            normalized = normalized.substring(1);
+        }
+        return normalized.contains(":") ? normalized : "enchantmentreform:" + normalized;
+    }
 
     public static ItemStack generateEnchantedBook(Enchantment enchantment, int level) {
         ItemStack enchantedBook = new ItemStack(Material.ENCHANTED_BOOK);

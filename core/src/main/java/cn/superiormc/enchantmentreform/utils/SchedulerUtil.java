@@ -1,6 +1,7 @@
 package cn.superiormc.enchantmentreform.utils;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -10,27 +11,29 @@ import java.util.concurrent.TimeUnit;
 
 public class SchedulerUtil {
 
-    private final Object task;
+    private final ScheduledTask scheduledTask;
+
+    private final BukkitTask bukkitTask;
 
     public SchedulerUtil(BukkitTask task) {
-        this.task = task;
+        this.bukkitTask = task;
+        this.scheduledTask = null;
     }
 
-    public SchedulerUtil(Object task) {
-        this.task = task;
+    public SchedulerUtil(ScheduledTask task) {
+        this.scheduledTask = task;
+        this.bukkitTask = null;
     }
 
     public void cancel() {
-        if (task == null) {
-            return;
-        }
-        if (task instanceof BukkitTask bukkitTask) {
-            bukkitTask.cancel();
-            return;
-        }
-        try {
-            task.getClass().getMethod("cancel").invoke(task);
-        } catch (ReflectiveOperationException ignored) {
+        if (EnchantmentReform.isFolia) {
+            if (scheduledTask != null) {
+                scheduledTask.cancel();
+            }
+        } else {
+            if (bukkitTask != null) {
+                bukkitTask.cancel();
+            }
         }
     }
 

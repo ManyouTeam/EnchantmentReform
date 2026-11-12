@@ -117,37 +117,63 @@ Actual prices, allocation maximums, and requirements come from the `allocation` 
 
 ## `enchantment-info.yml`: enchantment catalogue
 
-The catalogue uses a dedicated format instead of `contents` and `items`.
+Characters in `layout` refer to `contents` or `items`. Use `contents` for enchantment lists and `items` for buttons. The examples below use `Q` for enchantment slots.
 
-| Option | Purpose |
+| Option | Description |
 | --- | --- |
-| `title` | Catalogue title. Supports `{page}` and `{pages}`. |
-| `size` | Inventory size, default `54`. It should match the layout and be a multiple of nine. |
-| `enchantment-symbol` | Character used for enchantment entries in `layout`; default `E`. |
-| `description-max-lines` | Maximum rendered description lines per group; default `20`. Counts lines after `enchantment-description.wrap-length` wrapping. Zero or negative values disable description paging. |
-| `description-page-format` | Page and click hint appended when several description groups exist; defaults to `{lang:enchantment-menu-description-page}`. Leave empty to hide it. |
-| `rarity-sort-rule` | Rarity order. Unlisted rarities follow listed entries and are then sorted by name. |
-| `layout` | Places enchantments and buttons. `.` and spaces are empty; other characters refer to `buttons`. |
-| `enchantment-item` | Item template for every enchantment entry. |
-| `buttons.<character>` | Static button represented by a layout character. Item properties are placed directly in this node. |
-| `buttons.<character>.filter-type` | Turns the button into a `RARITY` or `SUPPORTED_ITEM` filter. Left-click advances and right-click reverses. |
-| `hide-on-first-page` / `hide-on-last-page` | Hides a button on the first or final page. |
-| `hidden-item` | Replacement shown while hidden; omit it to leave the slot empty. |
-| `actions` / `click-actions` | Normal button actions such as `previous_page`, `next_page`, `refresh`, and `close`. |
+| `title` | Menu title. Supports `{page}` and `{pages}`. |
+| `layout` | Nine slots per row, up to six rows. Dots and spaces leave slots empty. |
+| `contents.Q.type` | Set to `enchantment`. |
+| `contents.Q.include` | List of enchantment keys to show. Omit it or leave it empty to allow all. |
+| `contents.Q.exclude` | List of enchantment keys to hide. Exclusions override inclusions. |
+| `contents.Q.use-enchantment-icon` | Defaults to `true`, using rarity and enchantment icons. Set to `false` to start with the default enchanted book. |
+| `contents.Q.item` | Item template for enchantment entries. Supports the placeholders below. |
+| `rarity-sort-rule` | Rarities appear in list order. Unlisted rarities follow, sorted by rarity name. An empty list sorts all rarities by name. |
+| `weight-order` | Defaults to `DISABLED`, ignoring weight. `DESCENDING` puts higher weight first; `ASCENDING` puts lower weight first. |
+| `description-max-lines` | Lines of level descriptions per page; defaults to `20`. Zero or negative values disable description paging. |
+| `description-page-format` | Description page hint. Leave empty to hide it. |
+| `items.<character>.item` | Button item. Item fields can also go directly under `items.<character>`. |
+| `items.<character>.filter-type` | `RARITY` filters by rarity; `SUPPORTED_ITEM` filters by supported items. Left-click advances, right-click goes back. |
+| `hide-on-first-page` / `hide-on-last-page` | Hide a button on the first or last page. |
+| `hidden-item` | Item shown while the button is hidden. Omit it to leave the slot empty. |
+| `actions` / `click-actions` | Click actions for buttons or enchantment entries. |
+
+Use full keys in `include` and `exclude`, such as `minecraft:sharpness`. Matching ignores case. Each content area has its own filters and pages. An enchantment with `show-in-enchantment-gui: false` is hidden from every area.
+
+For example, exclude Curse of Binding:
+
+```yaml
+contents:
+  Q:
+    type: enchantment
+    include: []
+    exclude:
+      - minecraft:binding_curse
+    item:
+      name: '{name}'
+      lore:
+        - '{level-descriptions}'
+```
+
+Default sort priority: rarity → `order` from lowest to highest → full key. Setting `weight-order` to `ASCENDING` or `DESCENDING` compares weight after `order`, before the key. The menu's `rarity-sort-rule` and `weight-order` affect the catalogue. Item tooltips use `tooltip-order` in `config.yml`.
+
+Fields in the menu's `item` override the enchantment icon. Omit `material` here to keep different materials for different enchantments. See [enchantment icon examples](../configs/enchantment-configuration.md#display-settings).
 
 ### Enchantment-entry placeholders
 
-Descriptions are grouped by whole levels. With ten rendered lines per level and a limit of twenty, the initial group shows levels 1–2; clicking the same item with either mouse button shows levels 3–4. After the last group, clicking cycles back to the first. Each enchantment remembers its own group independently. Only the `{level-descriptions}` text counts toward the limit, excluding fixed information and the paging hint. A single level longer than the limit occupies one complete group. Entries enable this feature only when their lore uses `{level-descriptions}`.
+Descriptions are paged only when `item.lore` contains `{level-descriptions}`. The line limit counts wrapped descriptions, excluding fixed lore and the page hint. A level is never split across pages; an oversized level gets a page of its own.
 
-Use these in `enchantment-item`. The `name` field ultimately replaces only `{name}` and `{key}`; place the other placeholders in `lore` or other item fields. `{description}` and `{level-descriptions}` can be empty for vanilla enchantments without a custom description.
+Left-click or right-click an enchantment to see the next description page. The last page loops to the first. Each enchantment remembers its own page.
+
+Use these in `contents.Q.item`. `{description}` and `{level-descriptions}` can be empty for vanilla enchantments without a custom description.
 
 | Placeholder | Meaning |
 | --- | --- |
 | `{name}` | Enchantment display name. |
 | `{description}` | Localized description of a custom enchantment at its maximum level. |
-| `{level-descriptions}` | Complete localized level descriptions in the current group. |
-| `{description_page}` / `{description_pages}` | Current description group and total groups, starting at one and independent of catalogue pages. |
-| `{level_start}` / `{level_end}` | First and last levels shown in this group; also available in `description-page-format`. |
+| `{level-descriptions}` | Level descriptions on the current description page. |
+| `{description_page}` / `{description_pages}` | Current description page and total description pages, starting at one. |
+| `{level_start}` / `{level_end}` | First and last levels on this description page. Also available in `description-page-format`. |
 | `{max_level}` | Maximum enchantment level. |
 | `{rarity}` | Localized rarity name. |
 | `{weight}` | Enchantment selection weight. |
@@ -155,11 +181,11 @@ Use these in `enchantment-item`. The `name` field ultimately replaces only `{nam
 | `{exclusive_with}` | Localized “All” when `exclusive-with` contains `*`; otherwise the names of registered enchantments that conflict in either direction, excluding itself, or localized “None” when empty. Lists use active registry rules, including tags. |
 | `{key}` | Full enchantment key, such as `minecraft:sharpness`. |
 
-Existing menus can show conflicts by adding `- '{lang:enchantment-menu-exclusive-with}'` to `enchantment-item.lore`. The bundled menu includes this line by default.
+Existing menus can show conflicts by adding `- '{lang:enchantment-menu-exclusive-with}'` to `contents.Q.item.lore`. The bundled menu includes this line by default.
 
 ### Catalogue-button placeholders
 
-Use these in `buttons.<character>`. A hidden button's `hidden-item` receives only `{page}`, `{pages}`, and `{amount}`.
+Use these in `items.<character>`. A hidden button's `hidden-item` receives only `{page}`, `{pages}`, and `{amount}`.
 
 | Placeholder | Meaning |
 | --- | --- |

@@ -30,9 +30,8 @@ public final class PaperTooltipOrderTagRegistrar {
     public static void bind(BootstrapContext context,
                             Collection<ObjectCustomEnchantment> customDefinitions,
                             Collection<VanillaEnchantmentOverride> vanillaDefinitions,
-                            ConfigurationSection raritySettings,
                             ConfigurationSection tooltipSettings) {
-        if (!EnchantmentOrderUtil.isEnabled(tooltipSettings)) {
+        if (tooltipSettings != null && !tooltipSettings.getBoolean("enabled", true)) {
             return;
         }
 
@@ -44,7 +43,7 @@ public final class PaperTooltipOrderTagRegistrar {
                         customDefinitions.stream(),
                         vanillaDefinitions.stream())
                 .filter(PowerEnchantmentDefinition::isEnabled)
-                .sorted(EnchantmentOrderUtil.comparator(raritySettings, tooltipSettings))
+                .sorted(EnchantmentOrderUtil.comparator(tooltipSettings))
                 .map(PaperTooltipOrderTagRegistrar::key)
                 .toList();
 

@@ -250,7 +250,8 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
         }
         return AttributeManager.attributeManager.getAttributes().stream()
                 .filter(attribute -> attribute.isShownInSkillMenu(skill.id()))
-                .sorted(Comparator.comparing(ObjectCustomAttribute::getId)).toList();
+                .sorted(Comparator.comparingInt(ObjectCustomAttribute::getOrder)
+                        .thenComparing(ObjectCustomAttribute::getId)).toList();
     }
 
     private ItemStack buildSkillAttributeItem(ObjectCustomAttribute attribute) {
@@ -330,31 +331,36 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
         List<String> lines = new ArrayList<>();
         for (SkillDefinition.SkillReward configured : reward.rewards()) {
             String displayName;
-            if (configured instanceof SkillDefinition.AttributePointsReward pointsReward) {
-                displayName = formatRewardName(pointsReward.displayName(), rewardLevel,
-                        pointsReward.amount(), "");
-            } else if (configured instanceof SkillDefinition.AttributeReward attributeReward) {
-                String attributeName = localizedAttributeName(attributeReward.attribute());
-                displayName = formatRewardName(attributeReward.displayName(), rewardLevel,
-                        attributeReward.amount(), attributeName);
-            } else if (configured instanceof SkillDefinition.AttributesReward attributesReward) {
-                String summary = formatAttributeSummary(attributesReward.attributes());
-                displayName = CommonUtil.modifyString(player, attributesReward.displayName(),
-                        "player", player.getName(), "skill", skill.id(),
-                        "level", String.valueOf(rewardLevel), "attributes", summary);
-            } else if (configured instanceof SkillDefinition.CommandReward commandReward) {
-                displayName = formatRewardName(commandReward.displayName(), rewardLevel, 1, "");
-            } else if (configured instanceof SkillDefinition.ItemReward itemReward) {
-                String[] itemArgs = {"player", player.getName(), "skill", skill.id(),
-                        "level", String.valueOf(rewardLevel)};
-                ItemStack item = BuildItem.buildItemStack(player, itemReward.item(), itemArgs);
-                String itemName = CommonUtil.modifyString(player, itemReward.displayName(),
-                        rewardArgs(rewardLevel, item.getAmount(), ""));
-                displayName = CommonUtil.modifyString(player,
-                        "{lang:skill-reward-default-item}",
-                        "item", itemName, "amount", String.valueOf(item.getAmount()));
-            } else {
-                continue;
+            switch (configured) {
+                case SkillDefinition.AttributePointsReward pointsReward ->
+                        displayName = formatRewardName(pointsReward.displayName(), rewardLevel,
+                                pointsReward.amount(), "");
+                case SkillDefinition.AttributeReward attributeReward -> {
+                    String attributeName = localizedAttributeName(attributeReward.attribute());
+                    displayName = formatRewardName(attributeReward.displayName(), rewardLevel,
+                            attributeReward.amount(), attributeName);
+                }
+                case SkillDefinition.AttributesReward attributesReward -> {
+                    String summary = formatAttributeSummary(attributesReward.attributes());
+                    displayName = CommonUtil.modifyString(player, attributesReward.displayName(),
+                            "player", player.getName(), "skill", skill.id(),
+                            "level", String.valueOf(rewardLevel), "attributes", summary);
+                }
+                case SkillDefinition.CommandReward commandReward ->
+                        displayName = formatRewardName(commandReward.displayName(), rewardLevel, 1, "");
+                case SkillDefinition.ItemReward itemReward -> {
+                    String[] itemArgs = {"player", player.getName(), "skill", skill.id(),
+                            "level", String.valueOf(rewardLevel)};
+                    ItemStack item = BuildItem.buildItemStack(player, itemReward.item(), itemArgs);
+                    String itemName = CommonUtil.modifyString(player, itemReward.displayName(),
+                            rewardArgs(rewardLevel, item.getAmount(), ""));
+                    displayName = CommonUtil.modifyString(player,
+                            "{lang:skill-reward-default-item}",
+                            "item", itemName, "amount", String.valueOf(item.getAmount()));
+                }
+                case null, default -> {
+                    continue;
+                }
             }
             lines.add(CommonUtil.modifyString(player, "{lang:skill-reward-line}",
                     "reward", displayName));
@@ -444,15 +450,5 @@ public final class SkillDetailGUI extends InvGUI implements GUIPageController {
                 "page", String.valueOf(page + 1), "pages", String.valueOf(maximumPage + 1)});
     }
 
-    private ItemStack buildItem(ConfigurationSection section, String[] args) {
-        ItemStack item = BuildItem.buildItemStack(player, section, args);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && !section.getStringList("lore").isEmpty()) {
-            EnchantmentReform.methodUtil.setItemLore(meta,
-                    wrapLore(CommonUtil.modifyList(player, section.getStringList("lore"), args)), player);
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
 
 }

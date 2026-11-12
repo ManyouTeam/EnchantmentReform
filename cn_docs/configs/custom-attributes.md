@@ -4,6 +4,7 @@
 
 ```yaml
 enabled: true
+order: 1000
 name: '&c力量训练'
 description: '&8增加 &a{bonus_damage} &8点攻击伤害。'
 
@@ -61,6 +62,7 @@ powers:
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
 | `enabled` | `true` | 是否加载该属性。设为 false 后，该属性不会出现在菜单、命令补全中，也不会注册或执行其 Power。 |
+| `order` | `1000` | 菜单中的排列顺序，值越小越靠前；相同值按属性 ID 排序。也用于技能详情中的属性列表。 |
 | `name` | 文件 ID | 显示名称，支持 `{lang:...}`。 |
 | `description` | 无 | 可选描述，支持 `{lang:...}`、`{level}` 和 `variables` 中的变量；描述里的 `{level}` 是查看者当前的最终属性值。 |
 | `icon` | 无 | 可选的菜单图标，使用通用物品配置格式。自由菜单的属性内容区启用 `use-attribute-icon` 时使用；菜单的 `item.material` 仍可覆盖该图标。 |

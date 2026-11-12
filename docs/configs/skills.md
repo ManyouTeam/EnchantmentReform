@@ -6,6 +6,7 @@ Each skill is a YAML file in `plugins/EnchantmentReform/skills`; the file name i
 
 ```yaml
 enabled: true
+show-in-skill-gui: true
 order: 3
 name: '&bMining'
 description: '&7Mine natural blocks to gain XP.'
@@ -38,6 +39,13 @@ rewards:
           material: DIAMOND
           amount: 3
 ```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `order` | `1000` | Position in skill lists. Lower values come first; ties use the skill ID. |
+| `show-in-skill-gui` | `true` | Show the skill in overview menus. Hidden skills still earn XP and rewards. |
+
+Menu `include` and `exclude` lists can narrow the selection. They cannot reveal a hidden skill.
 
 `{level}` in the formula is the level being reached and `{current_level}` is the current level. Every entry in a reward list is one independently named reward: `type: attribute-points`, `type: attribute`, `type: attributes`, `type: command`, or `type: item`. Singular `attribute` uses `attribute` plus `amount`; plural `attributes` requires an `attributes` map and exposes its localized summary as `{attributes}`. Attribute rewards change custom-attribute base values. An item entry is itself an ItemFormat section. The S-shaped rewards GUI displays entries in YAML order using `display-name`, similar to AuraSkills/EcoSkills reward lists, instead of fixed category headings. Reward names support `{amount}`, `{attribute}`, `{attributes}`, `{player}`, `{skill}`, and `{level}` where applicable. Rewards are only read from typed `rewards` entries; untyped legacy reward sections are not accepted.
 

@@ -81,7 +81,7 @@ public class EnchantmentReformProvider extends AbstractEnchantHook {
         ConfigurationSection tooltipSettings = configManager == null
                 ? null
                 : configManager.getSection("tooltip-order");
-        if (!EnchantmentOrderUtil.isEnabled(tooltipSettings)) {
+        if (configManager != null && !configManager.getBoolean("tooltip-order.enabled", true)) {
             return new LinkedHashMap<>(source);
         }
 
@@ -98,11 +98,8 @@ public class EnchantmentReformProvider extends AbstractEnchantHook {
             return new LinkedHashMap<>(source);
         }
 
-        ConfigurationSection raritySettings = configManager == null
-                ? null
-                : configManager.getRarities();
         Comparator<PowerEnchantmentDefinition> comparator = EnchantmentOrderUtil.comparator(
-                raritySettings, tooltipSettings);
+                tooltipSettings);
 
         LinkedHashMap<Enchantment, Integer> result = new LinkedHashMap<>();
         configuredEnchantments.entrySet().stream()

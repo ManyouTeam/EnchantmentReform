@@ -1,16 +1,21 @@
 package cn.superiormc.enchantmentreform.gui;
 
+import cn.superiormc.enchantmentreform.EnchantmentReform;
+import cn.superiormc.enchantmentreform.methods.BuildItem;
 import cn.superiormc.enchantmentreform.methods.Dupe;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -69,6 +74,41 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
     public void setItem(int slot, ItemStack item) {
         inv.setItem(slot, Dupe.markGuiDisplayItem(item));
+    }
+
+    protected final ItemStack buildTemplatedItem(ConfigurationSection base, ConfigurationSection template,
+                                                 Material fallback, String[] args) {
+        ItemStack item = base == null ? new ItemStack(fallback) : BuildItem.buildItemStack(player, base, args);
+        if (template == null) {
+            return item;
+        }
+        if (template.contains("material")) {
+            item = BuildItem.buildItemStack(player, template, args);
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            EnchantmentReform.methodUtil.setItemName(meta, CommonUtil.modifyString(player,
+                    template.getString("name", "&f{name}"), args), player);
+            EnchantmentReform.methodUtil.setItemLore(meta,
+                    wrapLore(CommonUtil.modifyList(player, template.getStringList("lore"), args)), player);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
+                    ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    protected final ItemStack buildItem(ConfigurationSection section, String[] args) {
+        ItemStack item = BuildItem.buildItemStack(player, section, args);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && !section.getStringList("lore").isEmpty()) {
+            EnchantmentReform.methodUtil.setItemLore(meta,
+                    wrapLore(CommonUtil.modifyList(player, section.getStringList("lore"), args)), player);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
+                    ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     protected final List<String> wrapLore(List<String> configured) {

@@ -51,6 +51,24 @@ enchantment-description:
         description:
           format: '&7  {enchant_description}'
 
+# Controls vanilla client tooltip and EnchantmentSlots lore order.
+# Rarities are displayed from top to bottom. Rarities omitted from this list are
+# placed after configured rarities. Enchantments with the same rarity are sorted
+# by order (ascending, default 1000), then weight (weight-order), then namespaced key.
+# Enchantment descriptions can be displayed by the built-in client renderer or EnchantmentSlots.
+tooltip-order:
+  enabled: true
+  rarity-sort-rule:
+    - MYTHIC
+    - LEGENDARY
+    - EPIC
+    - RARE
+    - UNCOMMON
+    - COMMON
+    - CURSE
+  # ASCENDING, DESCENDING or DISABLED (skip weight sorting).
+  weight-order: DESCENDING
+
 # Overrides the minecraft:enchantable component when matching items enter a player inventory.
 # Material names may be Bukkit names such as SHIELD or namespaced keys such as minecraft:shield.
 item-enchantability-overrides:
@@ -79,23 +97,6 @@ anvil:
   bypass-enchantment-level-limit: false
   no-max-repair-cost: false
 
-# Controls both the vanilla client tooltip order and EnchantmentSlots lore order.
-# Rarities are displayed from top to bottom. Rarities omitted from this list are
-# placed after configured rarities. Enchantments with the same rarity are sorted
-# by weight, then by namespaced key.
-# Enchantment descriptions can be displayed by the built-in client renderer or EnchantmentSlots.
-tooltip-order:
-  enabled: true
-  rarity-sort-rule:
-    - MYTHIC
-    - LEGENDARY
-    - EPIC
-    - RARE
-    - UNCOMMON
-    - COMMON
-    - CURSE
-  weight-order: DESCENDING
-
 # Enchantments inherit these registry values from their rarity when the same
 # option is omitted from the individual enchantment file.
 #
@@ -109,6 +110,8 @@ tooltip-order:
 # anvil-cost:
 #   Base anvil cost multiplier. The final cost is also affected by the
 #   enchantment level.
+# icon: Optional ItemFormat catalogue icon inherited by enchantments of this rarity.
+# Per-enchantment icon fields override rarity fields; menu item fields override both.
 rarity:
   COMMON:
     display-name: '&<#E5E7EB>{lang:rarity-common}&<#9CA3AF>'

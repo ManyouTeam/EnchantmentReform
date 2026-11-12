@@ -10,16 +10,43 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommonUtil {
+
+    public static ConfigurationSection findSectionIgnoreCase(ConfigurationSection parent, String expected) {
+        if (parent == null || expected == null) {
+            return null;
+        }
+        ConfigurationSection direct = parent.getConfigurationSection(expected);
+        if (direct != null) {
+            return direct;
+        }
+        for (String key : parent.getKeys(false)) {
+            if (key.equalsIgnoreCase(expected)) {
+                return parent.getConfigurationSection(key);
+            }
+        }
+        return null;
+    }
 
     public static Set<String> normalized(List<String> values) {
         Set<String> result = new HashSet<>();

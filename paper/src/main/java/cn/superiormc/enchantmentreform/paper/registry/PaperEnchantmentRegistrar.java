@@ -1,5 +1,6 @@
 package cn.superiormc.enchantmentreform.paper.registry;
 
+import cn.superiormc.enchantmentreform.utils.ItemUtil;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomEnchantment;
 import cn.superiormc.enchantmentreform.objects.PowerEnchantmentDefinition;
 import cn.superiormc.enchantmentreform.objects.VanillaEnchantmentOverride;
@@ -206,7 +207,7 @@ public final class PaperEnchantmentRegistrar {
         for (String id : tags.getKeys(false)) {
             ConfigurationSection definition = tags.getConfigurationSection(id);
             if (definition != null) {
-                String key = normalizeTag(definition.getString("key", id));
+                String key = ItemUtil.normalizeItemTag(definition.getString("key", id));
                 if (key.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
                     definitions.put(key, definition);
                 }
@@ -216,7 +217,7 @@ public final class PaperEnchantmentRegistrar {
             List<TagEntry<ItemType>> values = new ArrayList<>();
             for (String value : entry.getValue().getStringList("values")) {
                 boolean tag = value.startsWith("#");
-                String reference = tag ? normalizeTag(value.substring(1))
+                String reference = tag ? ItemUtil.normalizeItemTag(value.substring(1))
                         : value.contains(":") ? value : "minecraft:" + value;
                 if (!reference.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
                     continue;
@@ -231,11 +232,6 @@ public final class PaperEnchantmentRegistrar {
             }
             registrar.setTag(TagKey.create(RegistryKey.ITEM, Key.key(entry.getKey())), values);
         }
-    }
-
-    private static String normalizeTag(String value) {
-        String normalized = value == null ? "" : value.strip().toLowerCase(Locale.ROOT);
-        return normalized.contains(":") ? normalized : "enchantmentreform:" + normalized;
     }
 
     private static void applyVanillaOverride(

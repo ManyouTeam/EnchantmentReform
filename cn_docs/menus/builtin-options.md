@@ -117,37 +117,63 @@
 
 ## `enchantment-info.yml`：附魔图鉴
 
-附魔图鉴使用专用格式，不使用 `contents` 和 `items`。
+`layout` 中的字符对应 `contents` 或 `items`。`contents` 用来列出附魔，`items` 用来放按钮；下面用 `Q` 表示附魔槽。
 
-| 选项 | 作用 |
+| 配置项 | 说明 |
 | --- | --- |
-| `title` | 图鉴标题，支持 `{page}` 与 `{pages}`。 |
-| `size` | 背包格数，默认 `54`。应与布局行数对应，并为 9 的倍数。 |
-| `enchantment-symbol` | `layout` 中用于放置附魔条目的字符，默认 `E`。 |
-| `description-max-lines` | 每组等级描述的最大显示行数，默认 `20`；按 `enchantment-description.wrap-length` 换行后计数，设为 `0` 或负数关闭描述分页。 |
-| `description-page-format` | 多组描述时自动追加的页码与点击提示，默认 `{lang:enchantment-menu-description-page}`；留空隐藏提示。 |
-| `rarity-sort-rule` | 稀有度排序顺序。未列出的稀有度排在已列出项之后，再按名称排序。 |
-| `layout` | 定义附魔槽和按钮位置。`.` 与空格为空槽，其他字符从 `buttons` 读取。 |
-| `enchantment-item` | 每个附魔条目的物品模板。 |
-| `buttons.<字符>` | 静态按钮定义，字符与 `layout` 对应。物品选项直接写在此节点下。 |
-| `buttons.<字符>.filter-type` | 将按钮设为筛选器。支持 `RARITY` 和 `SUPPORTED_ITEM`；左键切换到下一项，右键切换到上一项。 |
-| `hide-on-first-page` / `hide-on-last-page` | 在第一页或最后一页隐藏按钮。 |
-| `hidden-item` | 按钮隐藏时显示的替代物品；省略时该格为空。 |
-| `actions` / `click-actions` | 普通按钮动作，例如 `previous_page`、`next_page`、`refresh` 和 `close`。 |
+| `title` | 菜单标题，支持 `{page}`、`{pages}`。 |
+| `layout` | 每行 9 格，最多 6 行。`.` 和空格留空。 |
+| `contents.Q.type` | 填写 `enchantment`。 |
+| `contents.Q.include` | 要显示的附魔 key 列表。留空或不写时不限制。 |
+| `contents.Q.exclude` | 要排除的附魔 key 列表。与 `include` 重复时，以排除为准。 |
+| `contents.Q.use-enchantment-icon` | 默认 `true`，使用稀有度和附魔配置中的图标；设为 `false` 时使用默认附魔书。 |
+| `contents.Q.item` | 附魔条目的物品模板，支持下表中的占位符。 |
+| `rarity-sort-rule` | 稀有度按列表顺序排列。未列出的排在后面，按稀有度名称排序；列表为空时全部按稀有度名称排序。 |
+| `weight-order` | 默认 `DISABLED`，不按权重排序。`DESCENDING` 为权重大的在前，`ASCENDING` 为权重小的在前。 |
+| `description-max-lines` | 等级描述每页的行数上限，默认 `20`；设为 `0` 或负数关闭描述分页。 |
+| `description-page-format` | 描述的页码提示，留空不显示。 |
+| `items.<字符>.item` | 按钮物品，也可直接写在 `items.<字符>` 下。 |
+| `items.<字符>.filter-type` | `RARITY` 筛选稀有度，`SUPPORTED_ITEM` 筛选适用物品。左键选下一项，右键选上一项。 |
+| `hide-on-first-page` / `hide-on-last-page` | 在首页或末页隐藏按钮。 |
+| `hidden-item` | 按钮隐藏时显示的物品，不写则留空。 |
+| `actions` / `click-actions` | 按钮或附魔条目的点击动作。 |
+
+`include`、`exclude` 使用完整 key，例如 `minecraft:sharpness`，不区分大小写。多个内容区分别筛选、分页。附魔配置中的 `show-in-enchantment-gui: false` 对所有内容区生效。
+
+例如，排除绑定诅咒：
+
+```yaml
+contents:
+  Q:
+    type: enchantment
+    include: []
+    exclude:
+      - minecraft:binding_curse
+    item:
+      name: '{name}'
+      lore:
+        - '{level-descriptions}'
+```
+
+默认按稀有度 → `order` 从小到大 → 完整 key 排列。将 `weight-order` 改为 `ASCENDING` 或 `DESCENDING` 后，会在 `order` 相同时先比较权重，再比较 key。这里的 `rarity-sort-rule` 和 `weight-order` 只影响图鉴；物品上的附魔提示使用 `config.yml` 的 `tooltip-order`。
+
+菜单 `item` 中写出的选项会覆盖附魔图标。要保留不同附魔的材质，不要在这里固定 `material`。图标示例见[附魔配置](../configs/enchantment-configuration.md#显示设置)。
 
 ### 附魔条目占位符
 
-等级描述按完整等级分组。例如每级显示 10 行、上限为 20 行，首次显示 1–2 级，左键或右键再次点击该物品显示 3–4 级，最后一组之后回到第一组。各附魔分别记住当前组，不会因点击其他附魔而互相影响。上限只计算 `{level-descriptions}` 的描述部分，不包含稀有度等固定信息和翻组提示；单个等级本身超限时完整独占一组。只有 lore 使用 `{level-descriptions}` 的条目才会启用这项功能。
+只有 `item.lore` 含 `{level-descriptions}` 时才会分页。行数按自动换行后的结果计算，不含固定信息和页码提示。一个等级的描述不会拆到两页，单级超限时独占一页。
 
-用于 `enchantment-item`。其中 `name` 字段最终只会替换 `{name}` 和 `{key}`；下表其余占位符应放在 `lore` 等物品字段。原版附魔若没有自定义描述，`{description}` 和 `{level-descriptions}` 可能为空。
+左键或右键点击附魔可查看下一页描述，末页之后回到第一页。每个附魔单独记住页码。
+
+用于 `contents.Q.item`。原版附魔若没有自定义描述，`{description}` 和 `{level-descriptions}` 可能为空。
 
 | 占位符 | 显示内容 |
 | --- | --- |
 | `{name}` | 附魔显示名称。 |
 | `{description}` | 自定义附魔最高等级的本地化描述。 |
-| `{level-descriptions}` | 当前组包含的完整等级描述，按语言文件中的等级描述格式拼接。 |
-| `{description_page}` / `{description_pages}` | 当前描述组及描述总组数，从 1 开始，与图鉴目录页码分别计算。 |
-| `{level_start}` / `{level_end}` | 当前组显示的起始和结束等级。这些变量也可用于 `description-page-format`。 |
+| `{level-descriptions}` | 当前描述页中的各级说明。 |
+| `{description_page}` / `{description_pages}` | 当前描述页码和描述总页数，从 1 开始。 |
+| `{level_start}` / `{level_end}` | 当前描述页的起始和结束等级，也可用于 `description-page-format`。 |
 | `{max_level}` | 附魔最高等级。 |
 | `{rarity}` | 本地化后的稀有度名称。 |
 | `{weight}` | 附魔出现权重。 |
@@ -155,11 +181,11 @@
 | `{exclusive_with}` | `exclusive-with` 包含 `*` 时显示“所有”；否则列出任一方向互斥的已注册附魔名称，不包含自身，没有时显示“无”。列表读取实际生效的注册表规则，包含标签。 |
 | `{key}` | 附魔的完整键，例如 `minecraft:sharpness`。 |
 
-已有菜单可在 `enchantment-item.lore` 中添加 `- '{lang:enchantment-menu-exclusive-with}'` 来显示互斥关系。默认菜单已包含此行。
+已有菜单可在 `contents.Q.item.lore` 中添加 `- '{lang:enchantment-menu-exclusive-with}'` 来显示互斥关系。默认菜单已包含此行。
 
 ### 附魔图鉴按钮占位符
 
-用于 `buttons.<字符>`；隐藏按钮的 `hidden-item` 仅会收到 `{page}`、`{pages}`、`{amount}`。
+用于 `items.<字符>`；隐藏按钮的 `hidden-item` 仅会收到 `{page}`、`{pages}`、`{amount}`。
 
 | 占位符 | 显示内容 |
 | --- | --- |

@@ -261,6 +261,10 @@ public abstract class PowerEnchantmentDefinition extends AbstractPowerSourceDefi
         return key;
     }
 
+    public final int getOrder() {
+        return config.getInt("order", 1000);
+    }
+
     @Override
     public final String powerSourceId() {
         return key.asString();
