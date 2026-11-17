@@ -120,6 +120,7 @@ public final class EnchantmentConfigManager extends AbstractManager {
         }
         infoLogger.accept("Initialized powers for " + vanillaPowerCount
                 + (vanillaPowerCount == 1 ? " vanilla enchantment." : " vanilla enchantments."));
+        new TempPowerManager();
     }
 
     private void loadEnchantment(Path file, ConfigurationSection raritySettings)

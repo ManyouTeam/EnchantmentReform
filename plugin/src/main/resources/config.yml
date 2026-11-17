@@ -14,6 +14,9 @@ math:
 debug: false
 
 modules:
+  # Enables anti-abuse tracking, shared trigger checks, skill XP caps, and pressure reduction.
+  # When disabled, the anti-abuse listener is not registered.
+  anti-abuse: true
   # Enables skill definitions, progression, XP sources, rewards, and skill menus.
   # When disabled, every skill_level power/allocation condition is treated as met.
   skills: false

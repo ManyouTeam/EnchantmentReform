@@ -34,6 +34,7 @@
 * [🔢 Counting modes](configs/counting.md)
 * [🧵 Custom Items](configs/custom-items.md)
 * [🥕 Custom Attributes](configs/custom-attributes.md)
+* [Temporary Powers](configs/temp-powers.md)
 * [🧩 Vanilla Enchantment Overrides](configs/vanilla-enchantment-overrides.md)
 * [✨ Native Enchantment Effects](configs/native-enchantment-effects.md)
 * [💥 Power Configuration](configs/powers/README.md)

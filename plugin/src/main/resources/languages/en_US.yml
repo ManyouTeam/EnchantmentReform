@@ -20,6 +20,15 @@ attribute:
   add: "&#98FB98[EnchantmentReform] &fChanged {player}'s {attribute} base value to {value}; current value: {current}."
   modifier-added: "&#98FB98[EnchantmentReform] &fAdded {modifier} ({operation} {amount}) to {player}'s {attribute}; current value: {value}."
   modifier-set: "&#98FB98[EnchantmentReform] &fSet {modifier} ({operation} {amount}) on {player}'s {attribute}; current value: {value}."
+temp-power:
+  usage: '&#98FB98[EnchantmentReform] &cUsage: /er temppower set <player> <id> [level], remove <player> <id>, clear <player>, or list <player>.'
+  not-found: '&#98FB98[EnchantmentReform] &cTemporary power {power} was not found or is disabled!'
+  invalid-level: '&#98FB98[EnchantmentReform] &c{value} is not a valid positive integer level!'
+  set: '&#98FB98[EnchantmentReform] &fSet {player}''s temporary power {power} to level {level}.'
+  removed: '&#98FB98[EnchantmentReform] &fRemoved temporary power {power} from {player}.'
+  cleared: '&#98FB98[EnchantmentReform] &fCleared {amount} temporary powers from {player}.'
+  list-header: '&#98FB98[EnchantmentReform] &f{player} has {amount} active temporary powers:'
+  list-entry: '&7- &f{power}: level {level}, remember: {remember}'
 skill:
   multiplier-set: "&#98FB98[EnchantmentReform] &fSet {player}'s {skill} skill XP multiplier to {multiplier}."
   progress-updated: "&#98FB98[EnchantmentReform] &fUpdated {player}'s {skill}: level {level}/{maximum_level}, XP {experience}/{required_experience}."
@@ -44,8 +53,8 @@ command-tab:
 dupe-removed: "&#98FB98[EnchantmentReform] &fAn illegal item from your inventory has been removed!"
 help:
   main: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID."
-  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin."
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player."
+  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform temppower set|remove|clear|list &7- Manage player temporary powers."
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player.\n&f/enchantmentreform temppower set|remove|clear|list &7- Manage player temporary powers."
 override-lang:
   skill-source-farming-breed_animals: 'Breed animals'
   skill-source-farming-breed_animals-desc: 'Gain farming XP from breed animals.'

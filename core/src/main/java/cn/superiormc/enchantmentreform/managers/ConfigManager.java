@@ -2,6 +2,7 @@ package cn.superiormc.enchantmentreform.managers;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.objects.ObjectCustomAttribute;
+import cn.superiormc.enchantmentreform.objects.ObjectTempPower;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectAttributeMenu;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectMenu;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectSkillMenu;
@@ -29,6 +30,8 @@ public class ConfigManager extends AbstractManager {
 
     public Map<String, ObjectCustomAttribute> attributeConfigs = new LinkedHashMap<>();
 
+    public Map<String, ObjectTempPower> tempPowerConfigs = new LinkedHashMap<>();
+
     public Map<String, SkillDefinition> skillConfigs = new LinkedHashMap<>();
 
     public Map<String, ObjectMenu> menuConfigs = new LinkedHashMap<>();
@@ -37,10 +40,9 @@ public class ConfigManager extends AbstractManager {
 
     public ConfigManager() {
         configManager = this;
-        EnchantmentReform.instance.reloadConfig();
         config = EnchantmentReform.instance.getConfig();
-        EnchantmentReform.instance.saveConfig();
         initAttributeConfigs();
+        initTempPowerConfigs();
         initSkillConfigs();
         initMenuConfigs();
     }
@@ -108,6 +110,33 @@ public class ConfigManager extends AbstractManager {
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded skill: " + id + ".yml!");
             } catch (Throwable throwable) {
                 ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load skill " + file.getName() + ": " + throwable.getMessage());
+            }
+        }
+    }
+
+    private void initTempPowerConfigs() {
+        tempPowerConfigs.clear();
+        File directory = new File(EnchantmentReform.instance.getDataFolder(), "temp_powers");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4).toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = new YamlConfiguration();
+                config.load(file);
+                ObjectTempPower power = new ObjectTempPower(id, config);
+                if (!power.isEnabled()) {
+                    continue;
+                }
+                if (tempPowerConfigs.putIfAbsent(id, power) != null) {
+                    throw new IllegalArgumentException("Duplicate temporary power id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded temporary power: " + id + ".yml!");
+            } catch (Exception exception) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load temporary power "
+                        + file.getName() + ": " + exception.getMessage());
             }
         }
     }

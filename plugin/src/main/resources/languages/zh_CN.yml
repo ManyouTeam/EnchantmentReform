@@ -20,6 +20,15 @@ attribute:
   add: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {attribute} 基础值修改为 {value}，当前值：{current}。"
   modifier-added: "&#98FB98[EnchantmentReform] &f已为玩家 {player} 的 {attribute} 添加 {modifier}（{operation} {amount}），当前值：{value}。"
   modifier-set: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {attribute} 修改器 {modifier} 设为 {operation} {amount}，当前值：{value}。"
+temp-power:
+  usage: '&#98FB98[EnchantmentReform] &c用法：/er temppower set <玩家> <ID> [等级]、remove <玩家> <ID>、clear <玩家> 或 list <玩家>。'
+  not-found: '&#98FB98[EnchantmentReform] &c临时能力 {power} 不存在或已禁用！'
+  invalid-level: '&#98FB98[EnchantmentReform] &c{value} 不是有效的正整数等级！'
+  set: '&#98FB98[EnchantmentReform] &f已将玩家 {player} 的临时能力 {power} 设为 {level} 级。'
+  removed: '&#98FB98[EnchantmentReform] &f已移除玩家 {player} 的临时能力 {power}。'
+  cleared: '&#98FB98[EnchantmentReform] &f已清除玩家 {player} 的 {amount} 个临时能力。'
+  list-header: '&#98FB98[EnchantmentReform] &f玩家 {player} 当前有 {amount} 个临时能力：'
+  list-entry: '&7- &f{power}：等级 {level}，记忆：{remember}'
 skill:
   multiplier-set: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {skill} 技能经验倍率设为 {multiplier}。"
   progress-updated: "&#98FB98[EnchantmentReform] &f已更新玩家 {player} 的 {skill}：等级 {level}/{maximum_level}，经验 {experience}/{required_experience}。"
@@ -44,8 +53,8 @@ command-tab:
 dupe-removed: "&#98FB98[EnchantmentReform] &f已从您的背包中移除一个非法物品!"
 help:
   main: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。"
-  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。"
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。"
+  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform temppower set|remove|clear|list &7- 管理玩家临时能力。"
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。\n&f/enchantmentreform temppower set|remove|clear|list &7- 管理玩家临时能力。"
 override-lang:
   skill-source-farming-breed_animals: '繁殖动物'
   skill-source-farming-breed_animals-desc: '通过繁殖动物获得技能经验。'

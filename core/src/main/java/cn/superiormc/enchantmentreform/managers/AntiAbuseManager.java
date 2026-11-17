@@ -43,6 +43,11 @@ public final class AntiAbuseManager extends AbstractManager {
         antiAbuseManager = this;
     }
 
+    public boolean isEnabled() {
+        return ConfigManager.configManager == null
+                || ConfigManager.configManager.getBoolean("modules.anti-abuse", true);
+    }
+
     /**
      * Checks and claims a configured use. Skill sources pass safeDefaults=true, while powers
      * opt in to every check by defining it in their trigger's anti-abuse section.
@@ -51,6 +56,9 @@ public final class AntiAbuseManager extends AbstractManager {
                           String scope, boolean safeDefaults) {
         if (context == null || context.player() == null) {
             return false;
+        }
+        if (!isEnabled()) {
+            return true;
         }
         boolean ignorePlaced = bool(anti, "ignore-player-placed", safeDefaults);
         if (ignorePlaced && context.block() != null && placedBlocks.isPlayerPlaced(context.block())) {
@@ -148,10 +156,15 @@ public final class AntiAbuseManager extends AbstractManager {
     }
 
     @Override
-    public void onPluginDisable() {
+    public void onPluginReload() {
         cooldowns.clear();
         useWindows.clear();
         targetCooldowns.clear();
+    }
+
+    @Override
+    public void onPluginDisable() {
+        onPluginReload();
         antiAbuseManager = null;
     }
 }

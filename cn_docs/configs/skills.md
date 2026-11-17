@@ -185,6 +185,8 @@ skills:
 
 ## 共用防刷配置
 
+由 `config.yml -> modules.anti-abuse` 控制，默认 `true`。关闭后不注册防刷监听器，并跳过下列检查以及技能专用的 `maximum-xp-per-minute` 和 `pressure`；正常技能经验与上下线处理继续运行。可通过 `/er reload` 切换。
+
 以下 `anti-abuse` 选项同时可写在技能来源，以及附魔、物品、属性的任意触发器段中：
 
 - `ignore-player-placed`：玩家放置、骨粉催熟或由已标记方块蔓延出的方块不触发。标记保存在区块 PDC 中并跟随活塞移动。

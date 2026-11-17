@@ -1,0 +1,16 @@
+# Player-bound power activated only by /er temppower set <player> example [level].
+enabled: true
+
+# false survives plugin reload/re-enable, but expires on reconnect or server restart.
+# true remembers the grant and its player-specific level across both.
+remember: false
+default-level: 1
+execution-priority: 0
+
+powers:
+  on-activate:
+    abilities:
+      message:
+        type: send_message
+        mode: target-player
+        message: '&aTemporary power level {level}'

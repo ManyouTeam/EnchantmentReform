@@ -1,7 +1,6 @@
 package cn.superiormc.enchantmentreform.listeners;
 
 import cn.superiormc.enchantmentreform.managers.AntiAbuseManager;
-import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -19,7 +18,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -37,8 +35,11 @@ public final class AntiAbuseListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
-        SchedulerUtil.runTaskLater(location,
-                () -> manager().placedBlocks().remove(location.getBlock()), 1L);
+        SchedulerUtil.runTaskLater(location, () -> {
+            if (manager() != null && manager().isEnabled()) {
+                manager().placedBlocks().remove(location.getBlock());
+            }
+        }, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -89,18 +90,8 @@ public final class AntiAbuseListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        if (SkillManager.skillManager != null) {
-            SkillManager.skillManager.playerJoin(event.getPlayer());
-        }
-    }
-
-    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         manager().playerQuit(event.getPlayer().getUniqueId());
-        if (SkillManager.skillManager != null) {
-            SkillManager.skillManager.playerQuit(event.getPlayer().getUniqueId());
-        }
     }
 
     private void move(List<Block> blocks, BlockFace direction) {

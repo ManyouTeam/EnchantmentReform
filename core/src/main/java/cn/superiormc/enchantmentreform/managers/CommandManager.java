@@ -16,6 +16,7 @@ import cn.superiormc.enchantmentreform.commands.SubSetAttribute;
 import cn.superiormc.enchantmentreform.commands.SubSetAttributeModifier;
 import cn.superiormc.enchantmentreform.commands.SubSetSkillMultiplier;
 import cn.superiormc.enchantmentreform.commands.SubSkillProgress;
+import cn.superiormc.enchantmentreform.commands.SubTempPower;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 
@@ -47,6 +48,7 @@ public final class CommandManager extends AbstractManager {
         registeredCommands.put("menu", new SubMenu());
         registeredCommands.put("reload", new SubReload());
         registeredCommands.put("help", new SubHelp());
+        registeredCommands.put("temppower", new SubTempPower());
         registeredCommands.put("saveitem", new SubSaveItem());
         registeredCommands.put("givesaveitem", new SubGiveSaveItem());
         registeredCommands.put("randombook", new SubRandomBook());

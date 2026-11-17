@@ -1,7 +1,16 @@
 package cn.superiormc.enchantmentreform.commands;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
-import cn.superiormc.enchantmentreform.managers.*;
+import cn.superiormc.enchantmentreform.managers.AbstractManager;
+import cn.superiormc.enchantmentreform.managers.AttributeManager;
+import cn.superiormc.enchantmentreform.managers.CommandManager;
+import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
+import cn.superiormc.enchantmentreform.managers.FakeChangeManager;
+import cn.superiormc.enchantmentreform.managers.ItemManager;
+import cn.superiormc.enchantmentreform.managers.LanguageManager;
+import cn.superiormc.enchantmentreform.managers.SkillManager;
+import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,21 +37,18 @@ public final class SubReload extends AbstractCommand {
     private void reload(CommandSender sender) {
         LanguageManager.languageManager.sendStringText(sender, "plugin.reloading");
         EnchantmentReform.instance.reloadConfig();
-        AbstractManager.reloadManagers();
         new ConfigManager();
-        if (ListenerManager.listenerManager != null) {
-            ListenerManager.listenerManager.reloadEnchantabilityOverrides();
-        }
         new LanguageManager();
+        AbstractManager.reloadManagers();
         new ItemManager();
         new AttributeManager();
         new SkillManager();
-        new CommandManager();
         EnchantmentConfigManager manager = EnchantmentConfigManager.getInstance();
         if (manager != null) {
             manager.reloadDefinitions();
             manager.initializePowers();
         }
+        new CommandManager();
         if (TriggerManager.triggerManager != null) {
             TriggerManager.triggerManager.activeEnchantments().reloadMode();
         }

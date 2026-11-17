@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 public final class InitManager extends AbstractManager {
 
@@ -49,6 +51,7 @@ public final class InitManager extends AbstractManager {
         resourceOutputFolder("items", false);
         resourceOutputFolder("attributes", true);
         resourceOutputFolder("skills", true);
+        resourceOutputFolder("temp_powers", true);
         resourceOutputFolder("enchantments", false);
         resourceOutputFolder("vanilla_enchantments", false);
 
@@ -75,12 +78,12 @@ public final class InitManager extends AbstractManager {
                     .getCodeSource().getLocation().toURI());
             // Maven and IDE runs load classes from a directory rather than a plugin JAR.
             if (sourceFile.isDirectory()) {
-                java.net.URL resource = InitManager.class.getResource("/" + normalizedFolder);
+                URL resource = InitManager.class.getResource("/" + normalizedFolder);
                 if (resource == null) {
                     return;
                 }
                 Path folder = Path.of(resource.toURI());
-                try (java.util.stream.Stream<Path> files = Files.walk(folder)) {
+                try (Stream<Path> files = Files.walk(folder)) {
                     files.filter(Files::isRegularFile).forEach(file -> resourceOutput(
                             normalizedFolder + folder.relativize(file).toString().replace('\\', '/'),
                             regenerate));
@@ -128,12 +131,6 @@ public final class InitManager extends AbstractManager {
 
     public boolean isFirstLoad() {
         return firstLoad;
-    }
-
-    @Override
-    public void onPluginReload() {
-        firstLoad = false;
-        init();
     }
 
     public static YamlConfiguration loadBundledConfiguration(String resource) {

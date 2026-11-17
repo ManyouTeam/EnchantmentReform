@@ -71,6 +71,9 @@ public final class ActiveEnchantmentManager {
     public List<ActivePowerSource> findActive(TriggerData data) {
         List<ActivePowerSource> candidates = new ArrayList<>();
         candidates.addAll(scanAttributes(data.player()));
+        if (TempPowerManager.tempPowerManager != null) {
+            candidates.addAll(TempPowerManager.tempPowerManager.getActiveTempPowers(data.player()));
+        }
         EquipmentSlot triggerSlot = data.triggerItemSlot() == null ? EquipmentSlot.HAND : data.triggerItemSlot();
         candidates.addAll(scanTriggerItem(data.player(), data.triggerItem(), triggerSlot));
         Map<EquipmentSlot, List<ActivePowerSource>> equipment = equipment(data.player());
@@ -108,6 +111,9 @@ public final class ActiveEnchantmentManager {
     public List<ActivePowerSource> findActiveForInteraction(TriggerData data) {
         List<ActivePowerSource> candidates = new ArrayList<>();
         candidates.addAll(scanAttributes(data.player()));
+        if (TempPowerManager.tempPowerManager != null) {
+            candidates.addAll(TempPowerManager.tempPowerManager.getActiveTempPowers(data.player()));
+        }
         Map<EquipmentSlot, List<ActivePowerSource>> equipment = equipment(data.player());
         INTERACT_SLOT_PRIORITY.forEach(slot -> candidates.addAll(
                 equipment.getOrDefault(slot, List.of())));
@@ -148,7 +154,9 @@ public final class ActiveEnchantmentManager {
     }
 
     public void clear(Player player) {
-        if (player != null) cache.remove(player.getUniqueId());
+        if (player != null) {
+            cache.remove(player.getUniqueId());
+        }
     }
 
     public void clearAll() {
@@ -189,7 +197,9 @@ public final class ActiveEnchantmentManager {
     }
 
     private ScannedItem scanItem(ItemStack item) {
-        if (item == null || item.getType().isAir()) return ScannedItem.EMPTY;
+        if (item == null || item.getType().isAir()) {
+            return ScannedItem.EMPTY;
+        }
         EnchantmentConfigManager manager = EnchantmentConfigManager.getInstance();
 
         List<ScannedEnchantment> present = new ArrayList<>();
@@ -343,9 +353,15 @@ public final class ActiveEnchantmentManager {
         for (OccurrenceKey occurrence : occurrences) {
             ActivePowerSource oldActive = beforeByOccurrence.get(occurrence);
             ActivePowerSource newActive = afterByOccurrence.get(occurrence);
-            if (sameEffective(oldActive, newActive)) continue;
-            if (oldActive != null) deactivated.add(oldActive);
-            if (newActive != null) activated.add(newActive);
+            if (sameEffective(oldActive, newActive)) {
+                continue;
+            }
+            if (oldActive != null) {
+                deactivated.add(oldActive);
+            }
+            if (newActive != null) {
+                activated.add(newActive);
+            }
         }
         return new EquipmentTransition(List.copyOf(deactivated), List.copyOf(activated));
     }

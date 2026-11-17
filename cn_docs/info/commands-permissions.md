@@ -46,6 +46,19 @@ enchantmentreform.menu
 
 前两个指令修改基础值。`setattribute` 末尾可加 `-ignore`，以绕过该属性配置的最小值与最大值。Modifier operation 包括 `ADD_VALUE`、`ADD_MULTIPLIED_BASE` 和 `ADD_MULTIPLIED_TOTAL`。四个管理权限都默认授予服务器管理员，权限节点为 `enchantmentreform.` 加对应指令名。
 
+## 管理临时能力
+
+```text
+/er temppower set <玩家> <ID> [等级]
+/er temppower remove <玩家> <ID>
+/er temppower clear <玩家>
+/er temppower list <玩家>
+```
+
+目标必须在线；省略等级时使用对应 `temp_powers/<ID>.yml` 的 `default-level`。等级必须为正整数。权限为 `enchantmentreform.temppower`，默认仅管理员拥有。玩家和控制台均可执行，其他插件也可派发命令。
+
+`remember: false` 的授权及等级在插件重载或重新启用后保留，仅在玩家重新进服或服务器重启后清空；`true` 则持续保留。完整配置和生命周期规则见[临时能力](../configs/temp-powers.md)。
+
 ## 随机给予附魔书
 
 ```text

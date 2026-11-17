@@ -49,6 +49,7 @@ Desktop.ini
 !/plugin/src/main/resources/vanilla_enchantments/
 !/plugin/src/main/resources/attributes/
 !/plugin/src/main/resources/skills/
+!/plugin/src/main/resources/temp_powers/
 !/plugin/src/main/resources/enchantments/
 /plugin/src/main/resources/attributes/*
 /plugin/src/main/resources/skills/*

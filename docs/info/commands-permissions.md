@@ -46,6 +46,19 @@ The permission defaults to all players. Separate legacy GUI subcommands are not 
 
 The first two commands change the base value. The optional `-ignore` suffix on `setattribute` bypasses the attribute's configured minimum and maximum. Modifier operations are `ADD_VALUE`, `ADD_MULTIPLIED_BASE`, and `ADD_MULTIPLIED_TOTAL`. All four management permissions default to operators and use the command name after `enchantmentreform.`.
 
+## Manage temporary powers
+
+```text
+/er temppower set <player> <id> [level]
+/er temppower remove <player> <id>
+/er temppower clear <player>
+/er temppower list <player>
+```
+
+The target must be online. An omitted level uses `default-level` from `temp_powers/<id>.yml`; explicit levels must be positive integers. Permission: `enchantmentreform.temppower`, default `op`. Players, the console and other plugins can dispatch these commands.
+
+`remember: false` survives plugin reload or re-enable, but clears on reconnect or server restart. `true` retains grants and levels across both. See [Temporary Powers](../configs/temp-powers.md) for configuration and lifecycle details.
+
 ## Give random enchanted books
 
 ```text

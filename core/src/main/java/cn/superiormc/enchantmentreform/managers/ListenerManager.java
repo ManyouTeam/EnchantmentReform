@@ -18,6 +18,8 @@ public class ListenerManager extends AbstractManager {
 
     private EnchantabilityOverrideListener enchantabilityOverrideListener;
 
+    private AntiAbuseListener antiAbuseListener;
+
     public ListenerManager(){
         listenerManager = this;
         registerListeners();
@@ -25,7 +27,7 @@ public class ListenerManager extends AbstractManager {
 
     private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(new GUIListener(), EnchantmentReform.instance);
-        Bukkit.getPluginManager().registerEvents(new AntiAbuseListener(), EnchantmentReform.instance);
+        reloadAntiAbuseListener();
         Bukkit.getPluginManager().registerEvents(new LocationChangedEffectTempBlockListener(), EnchantmentReform.instance);
         if (EnchantmentReform.methodUtil.methodID().equals("paper")) {
             if (CommonUtil.getMajorVersion(19)) {
@@ -39,15 +41,33 @@ public class ListenerManager extends AbstractManager {
         }
     }
 
-    public void reloadEnchantabilityOverrides() {
+    private void reloadEnchantabilityOverrides() {
         if (enchantabilityOverrideListener != null) {
             enchantabilityOverrideListener.reload(
                     ConfigManager.configManager.getSection("item-enchantability-overrides"));
         }
     }
 
+    private void reloadAntiAbuseListener() {
+        if (AntiAbuseManager.antiAbuseManager.isEnabled()) {
+            if (antiAbuseListener == null) {
+                antiAbuseListener = new AntiAbuseListener();
+                Bukkit.getPluginManager().registerEvents(antiAbuseListener, EnchantmentReform.instance);
+            }
+        } else if (antiAbuseListener != null) {
+            HandlerList.unregisterAll(antiAbuseListener);
+            antiAbuseListener = null;
+        }
+    }
+
     public void unregisterAllListener() {
         HandlerList.unregisterAll(EnchantmentReform.instance);
+    }
+
+    @Override
+    public void onPluginReload() {
+        reloadEnchantabilityOverrides();
+        reloadAntiAbuseListener();
     }
 
     @Override

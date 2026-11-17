@@ -304,13 +304,17 @@ public final class SkillManager extends AbstractManager {
         }
         long now = System.currentTimeMillis();
         String key = skill.id() + "/" + source.id();
+        boolean antiAbuseEnabled = AntiAbuseManager.antiAbuseManager != null
+                && AntiAbuseManager.antiAbuseManager.isEnabled();
         double xp = safeMultiply(source.calculateXp(context, amount),
-                pressureMultiplier(player, source, key, now));
+                antiAbuseEnabled ? pressureMultiplier(player, source, key, now) : 1.0D);
         xp = safeMultiply(xp, getExperienceMultiplier(player, skill));
         if (xp <= 0.0D) {
             return 0.0D;
         }
-        xp = applyRateLimit(player, key, source.maximumXpPerMinute(), xp, now);
+        if (antiAbuseEnabled) {
+            xp = applyRateLimit(player, key, source.maximumXpPerMinute(), xp, now);
+        }
         if (xp <= 0.0D) {
             return 0.0D;
         }

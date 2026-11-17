@@ -12,10 +12,21 @@ EnchantmentReform stores runtime files in `plugins/EnchantmentReform/`.
 | `vanilla_enchantments/` | Overrides for selected vanilla enchantments. | Full restart. |
 | `languages/` | Localized plugin and enchantment text. | Runtime reload is normally sufficient. |
 | `menus/` | One file per GUI type, plus `settings.yml` for shared menu settings. | Runtime reload is normally sufficient. |
+| `temp_powers/` | Command-granted player powers with per-definition retention and default levels. | Runtime reload. |
 
 Existing files are not overwritten during updates. Compare customized files with the resources bundled in the new JAR.
 
 ## Important `config.yml` sections
+
+### `modules`
+
+```yaml
+modules:
+  anti-abuse: true
+  skills: false
+```
+
+`anti-abuse` defaults to enabled. When `false`, startup does not register the anti-abuse listener. Shared anti-abuse checks, block/spawner tracking, skill-source XP-per-minute limits and pressure reduction are bypassed. Normal conditions, power cooldowns and skill progression still apply. `/er reload` registers or unregisters the listener according to the setting and resets anti-abuse runtime counters. Skill login initialization and logout cleanup run independently of this module.
 
 ### `config-files`
 

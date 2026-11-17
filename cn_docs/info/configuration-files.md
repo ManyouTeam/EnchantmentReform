@@ -12,10 +12,21 @@ EnchantmentReform 的运行时文件存放在 `plugins/EnchantmentReform/` 中�
 | `vanilla_enchantments/` | 覆盖指定的原版附魔。 | 完整重启。 |
 | `languages/` | 本地化的插件文本和附魔文本。 | 通常运行时重载即可。 |
 | `menus/` | 每种 GUI 使用一个独立文件，公共菜单设置位于 `settings.yml`。 | 通常运行时重载即可。 |
+| `temp_powers/` | 通过指令授予玩家的临时能力，可分别配置是否记忆和默认等级。 | 运行时重载即可。 |
 
 插件更新时不会覆盖已有文件。请将自定义文件与新版 JAR 中包含的资源进行比较。
 
 ## 重要的 `config.yml` 配置节
+
+### `modules`
+
+```yaml
+modules:
+  anti-abuse: true
+  skills: false
+```
+
+`anti-abuse` 默认开启。设为 `false` 时，启动不注册防刷监听器，跳过共用防刷检查、方块及刷怪笼标记、技能来源的每分钟经验上限和压力衰减；正常条件、能力冷却和技能进度仍然生效。修改后执行 `/er reload`，会按开关注册或注销防刷监听器并清空防刷运行时计数。技能上下线初始化和清理独立于防刷模块。
 
 ### `config-files`
 

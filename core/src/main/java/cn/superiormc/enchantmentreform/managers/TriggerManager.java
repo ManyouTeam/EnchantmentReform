@@ -75,6 +75,7 @@ import cn.superiormc.enchantmentreform.objects.triggers.VibrationReceiveTrigger;
 import cn.superiormc.enchantmentreform.power.ActivePowerSource;
 import cn.superiormc.enchantmentreform.power.PowerExecutionResult;
 import cn.superiormc.enchantmentreform.power.TrackedPowerSource;
+import cn.superiormc.enchantmentreform.objects.ObjectTempPower;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -478,6 +479,11 @@ public final class TriggerManager extends AbstractManager {
     private boolean canAttempt(AbstractTrigger<?> trigger,
                                TriggerData data,
                                ActivePowerSource active) {
+        if (active.source() instanceof ObjectTempPower definition && !isTrigger(trigger, "deactivate")
+                && (TempPowerManager.tempPowerManager == null
+                || !TempPowerManager.tempPowerManager.isActive(data.player(), definition))) {
+            return false;
+        }
         ObjectPower power = active.power();
         return power != null
                 && power.getSection(trigger.configKey()) != null

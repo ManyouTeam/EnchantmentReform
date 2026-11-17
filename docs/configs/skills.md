@@ -177,6 +177,8 @@ Set `manual: true` for a source that must be shown in the skill menu but is acti
 
 ## Shared anti-abuse layer
 
+Controlled by `config.yml -> modules.anti-abuse`, default `true`. Disabling it prevents registration of the anti-abuse listener and bypasses the following checks, including skill-specific `maximum-xp-per-minute` and `pressure`. Normal skill XP and player login/logout handling continue to run. Apply changes with `/er reload`.
+
 The following `anti-abuse` options work both on skill sources and inside any enchantment, item, or attribute power trigger section:
 
 - `ignore-player-placed`, including fertilized/spread blocks and piston movement

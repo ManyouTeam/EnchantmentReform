@@ -2,6 +2,8 @@ package cn.superiormc.enchantmentreform.listeners;
 
 import cn.superiormc.enchantmentreform.EnchantmentReform;
 import cn.superiormc.enchantmentreform.managers.TriggerManager;
+import cn.superiormc.enchantmentreform.managers.TempPowerManager;
+import cn.superiormc.enchantmentreform.managers.SkillManager;
 import cn.superiormc.enchantmentreform.objects.triggers.TriggerRuntime;
 import cn.superiormc.enchantmentreform.power.AbilityDamageUtil;
 import cn.superiormc.enchantmentreform.power.AttackCooldownUtil;
@@ -30,6 +32,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
@@ -158,7 +161,19 @@ public class EnchantmentPowerListener implements Listener, AutoCloseable {
     }
 
     @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        if (SkillManager.skillManager != null) {
+            SkillManager.skillManager.playerJoin(event.getPlayer());
+        }
+        TempPowerManager.tempPowerManager.restoreTempPowers(event.getPlayer());
+    }
+
+    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+        if (SkillManager.skillManager != null) {
+            SkillManager.skillManager.playerQuit(event.getPlayer().getUniqueId());
+        }
+        TempPowerManager.tempPowerManager.quitTempPowers(event.getPlayer());
         triggerManager.runtime().playerQuit(event.getPlayer());
         AttackCooldownUtil.clear(event.getPlayer().getUniqueId());
     }
