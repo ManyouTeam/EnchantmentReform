@@ -2,7 +2,6 @@ package cn.superiormc.enchantmentreform.objects.matchentity;
 
 import cn.superiormc.enchantmentreform.objects.ObjectSingleMatchEntity;
 
-import cn.superiormc.enchantmentreform.EnchantmentReform;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;

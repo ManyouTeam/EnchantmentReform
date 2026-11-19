@@ -4,6 +4,8 @@ enabled: true
 # false survives plugin reload/re-enable, but expires on reconnect or server restart.
 # true remembers the grant and its player-specific level across both.
 remember: false
+# true fires only on-activate once per grant.
+once: false
 default-level: 1
 execution-priority: 0
 

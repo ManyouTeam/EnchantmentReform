@@ -10,6 +10,7 @@ import cn.superiormc.enchantmentreform.objects.ObjectSingleAction;
 import cn.superiormc.enchantmentreform.objects.actions.ActionConditional;
 import cn.superiormc.enchantmentreform.objects.actions.ActionMythicMobsSpawn;
 import cn.superiormc.enchantmentreform.objects.abilities.AbstractAbility;
+import cn.superiormc.enchantmentreform.objects.abilities.AddStatAbility;
 import cn.superiormc.enchantmentreform.objects.abilities.AccelerateCropsAbility;
 import cn.superiormc.enchantmentreform.objects.abilities.AccelerateWorkBlocksAbility;
 import cn.superiormc.enchantmentreform.objects.abilities.AnyOfAbility;
@@ -151,6 +152,7 @@ public class AbilityManager extends AbstractManager {
         register("particle", ParticleAbility::new);
         register("sound", SoundAbility::new);
         register("set_attribute", SetAttributeAbility::new);
+        register("add_stat", AddStatAbility::new);
         register("refresh_attribute", RefreshAttributeAbility::new);
         register("set_health", SetHealthAbility::new);
         register("set_absorption", SetAbsorptionAbility::new);
@@ -301,6 +303,14 @@ public class AbilityManager extends AbstractManager {
             return false;
         }
         return executeAbility(toAction(abilitySection), context);
+    }
+
+    public void executeActivationStats(ConfigurationSection section, PowerContext context) {
+        for (AbstractAbility ability : parseActions(section)) {
+            if (ability instanceof AddStatAbility) {
+                executeAbility(ability, context);
+            }
+        }
     }
 
     private boolean executeAbility(AbstractAbility ability, PowerContext context) {

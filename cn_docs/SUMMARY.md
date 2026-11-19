@@ -34,7 +34,7 @@
 * [🔢 计数方式](configs/counting.md)
 * [🧵 自定义物品](configs/custom-items.md)
 * [🥕 自定义属性](configs/custom-attributes.md)
-* [临时能力](configs/temp-powers.md)
+* [⏳ 临时能力](configs/temp-powers.md)
 * [🧩 原版附魔覆盖](configs/vanilla-enchantment-overrides.md)
 * [✨ 原生附魔效果](configs/native-enchantment-effects.md)
 * [💥 能力配置](configs/powers/README.md)

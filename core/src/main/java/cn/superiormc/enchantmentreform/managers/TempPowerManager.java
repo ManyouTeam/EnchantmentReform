@@ -66,6 +66,9 @@ public final class TempPowerManager extends AbstractManager {
         List<ActivePowerSource> active = new ArrayList<>();
         String session = playerSession(player);
         for (ObjectTempPower definition : tempPowers.values()) {
+            if (definition.isOnce()) {
+                continue;
+            }
             int level = definition.getLevel(player, session);
             if (level > 0) {
                 active.add(new ActivePowerSource(definition, definition.getPower(), level, null, null));
@@ -83,6 +86,11 @@ public final class TempPowerManager extends AbstractManager {
         if (level <= 0) {
             throw new IllegalArgumentException("Temporary power level must be positive");
         }
+        ActivePowerSource active = new ActivePowerSource(definition, definition.getPower(), level, null, null);
+        if (definition.isOnce()) {
+            dispatchActivation(player, active);
+            return;
+        }
         int previous = definition.getLevel(player, playerSession(player));
         if (previous == level) {
             return;
@@ -92,7 +100,7 @@ public final class TempPowerManager extends AbstractManager {
             deactivateTempPower(player, new ActivePowerSource(
                     definition, definition.getPower(), previous, null, null));
         }
-        activateTempPower(player, new ActivePowerSource(definition, definition.getPower(), level, null, null));
+        activateTempPower(player, active);
     }
 
     public void removeTempPower(Player player, ObjectTempPower definition) {
@@ -141,7 +149,8 @@ public final class TempPowerManager extends AbstractManager {
             return;
         }
         for (NamespacedKey key : stored.getKeys()) {
-            if (!key.getNamespace().equals("enchantmentreform") || !tempPowers.containsKey(key.getKey())) {
+            ObjectTempPower definition = tempPowers.get(key.getKey());
+            if (!key.getNamespace().equals("enchantmentreform") || definition == null || definition.isOnce()) {
                 stored.remove(key);
             }
         }
@@ -157,6 +166,10 @@ public final class TempPowerManager extends AbstractManager {
                 .add(active.source().powerSourceId())) {
             return;
         }
+        dispatchActivation(player, active);
+    }
+
+    private void dispatchActivation(Player player, ActivePowerSource active) {
         if (TriggerManager.triggerManager != null) {
             TriggerManager.triggerManager.dispatch(TriggerRuntime.Activation.class,
                     new TriggerRuntime.Activation(player, null, active));

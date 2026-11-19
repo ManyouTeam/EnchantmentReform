@@ -278,6 +278,8 @@ powers:
         - enchantmentreform:allowed_curse
 ```
 
+装备或临时能力可以通过 [`add_stat`](../abilities/integration.md#add_stat) 在激活时添加属性加成，来源停用时会自动撤销。
+
 声明此规则的附魔不会禁用自身。普通触发器中的条件、修改器和 `powers.limit` 不适用于这个特殊部分。
 
 ## 多个触发器

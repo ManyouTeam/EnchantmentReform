@@ -138,6 +138,7 @@ Supported fields may resolve `level`, power variables, level selector maps, nume
 | `nearby_block` | [Block and World Abilities](blocks-world.md#nearby-block) |
 | `summon` | [Integration and Targeting Abilities](integration.md#summon) |
 | `mythic_skill` | [Integration and Targeting Abilities](integration.md#mythic-skill) |
+| `add_stat` | [Integration and Targeting Abilities](integration.md#add_stat) |
 | `send_message` | [Integration and Targeting Abilities](integration.md#send-message) |
 | `execute_command` | [Integration and Targeting Abilities](integration.md#execute-command) |
 | `execute_action` | [Integration and Targeting Abilities](integration.md#execute-action) |

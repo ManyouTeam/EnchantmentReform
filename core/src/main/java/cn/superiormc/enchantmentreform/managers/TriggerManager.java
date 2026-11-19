@@ -479,6 +479,9 @@ public final class TriggerManager extends AbstractManager {
     private boolean canAttempt(AbstractTrigger<?> trigger,
                                TriggerData data,
                                ActivePowerSource active) {
+        if (active.source() instanceof ObjectTempPower definition && definition.isOnce()) {
+            return isTrigger(trigger, "activate") && active.power().getSection(trigger.configKey()) != null;
+        }
         if (active.source() instanceof ObjectTempPower definition && !isTrigger(trigger, "deactivate")
                 && (TempPowerManager.tempPowerManager == null
                 || !TempPowerManager.tempPowerManager.isActive(data.player(), definition))) {

@@ -7,12 +7,80 @@ Every registered ability on this page is documented as a complete reference entr
 * `nearby_entities`
 * `summon`
 * `mythic_skill`
+* `add_stat`
 * `send_message`
 * `execute_command`
 * `execute_action`
 * `auto_fishing`
 * `disable_enchantments`
 
+
+---
+
+## `add_stat`
+
+Adds a stat modifier to a player. The selected provider must be installed and enabled.
+
+### Fields
+
+| Field | Default | Description |
+| --- | --- | --- |
+| `provider` | `MythicLib` | Plugin that owns the stat. Accepts `MythicLib`, `MythicMobs`, or `AuraSkills`. |
+| `stat` | Required | Stat ID from the selected provider. For an AuraSkills built-in stat, both `strength` and `auraskills/strength` refer to Strength. AuraSkills uses `namespace/id` for a fully qualified ID, with `auraskills` as the default namespace. |
+| `value` | `0` | Modifier amount. Supports power expressions such as `'2 * {level}'`. MythicLib uses a flat modifier and AuraSkills adds the given number of stat points. |
+| `modifier-type` | `ADD` | MythicMobs operation. See the table below. |
+| `target` | `SOURCE` | Entity selector. The selected entity must be a player. |
+
+Other common fields are listed in the [Abilities reference](README.md).
+
+### MythicMobs modifier types
+
+These values and aliases are supported by MythicMobs 5.9.5. Names are case-insensitive. Quote numeric aliases in YAML.
+
+| Value | Aliases | Effect |
+| --- | --- | --- |
+| `ADD` | `ADDITIVE`, `ADD_NUMBER`, `'0'` | Adds points. `5` adds 5. |
+| `MULTIPLY` | `MULTIPLY_BASE`, `MULTIPLY_ADD`, `MULTIPLY_ADDITIVE`, `ADD_SCALAR`, `ADD_MULTIPLY`, `ADD_MULTIPLIER`, `ADDITIVE_MULTIPLY`, `ADDITIVE_MULTIPLIER`, `'1'` | Sums modifiers of this type, then multiplies by `1 + sum`. `0.2` alone adds 20%. |
+| `COMPOUND` | `MULTIPLY_SCALAR`, `MULTIPLY_COMPOUND`, `COMPOUND_MULTIPLY`, `COMPOUND_MULTIPLIER`, `'2'` | Multiplies by each configured factor. `1.2` alone adds 20%. |
+| `SET` | `SETTER`, `OVERRIDE`, `'3'` | Overrides the calculated result with `value`, subject to the stat's bounds. |
+
+### Examples
+
+Place any of these entries under either `powers.activation-abilities` or `powers.on-activate.abilities`. Each entry grants its own modifier, so choose one placement per bonus.
+
+```yaml
+powers:
+  activation-abilities:
+    strength_bonus:
+      type: add_stat
+      provider: AuraSkills
+      stat: strength
+      value: '2 * {level}'
+```
+
+```yaml
+powers:
+  on-activate:
+    abilities:
+      damage_bonus:
+        type: add_stat
+        provider: MythicMobs
+        stat: ATTACK_DAMAGE
+        modifier-type: MULTIPLY
+        value: 0.2
+```
+
+```yaml
+powers:
+  activation-abilities:
+    damage_bonus:
+      type: add_stat
+      provider: MythicLib
+      stat: ATTACK_DAMAGE
+      value: 5
+```
+
+Repeated execution updates the modifier for the same owner, target, power, slot, and ability entry. Source deactivation, player unload, or plugin reload removes it. A failed ability-level condition removes an existing modifier when the ability is checked. Use a repeating trigger to recheck changing conditions. A temporary power with `once: true` only dispatches its `on-activate` section.
 
 ---
 

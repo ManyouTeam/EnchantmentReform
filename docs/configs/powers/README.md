@@ -278,6 +278,8 @@ powers:
         - enchantmentreform:allowed_curse
 ```
 
+Equipment and temporary powers can also grant an [`add_stat`](../abilities/integration.md#add_stat) modifier when activated. It is removed when the source deactivates.
+
 The enchantment declaring the rule does not disable itself. Normal trigger conditions, modifiers, and `powers.limit` do not apply to this special section.
 
 ## Multiple triggers

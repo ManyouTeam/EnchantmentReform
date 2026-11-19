@@ -131,7 +131,7 @@ public abstract class AbstractAbility extends AbstractConfiguredSection<PowerCon
         TextUtil.sendMessage(player, message);
     }
 
-    private boolean matchesContext(PowerContext context) {
+    protected boolean matchesContext(PowerContext context) {
         return PowerConditionsManager.powerConditions.matches(
                 section.getConfigurationSection("conditions"), context);
     }

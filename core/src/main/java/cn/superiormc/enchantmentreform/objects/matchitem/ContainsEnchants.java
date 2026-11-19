@@ -6,7 +6,6 @@ import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -34,8 +33,7 @@ public class ContainsEnchants extends AbstractMatchItemRule {
                 continue;
             }
             int level;
-            if (meta instanceof EnchantmentStorageMeta) {
-                EnchantmentStorageMeta enchantmentStorageMeta = (EnchantmentStorageMeta) meta;
+            if (meta instanceof EnchantmentStorageMeta enchantmentStorageMeta) {
                 level = enchantmentStorageMeta.getStoredEnchantLevel(vanillaEnchant);
             } else {
                 level = meta.getEnchantLevel(vanillaEnchant);

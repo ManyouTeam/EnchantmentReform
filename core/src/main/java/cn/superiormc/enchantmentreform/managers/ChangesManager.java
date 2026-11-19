@@ -96,8 +96,6 @@ public final class ChangesManager extends AbstractManager {
         register(new ReplaceEnchants());
         register(new ReplaceStoredEnchants());
         register(new ReplaceRandomItem());
-        register(new Deapply());
-        register(new ResetApplyLimit());
         register(new RandomChange());
         register(new SubChange());
     }

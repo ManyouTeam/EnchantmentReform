@@ -138,6 +138,7 @@ abilities:
 | `nearby_block` | [方块与世界能力](blocks-world.md#nearby-block) |
 | `summon` | [集成与目标选择能力](integration.md#summon) |
 | `mythic_skill` | [集成与目标选择能力](integration.md#mythic-skill) |
+| `add_stat` | [集成与目标选择能力](integration.md#add_stat) |
 | `send_message` | [集成与目标选择能力](integration.md#send-message) |
 | `execute_command` | [集成与目标选择能力](integration.md#execute-command) |
 | `execute_action` | [集成与目标选择能力](integration.md#execute-action) |

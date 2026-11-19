@@ -11,6 +11,8 @@ softdepend:
   - PlaceholderAPI
   - NBTAPI
   - MythicMobs
+  - MythicLib
+  - AuraSkills
   - packetevents
   - Vault
   - PlayerPoints

@@ -7,11 +7,79 @@
 * `nearby_entities`
 * `summon`
 * `mythic_skill`
+* `add_stat`
 * `send_message`
 * `execute_command`
 * `execute_action`
 * `auto_fishing`
 * `disable_enchantments`
+
+---
+
+## `add_stat`
+
+为玩家添加属性修饰符。服务器需要安装并启用对应的插件。
+
+### 配置字段
+
+| 字段 | 默认值 | 说明 |
+| --- | --- | --- |
+| `provider` | `MythicLib` | 属性所属插件，可填 `MythicLib`、`MythicMobs` 或 `AuraSkills`。 |
+| `stat` | 必填 | 对应插件的属性 ID。AuraSkills 自带的力量属性既可写 `strength`，也可写 `auraskills/strength`。AuraSkills 的完整 ID 格式为 `命名空间/属性 ID`，省略命名空间时默认用 `auraskills`。 |
+| `value` | `0` | 修饰值，支持 `'2 * {level}'` 等能力表达式。MythicLib 使用固定数值修饰符，AuraSkills 按给定点数加减属性。 |
+| `modifier-type` | `ADD` | MythicMobs 的计算方式，可用值见下表。 |
+| `target` | `SOURCE` | 实体选择器，选中的实体必须是玩家。 |
+
+其他通用字段见[能力文档](README.md)。
+
+### MythicMobs 的 modifier-type
+
+下表列出 MythicMobs 5.9.5 支持的值及别名。字母大小写均可，数字别名在 YAML 中用引号包裹。
+
+| 值 | 别名 | 效果 |
+| --- | --- | --- |
+| `ADD` | `ADDITIVE`, `ADD_NUMBER`, `'0'` | 按点数加减。`5` 增加 5 点。 |
+| `MULTIPLY` | `MULTIPLY_BASE`, `MULTIPLY_ADD`, `MULTIPLY_ADDITIVE`, `ADD_SCALAR`, `ADD_MULTIPLY`, `ADD_MULTIPLIER`, `ADDITIVE_MULTIPLY`, `ADDITIVE_MULTIPLIER`, `'1'` | 同类修饰符先求和，再乘以 `1 + 总和`。单独配置 `0.2` 增加 20%。 |
+| `COMPOUND` | `MULTIPLY_SCALAR`, `MULTIPLY_COMPOUND`, `COMPOUND_MULTIPLY`, `COMPOUND_MULTIPLIER`, `'2'` | 逐项乘以各自的倍率。单独配置 `1.2` 增加 20%。 |
+| `SET` | `SETTER`, `OVERRIDE`, `'3'` | 将计算结果设为 `value`，仍受该属性的最小值和最大值限制。 |
+
+### 示例
+
+以下配置条目都可放在 `powers.activation-abilities` 或 `powers.on-activate.abilities`。每个条目独立产生修饰符，同一加成选一个位置即可。
+
+```yaml
+powers:
+  activation-abilities:
+    strength_bonus:
+      type: add_stat
+      provider: AuraSkills
+      stat: strength
+      value: '2 * {level}'
+```
+
+```yaml
+powers:
+  on-activate:
+    abilities:
+      damage_bonus:
+        type: add_stat
+        provider: MythicMobs
+        stat: ATTACK_DAMAGE
+        modifier-type: MULTIPLY
+        value: 0.2
+```
+
+```yaml
+powers:
+  activation-abilities:
+    damage_bonus:
+      type: add_stat
+      provider: MythicLib
+      stat: ATTACK_DAMAGE
+      value: 5
+```
+
+同一持有者、目标、能力来源、装备槽和配置条目重复执行时会更新已有修饰符。来源停用、玩家卸载或插件重载时会撤销修饰符。能力条件检查失败时也会撤销已有修饰符。需要持续复查动态条件时，可使用周期触发器。设为 `once: true` 的临时能力只会触发其 `on-activate` 部分。
 
 ---
 

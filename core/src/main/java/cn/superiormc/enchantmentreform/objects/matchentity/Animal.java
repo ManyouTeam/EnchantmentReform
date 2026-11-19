@@ -9,7 +9,7 @@ public final class Animal extends AbstractMatchEntityRule {
     @Override
     public boolean getMatch(ObjectSingleMatchEntity match) {
         boolean result = match.getEntity() instanceof Animals;
-        return match.getSection().getBoolean("animal") ? result : !result;
+        return match.getSection().getBoolean("animal") == result;
     }
 
     @Override
