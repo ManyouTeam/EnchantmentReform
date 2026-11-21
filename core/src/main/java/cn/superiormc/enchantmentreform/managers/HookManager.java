@@ -87,10 +87,8 @@ public class HookManager extends AbstractManager implements Listener {
             tryRegisterMythicChangerRule();
         }
         if (event.getPlugin().getName().equalsIgnoreCase("packetevents")
-                && FakeChangeManager.fakeChangeManager == null
-                && FakeChangeManager.enableThis()) {
-            new FakeChangeManager();
-            AbstractManager.initializeManagers();
+                && ListenerManager.listenerManager != null) {
+            ListenerManager.listenerManager.registerPacketListeners();
         }
     }
 

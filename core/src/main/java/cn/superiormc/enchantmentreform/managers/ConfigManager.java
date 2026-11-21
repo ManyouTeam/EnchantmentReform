@@ -10,6 +10,7 @@ import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +26,7 @@ import java.util.Map;
 
 public class ConfigManager extends AbstractManager {
 
-    public static ConfigManager configManager;
+    public static volatile ConfigManager configManager;
 
     public FileConfiguration config;
 
@@ -38,25 +40,16 @@ public class ConfigManager extends AbstractManager {
 
     private YamlConfiguration menuSettings = new YamlConfiguration();
 
+    private Map<Material, Integer> enchantabilityOverrides = new EnumMap<>(Material.class);
+
     public ConfigManager() {
-        configManager = this;
         config = EnchantmentReform.instance.getConfig();
+        configManager = this;
         initAttributeConfigs();
         initTempPowerConfigs();
         initSkillConfigs();
         initMenuConfigs();
-    }
-
-    public void reloadAttributeConfigs() {
-        initAttributeConfigs();
-    }
-
-    public void reloadSkillConfigs() {
-        initSkillConfigs();
-    }
-
-    public void reloadMenuConfigs() {
-        initMenuConfigs();
+        initEnchantabilityOverrides();
     }
 
     private void initAttributeConfigs() {
@@ -182,6 +175,45 @@ public class ConfigManager extends AbstractManager {
         }
     }
 
+    private void initEnchantabilityOverrides() {
+        enchantabilityOverrides.clear();
+        ConfigurationSection section = getSection("item-enchantability-overrides");
+        if (!section.getBoolean("enabled", true)) {
+            return;
+        }
+        ConfigurationSection materials = section.getConfigurationSection("materials");
+        if (materials == null) {
+            return;
+        }
+        for (String key : materials.getKeys(false)) {
+            Material material = parseEnchantabilityMaterial(key);
+            if (material == null || material.isAir() || !material.isItem()) {
+                continue;
+            }
+            Object configured = materials.get(key);
+            if (!(configured instanceof Number number) || number.intValue() <= 0) {
+                continue;
+            }
+            enchantabilityOverrides.put(material, number.intValue());
+        }
+    }
+
+    private Material parseEnchantabilityMaterial(String key) {
+        if (key == null || key.isBlank()) {
+            return null;
+        }
+        String normalized = key.strip();
+        Material material = Material.matchMaterial(normalized);
+        if (material != null) {
+            return material;
+        }
+        int separator = normalized.indexOf(':');
+        if (separator >= 0 && separator + 1 < normalized.length()) {
+            normalized = normalized.substring(separator + 1);
+        }
+        return Material.matchMaterial(normalized.toUpperCase(Locale.ROOT));
+    }
+
     public ConfigurationSection getEnchantmentMenu() {
         return getMenu("enchantment-info");
     }
@@ -271,5 +303,9 @@ public class ConfigManager extends AbstractManager {
 
     public Collection<String> getMenuIds() {
         return List.copyOf(menuConfigs.keySet());
+    }
+
+    public Integer getEnchantabilityOverride(Material material) {
+        return enchantabilityOverrides.get(material);
     }
 }

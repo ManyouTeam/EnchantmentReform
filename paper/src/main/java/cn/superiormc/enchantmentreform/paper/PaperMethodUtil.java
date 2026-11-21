@@ -454,8 +454,8 @@ public class PaperMethodUtil implements SpecialMethodUtil {
     }
 
     @Override
-    public EnchantmentPowerListener enchantmentPowerListener(TriggerManager triggerManager) {
-       return new PaperEnchantmentPowerListener(triggerManager);
+    public EnchantmentPowerListener enchantmentPowerListener() {
+        return new PaperEnchantmentPowerListener(TriggerManager.triggerManager);
     }
 
     @Override

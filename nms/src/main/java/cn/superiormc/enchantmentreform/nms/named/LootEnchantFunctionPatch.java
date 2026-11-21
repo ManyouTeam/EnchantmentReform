@@ -100,16 +100,16 @@ public final class LootEnchantFunctionPatch {
     }
 
     public static synchronized void uninstall(Logger logger) {
+        if (transformer == null || instrumentation == null) {
+            return;
+        }
+
         ResettableClassFileTransformer installedTransformer = transformer;
         Instrumentation installedInstrumentation = instrumentation;
         transformer = null;
         instrumentation = null;
         activeAbi = null;
         clearProperties();
-
-        if (installedTransformer == null || installedInstrumentation == null) {
-            return;
-        }
 
         try {
             boolean restored = installedTransformer.reset(

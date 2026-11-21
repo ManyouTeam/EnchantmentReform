@@ -1,5 +1,7 @@
 package cn.superiormc.enchantmentreform.nms.named;
 
+import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import cn.superiormc.enchantmentreform.managers.ErrorManager;
 import cn.superiormc.enchantmentreform.nms.NmsBridge;
 import cn.superiormc.enchantmentreform.nms.NmsLog;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;
@@ -16,6 +18,7 @@ public final class NamedNmsBootstrap {
         // Spigot 26.2 no longer exposes Bukkit#getMinecraftVersion(). Keep the
         // bootstrap linked only against the long-standing Bukkit API instead.
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
+        installLootEnchantFunctionPatch(logger);
         ArrowWaterResistancePatch.install(logger);
         NamedNmsResolver resolver = new NamedNmsResolver();
         NamedNmsHandles.Common common;
@@ -50,5 +53,34 @@ public final class NamedNmsBootstrap {
         NmsLog.info(logger, NmsLog.BRIDGE, "enabled (Minecraft " + version + "; capabilities: "
                 + bridge.capabilities().stream().map(Enum::name).sorted().toList() + ").");
         return bridge;
+    }
+
+    private static void installLootEnchantFunctionPatch(Logger logger) {
+        ConfigManager config = ConfigManager.configManager;
+        if (!config.getBoolean("enchant-randomly-overrides.enabled", false)) {
+            return;
+        }
+
+        int minimumCost = config.getInt("enchant-randomly-overrides.minimum-cost", 10);
+        int maximumCost = config.getInt("enchant-randomly-overrides.maximum-cost", 30);
+        try {
+            LootEnchantFunctionPatch.install(logger, minimumCost, maximumCost);
+        } catch (Throwable throwable) {
+            ErrorManager.errorManager.sendErrorMessage("§c[NMS] Loot enchanting: patch initialization failed. " + throwable);
+        }
+    }
+
+    public static void uninstallPatches(Logger logger) {
+        try {
+            ArrowWaterResistancePatch.uninstall(logger);
+        } catch (Throwable throwable) {
+            ErrorManager.errorManager.sendErrorMessage("§c[NMS] Aquatic arrow: restoration failed. " + throwable);
+        }
+
+        try {
+            LootEnchantFunctionPatch.uninstall(logger);
+        } catch (Throwable throwable) {
+            ErrorManager.errorManager.sendErrorMessage("§c[NMS] Loot enchanting: restoration failed. " + throwable);
+        }
     }
 }

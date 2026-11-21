@@ -2,8 +2,6 @@ package cn.superiormc.enchantmentreform.listeners;
 
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,29 +11,15 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.EnumMap;
-import java.util.Locale;
-import java.util.Map;
-
 public final class EnchantabilityOverrideListener implements Listener {
-
-    private volatile Map<Material, Integer> overrides = Map.of();
-
-    public EnchantabilityOverrideListener(ConfigurationSection section) {
-        reload(section);
-    }
-
-    public void reload(ConfigurationSection section) {
-        overrides = loadOverrides(section);
-    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventorySlotChange(PlayerInventorySlotChangeEvent event) {
         int slot = event.getSlot();
         Player player = event.getPlayer();
         ItemStack item = event.getNewItemStack();
-        if (ConfigManager.configManager.getBoolean("item-enchantability-overrides.ignore-equipment-when-open-other-invenotry", true) &&
-                !(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
+        if (ConfigManager.configManager.getBoolean("item-enchantability-overrides.enabled") && ConfigManager.configManager.getBoolean("item-enchantability-overrides.ignore-equipment-when-open-other-invenotry", true)
+                && !(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
             switch (slot) {
                 case 5:
                     if (player.getInventory().getItem(EquipmentSlot.HEAD).hashCode() == item.hashCode()) {
@@ -72,7 +56,7 @@ public final class EnchantabilityOverrideListener implements Listener {
                 || slot < 0 || slot >= player.getInventory().getSize()) {
             return;
         }
-        Integer enchantability = overrides.get(item.getType());
+        Integer enchantability = ConfigManager.configManager.getEnchantabilityOverride(item.getType());
         if (enchantability == null) {
             return;
         }
@@ -85,44 +69,5 @@ public final class EnchantabilityOverrideListener implements Listener {
         updatedMeta.setEnchantable(enchantability);
         updated.setItemMeta(updatedMeta);
         player.getInventory().setItem(slot, updated);
-    }
-
-    private static Map<Material, Integer> loadOverrides(ConfigurationSection section) {
-        if (section == null || !section.getBoolean("enabled", true)) {
-            return Map.of();
-        }
-        ConfigurationSection materials = section.getConfigurationSection("materials");
-        if (materials == null) {
-            return Map.of();
-        }
-        Map<Material, Integer> result = new EnumMap<>(Material.class);
-        for (String key : materials.getKeys(false)) {
-            Material material = parseMaterial(key);
-            if (material == null || material.isAir() || !material.isItem()) {
-                continue;
-            }
-            Object configured = materials.get(key);
-            if (!(configured instanceof Number number) || number.intValue() <= 0) {
-                continue;
-            }
-            result.put(material, number.intValue());
-        }
-        return Map.copyOf(result);
-    }
-
-    private static Material parseMaterial(String key) {
-        if (key == null || key.isBlank()) {
-            return null;
-        }
-        String normalized = key.strip();
-        Material material = Material.matchMaterial(normalized);
-        if (material != null) {
-            return material;
-        }
-        int separator = normalized.indexOf(':');
-        if (separator >= 0 && separator + 1 < normalized.length()) {
-            normalized = normalized.substring(separator + 1);
-        }
-        return Material.matchMaterial(normalized.toUpperCase(Locale.ROOT));
     }
 }

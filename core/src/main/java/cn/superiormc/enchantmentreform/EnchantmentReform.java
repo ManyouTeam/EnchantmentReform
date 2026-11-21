@@ -1,7 +1,26 @@
 package cn.superiormc.enchantmentreform;
 
-import cn.superiormc.enchantmentreform.listeners.EnchantmentPowerListener;
-import cn.superiormc.enchantmentreform.managers.*;
+import cn.superiormc.enchantmentreform.managers.AbilityManager;
+import cn.superiormc.enchantmentreform.managers.AbstractManager;
+import cn.superiormc.enchantmentreform.managers.AntiAbuseManager;
+import cn.superiormc.enchantmentreform.managers.AttributeManager;
+import cn.superiormc.enchantmentreform.managers.ChangesManager;
+import cn.superiormc.enchantmentreform.managers.CommandManager;
+import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
+import cn.superiormc.enchantmentreform.managers.ErrorManager;
+import cn.superiormc.enchantmentreform.managers.HookManager;
+import cn.superiormc.enchantmentreform.managers.InitManager;
+import cn.superiormc.enchantmentreform.managers.ItemManager;
+import cn.superiormc.enchantmentreform.managers.LanguageManager;
+import cn.superiormc.enchantmentreform.managers.ListenerManager;
+import cn.superiormc.enchantmentreform.managers.MatchEntityManager;
+import cn.superiormc.enchantmentreform.managers.MatchItemManager;
+import cn.superiormc.enchantmentreform.managers.PowerConditionsManager;
+import cn.superiormc.enchantmentreform.managers.PowerManager;
+import cn.superiormc.enchantmentreform.managers.PowerModifiersManager;
+import cn.superiormc.enchantmentreform.managers.SkillManager;
+import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import cn.superiormc.enchantmentreform.nms.NmsBridge;
 import cn.superiormc.enchantmentreform.nms.NmsLog;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;
@@ -20,25 +39,23 @@ import java.util.logging.Logger;
 
 public final class EnchantmentReform extends JavaPlugin {
 
+    private static final String NMS_BOOTSTRAP = "cn.superiormc.enchantmentreform.nms.named.NamedNmsBootstrap";
+
     public static EnchantmentReform instance;
 
     private Metrics metrics;
 
     public static SpecialMethodUtil methodUtil;
 
-    public static boolean isFolia;
+    public static boolean isPaper = false;
+
+    public static boolean isFolia = false;
 
     public static int yearVersion;
 
     public static int majorVersion;
 
     public static int minorVersion;
-
-    private EnchantmentPowerListener powerListener;
-
-    private boolean lootEnchantFunctionPatchInstalled;
-
-    private boolean paperMode;
 
     private boolean spigotRegistryReady;
 
@@ -47,8 +64,9 @@ public final class EnchantmentReform extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        paperMode = isPaperServer();
-        if (paperMode) {
+        isPaper = CommonUtil.getClass("io.papermc.paper.plugin.bootstrap.PluginBootstrap")
+                || CommonUtil.getClass("com.destroystokyo.paper.PaperConfig");
+        if (isPaper) {
             return;
         }
         try {
@@ -79,8 +97,7 @@ public final class EnchantmentReform extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        paperMode = isPaperServer();
-        if (!paperMode && !spigotRegistryReady) {
+        if (!isPaper && !spigotRegistryReady) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -93,7 +110,7 @@ public final class EnchantmentReform extends JavaPlugin {
         } catch (Throwable throwable) {
             Bukkit.getConsoleSender().sendMessage(TextUtil.pluginPrefix() + " §cError: Can not get your Minecraft version! Default set to 1.0.0.");
         }
-        if (paperMode) {
+        if (isPaper) {
             try {
                 Class<?> paperClass = Class.forName("cn.superiormc.enchantmentreform.paper.PaperMethodUtil");
                 methodUtil = (SpecialMethodUtil) paperClass.getDeclaredConstructor().newInstance();
@@ -128,7 +145,6 @@ public final class EnchantmentReform extends JavaPlugin {
         }
         new ConfigManager();
         new AntiAbuseManager();
-        installLootEnchantFunctionPatch();
         new LanguageManager();
         new HookManager();
         new ItemManager();
@@ -153,11 +169,6 @@ public final class EnchantmentReform extends JavaPlugin {
         enchantmentConfigManager.initializePowers();
         new CommandManager();
         new ListenerManager();
-        methodUtil.tempBlockManager();
-        powerListener = methodUtil.enchantmentPowerListener(TriggerManager.triggerManager);
-        if (FakeChangeManager.enableThis()) {
-            new FakeChangeManager();
-        }
         AbstractManager.initializeManagers();
         metrics = new Metrics(EnchantmentReform.instance, 32795);
         TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fYour server version is: " + yearVersion + "." + majorVersion + "." + minorVersion + "!");
@@ -168,81 +179,10 @@ public final class EnchantmentReform extends JavaPlugin {
         return nmsBridge;
     }
 
-    private boolean isPaperServer() {
-        return CommonUtil.getClass("io.papermc.paper.plugin.bootstrap.PluginBootstrap")
-                || CommonUtil.getClass("com.destroystokyo.paper.PaperConfig");
-    }
-
-    private void installLootEnchantFunctionPatch() {
-        if (!ConfigManager.configManager.getBoolean(
-                "enchant-randomly-overrides.enabled",
-                false
-        )) {
-            return;
-        }
-        int minimumCost = ConfigManager.configManager.getInt(
-                "enchant-randomly-overrides.minimum-cost",
-                10
-        );
-
-        int maximumCost = ConfigManager.configManager.getInt(
-                "enchant-randomly-overrides.maximum-cost",
-                30
-        );
-
-        try {
-            Class<?> patchClass = Class.forName(
-                    "cn.superiormc.enchantmentreform.nms.named."
-                            + "LootEnchantFunctionPatch"
-            );
-
-            lootEnchantFunctionPatchInstalled = (boolean) patchClass
-                    .getMethod(
-                            "install",
-                            java.util.logging.Logger.class,
-                            int.class,
-                            int.class
-                    )
-                    .invoke(
-                            null,
-                            getLogger(),
-                            minimumCost,
-                            maximumCost
-                    );
-        } catch (Throwable throwable) {
-            NmsLog.warning(getLogger(), NmsLog.LOOT_ENCHANTING, "unavailable; patch initialization failed.", throwable);
-            lootEnchantFunctionPatchInstalled = false;
-        }
-    }
-
-    private void uninstallLootEnchantFunctionPatch() {
-        if (!lootEnchantFunctionPatchInstalled) {
-            return;
-        }
-
-        lootEnchantFunctionPatchInstalled = false;
-
-        try {
-            Class<?> patchClass = Class.forName(
-                    "cn.superiormc.enchantmentreform.nms.named."
-                            + "LootEnchantFunctionPatch"
-            );
-
-            patchClass
-                    .getMethod(
-                            "uninstall",
-                            java.util.logging.Logger.class
-                    )
-                    .invoke(null, getLogger());
-        } catch (Throwable throwable) {
-            NmsLog.warning(getLogger(), NmsLog.LOOT_ENCHANTING, "restoration failed.", throwable);
-        }
-    }
-
     private NmsBridge createNmsBridge() {
         try {
-            Class<?> bootstrap = Class.forName("cn.superiormc.enchantmentreform.nms.named.NamedNmsBootstrap");
-            return (NmsBridge) bootstrap.getMethod("create", java.util.logging.Logger.class)
+            Class<?> bootstrap = Class.forName(NMS_BOOTSTRAP);
+            return (NmsBridge) bootstrap.getMethod("create", Logger.class)
                     .invoke(null, getLogger());
         } catch (Throwable throwable) {
             NmsLog.warning(getLogger(), NmsLog.BRIDGE, "unavailable; initialization failed.", throwable);
@@ -252,23 +192,19 @@ public final class EnchantmentReform extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        try {
-            Class.forName("cn.superiormc.enchantmentreform.nms.named.ArrowWaterResistancePatch")
-                    .getMethod("uninstall", java.util.logging.Logger.class).invoke(null, getLogger());
-        } catch (Throwable throwable) {
-            NmsLog.warning(getLogger(), NmsLog.AQUATIC_ARROW, "restoration failed.", throwable);
+        if (ErrorManager.errorManager != null) {
+            try {
+                Class.forName(NMS_BOOTSTRAP).getMethod("uninstallPatches", Logger.class).invoke(null, getLogger());
+            } catch (ReflectiveOperationException | LinkageError exception) {
+                ErrorManager.errorManager.sendErrorMessage("§c[NMS] Patch restoration failed: " + exception);
+            }
         }
-        uninstallLootEnchantFunctionPatch();
         if (methodUtil != null) {
             Bukkit.getOnlinePlayers().forEach(methodUtil::clearBossBars);
         }
         if (metrics != null) {
             metrics.shutdown();
             metrics = null;
-        }
-        if (powerListener != null) {
-            powerListener.close();
-            powerListener = null;
         }
         boolean powerManagerRegistered = PowerManager.powerManager != null;
         AbstractManager.disableManagers();

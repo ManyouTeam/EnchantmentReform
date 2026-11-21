@@ -76,11 +76,6 @@ public final class SkillManager extends AbstractManager {
         initializeSkills();
     }
 
-    public void loadSkills() {
-        ConfigManager.configManager.reloadSkillConfigs();
-        initializeSkills();
-    }
-
     private void initializeSkills() {
         if (!isEnabled()) {
             return;

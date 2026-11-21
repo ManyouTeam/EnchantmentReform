@@ -17,10 +17,6 @@ public final class AttributeManager extends AbstractManager {
         attributeManager = this;
     }
 
-    public void loadAttributes() {
-        ConfigManager.configManager.reloadAttributeConfigs();
-    }
-
     public void initializePowers() {
         for (ObjectCustomAttribute attribute : ConfigManager.configManager.attributeConfigs.values()) {
             attribute.initializePower();

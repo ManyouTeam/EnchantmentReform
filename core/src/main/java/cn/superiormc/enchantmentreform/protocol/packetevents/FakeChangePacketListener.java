@@ -1,7 +1,7 @@
 package cn.superiormc.enchantmentreform.protocol.packetevents;
 
+import cn.superiormc.enchantmentreform.hooks.enchantmentdescription.EnchantmentDescriptionItemDisplay;
 import cn.superiormc.enchantmentreform.hooks.fakechange.FakeChangeContext;
-import cn.superiormc.enchantmentreform.managers.FakeChangeManager;
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
@@ -19,10 +19,10 @@ import java.util.List;
 
 public final class FakeChangePacketListener implements PacketListener {
 
-    private final FakeChangeManager manager;
+    private final EnchantmentDescriptionItemDisplay itemDisplay;
 
-    public FakeChangePacketListener(FakeChangeManager manager) {
-        this.manager = manager;
+    public FakeChangePacketListener(EnchantmentDescriptionItemDisplay itemDisplay) {
+        this.itemDisplay = itemDisplay;
     }
 
     @Override
@@ -104,7 +104,10 @@ public final class FakeChangePacketListener implements PacketListener {
         org.bukkit.inventory.ItemStack bukkit = SpigotConversionUtil.toBukkitItemStack(item);
         FakeChangeContext context = new FakeChangeContext(
                 player, surface, windowId, slot, playerInventory);
-        return SpigotConversionUtil.fromBukkitItemStack(manager.transform(bukkit, context));
+        if (bukkit != null && !bukkit.getType().isAir()) {
+            bukkit = itemDisplay.apply(bukkit.clone(), context);
+        }
+        return SpigotConversionUtil.fromBukkitItemStack(bukkit);
     }
 
     private boolean isPlayerInventory(Player player, int slot, int windowId) {

@@ -6,7 +6,6 @@ import cn.superiormc.enchantmentreform.managers.AttributeManager;
 import cn.superiormc.enchantmentreform.managers.CommandManager;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
-import cn.superiormc.enchantmentreform.managers.FakeChangeManager;
 import cn.superiormc.enchantmentreform.managers.ItemManager;
 import cn.superiormc.enchantmentreform.managers.LanguageManager;
 import cn.superiormc.enchantmentreform.managers.SkillManager;
@@ -51,9 +50,6 @@ public final class SubReload extends AbstractCommand {
         new CommandManager();
         if (TriggerManager.triggerManager != null) {
             TriggerManager.triggerManager.activeEnchantments().reloadMode();
-        }
-        if (FakeChangeManager.fakeChangeManager != null) {
-            FakeChangeManager.fakeChangeManager.reload();
         }
         LanguageManager.languageManager.sendStringText(sender, "plugin.reloaded");
         LanguageManager.languageManager.sendStringText(sender, "plugin.registry-restart-required");

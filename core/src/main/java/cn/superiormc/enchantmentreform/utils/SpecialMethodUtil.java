@@ -90,8 +90,8 @@ public interface SpecialMethodUtil {
 
     void tempBlockManager();
 
-    default EnchantmentPowerListener enchantmentPowerListener(TriggerManager triggerManager) {
-        return new EnchantmentPowerListener(triggerManager);
+    default EnchantmentPowerListener enchantmentPowerListener() {
+        return new EnchantmentPowerListener(TriggerManager.triggerManager);
     }
 
     default double getDestroySpeed(Block block, ItemStack tool) {
