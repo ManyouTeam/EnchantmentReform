@@ -2,7 +2,9 @@ package cn.superiormc.enchantmentreform.objects;
 
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 
+import java.lang.reflect.Method;
 import java.util.Locale;
 
 public record EnchantmentRarity(String id,
@@ -31,6 +33,26 @@ public record EnchantmentRarity(String id,
                 suffix == null ? "" : suffix,
                 section == null ? null : section.getString("display-name"),
                 section);
+    }
+
+    public static String idOf(PowerEnchantmentDefinition definition, Enchantment enchantment) {
+        if (definition != null) {
+            return definition.getRarity();
+        }
+        if (enchantment.isCursed()) {
+            return "CURSE";
+        }
+        try {
+            Method method = enchantment.getClass().getMethod("getRarity");
+            method.setAccessible(true);
+            Object paperRarity = method.invoke(enchantment);
+            if (paperRarity != null) {
+                String value = paperRarity.toString().toUpperCase(Locale.ROOT);
+                return value.equals("VERY_RARE") ? "LEGENDARY" : value;
+            }
+        } catch (ReflectiveOperationException ignored) {
+        }
+        return enchantment.isTreasure() ? "RARE" : "COMMON";
     }
 
     public int inheritedInt(String path, int defaultValue) {

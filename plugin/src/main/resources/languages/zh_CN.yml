@@ -1,5 +1,4 @@
 error:
-  menu-console-usage: '&#98FB98[EnchantmentReform] &c控制台用法：er menu [菜单ID] <玩家> [技能ID|属性ID] [-b]'
   player-not-found: "&#98FB98[EnchantmentReform] &c找不到玩家 {player}!"
   args: "&#98FB98[EnchantmentReform] &c命令用法错误，请使用/enchantmentreform help获取帮助!"
   in-game: "&#98FB98[EnchantmentReform] &c你必须在游戏中使用该命令!"
@@ -21,7 +20,6 @@ attribute:
   modifier-added: "&#98FB98[EnchantmentReform] &f已为玩家 {player} 的 {attribute} 添加 {modifier}（{operation} {amount}），当前值：{value}。"
   modifier-set: "&#98FB98[EnchantmentReform] &f已将玩家 {player} 的 {attribute} 修改器 {modifier} 设为 {operation} {amount}，当前值：{value}。"
 temp-power:
-  usage: '&#98FB98[EnchantmentReform] &c用法：/er temppower set <玩家> <ID> [等级]、remove <玩家> <ID>、clear <玩家> 或 list <玩家>。'
   not-found: '&#98FB98[EnchantmentReform] &c临时能力 {power} 不存在或已禁用！'
   invalid-level: '&#98FB98[EnchantmentReform] &c{value} 不是有效的正整数等级！'
   set: '&#98FB98[EnchantmentReform] &f已将玩家 {player} 的临时能力 {power} 设为 {level} 级。'
@@ -38,14 +36,28 @@ plugin:
   registry-restart-required: "&#98FB98[EnchantmentReform] &f附魔注册表的变更需要完整重启服务器后生效!"
   saved: "&#98FB98[EnchantmentReform] &f物品已保存!"
   generated: "&#98FB98[EnchantmentReform] &f已在插件根目录下生成手持物品的物品格式文件!"
+give-book:
+  unknown: '&#98FB98[EnchantmentReform] &c未知的附魔：{value}。'
+  invalid-level: '&#98FB98[EnchantmentReform] &c请输入 1 至 255 的附魔等级。'
+  given: '&#98FB98[EnchantmentReform] &f已给予 {player} 一本 {enchantment} {level} 级附魔书。'
+random-enchant:
+  empty-hand: '&#98FB98[EnchantmentReform] &c{player} 的主手没有物品。'
+  no-result: '&#98FB98[EnchantmentReform] &c未能为每次抽取找到适用的附魔，主手物品未修改。'
+  failed: '&#98FB98[EnchantmentReform] &c主手物品附魔失败，请查看控制台错误信息。'
+  applied-with-enchantments: '&#98FB98[EnchantmentReform] &f已为 {player} 的主手物品添加 {enchantments}&f。'
 random-book:
-  usage: '&#98FB98[EnchantmentReform] &c用法：/er randombook <玩家> levels <附魔强度> [数量]，或 /er randombook <玩家> all [数量]。'
+  invalid-target: '&#98FB98[EnchantmentReform] &c未知或为空的支持物品标签：{value}。'
+  no-target-result: '&#98FB98[EnchantmentReform] &c没有符合目标物品及筛选条件的附魔书。'
+  invalid-rarity: '&#98FB98[EnchantmentReform] &c未知的附魔稀有度：{value}。'
+  no-rarity-result: '&#98FB98[EnchantmentReform] &c未能生成稀有度为 {value} 的附魔书，本次未发放。'
+  invalid-level: '&#98FB98[EnchantmentReform] &c附魔等级 {value} 无效，请输入正整数或 5~10 这样的范围。'
+  no-level-result: '&#98FB98[EnchantmentReform] &c没有附魔支持所选等级或范围 {value}，本次未发放。'
   invalid-power: '&#98FB98[EnchantmentReform] &c{value} 不是有效的正整数附魔强度！'
   invalid-amount: '&#98FB98[EnchantmentReform] &c{value} 不是有效数量，请填写 1-64 的整数！'
   no-enchantments: '&#98FB98[EnchantmentReform] &c没有可供随机选择的已注册附魔。'
   no-result: '&#98FB98[EnchantmentReform] &c原版算法在附魔强度 {power} 下未生成有效附魔书，本次未发放任何物品。'
   failed: '&#98FB98[EnchantmentReform] &c生成附魔书失败，请查看控制台错误信息。'
-  given: '&#98FB98[EnchantmentReform] &f已给予玩家 {player} {amount} 本随机附魔书。'
+  given-with-enchantments: '&#98FB98[EnchantmentReform] &f已给予 {player} {amount} 本随机附魔书，包含 {enchantments}&f。'
 
 give-save-item: "&#98FB98[EnchantmentReform] &f已将 {amount} 个已保存物品 {item} 给予玩家 {player}!"
 command-tab:
@@ -53,8 +65,8 @@ command-tab:
 dupe-removed: "&#98FB98[EnchantmentReform] &f已从您的背包中移除一个非法物品!"
 help:
   main: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。"
-  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform temppower set|remove|clear|list &7- 管理玩家临时能力。"
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform randombook <玩家> levels <附魔强度> [数量] &7- 按原版规则随机给予附魔书。\n&f/enchantmentreform randombook <玩家> all [数量] &7- 从全部附魔随机给予单附魔书。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。\n&f/enchantmentreform temppower set|remove|clear|list &7- 管理玩家临时能力。"
+  main-admin: "&#98FB98&lEnchantmentReform &7由 @PQguanfang 制作\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform menu [菜单ID] &7- 打开指定菜单。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform temppower set|remove|clear|list &7- 管理玩家临时能力。\n&f/er givebook [玩家] <附魔ID> [等级]\n&f/er randombook [玩家] all [数量] [--level <等级|范围>] [--target <支持物品标签>] [--rarity <稀有度ID>]\n&f/er randombook [玩家] levels <附魔强度> [数量] [--target <支持物品标签>] [--rarity <稀有度ID>]\n&f/er randomenchant [玩家] all [次数] [--level <等级|范围>] [--rarity <稀有度ID>]\n&f/er randomenchant [玩家] levels <附魔强度> [次数] [--rarity <稀有度ID>]"
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- 查看帮助。\n&f/enchantmentreform setskillxp|addskillxp <玩家> <技能> <经验> &7- 修改技能经验。\n&f/enchantmentreform setskilllevel|addskilllevel <玩家> <技能> <等级> &7- 修改技能等级。\n&f/enchantmentreform setskillmultiplier <玩家> <技能|all> <倍率> &7- 设置技能经验倍率。\n&f/enchantmentreform reload &7- 重载插件。\n&f/enchantmentreform menu [菜单ID] <玩家名> [技能ID|属性ID] [-b] &7- 为在线玩家打开菜单。\n&f/enchantmentreform temppower set|remove|clear|list &7- 管理玩家临时能力。\n&f/er givebook <玩家> <附魔ID> [等级]\n&f/er randombook <玩家> all [数量] [--level <等级|范围>] [--target <支持物品标签>] [--rarity <稀有度ID>]\n&f/er randombook <玩家> levels <附魔强度> [数量] [--target <支持物品标签>] [--rarity <稀有度ID>]\n&f/er randomenchant <玩家> all [次数] [--level <等级|范围>] [--rarity <稀有度ID>]\n&f/er randomenchant <玩家> levels <附魔强度> [次数] [--rarity <稀有度ID>]"
 override-lang:
   skill-source-farming-breed_animals: '繁殖动物'
   skill-source-farming-breed_animals-desc: '通过繁殖动物获得技能经验。'

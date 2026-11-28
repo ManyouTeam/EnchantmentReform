@@ -1,10 +1,13 @@
 package cn.superiormc.enchantmentreform.spigot;
 
+import cn.superiormc.enchantmentreform.managers.ErrorManager;
 import cn.superiormc.enchantmentreform.spigot.listeners.SpigotTempBlockListener;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.SchedulerUtil;
 import cn.superiormc.enchantmentreform.utils.SpecialMethodUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,7 +15,18 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.EvokerFangs;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -22,12 +36,23 @@ import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 import org.bukkit.projectiles.ProjectileSource;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class SpigotMethodUtil implements SpecialMethodUtil {
 
@@ -46,6 +71,48 @@ public class SpigotMethodUtil implements SpecialMethodUtil {
     @Override
     public String methodID() {
         return "spigot";
+    }
+
+    @Override
+    public Supplier<ItemStack> enchantedItemGenerator(ItemStack item, int power, List<Enchantment> enchantments) {
+        try {
+            String craftPackage = Bukkit.getServer().getClass().getPackageName();
+            Class<?> craftStack = Class.forName(craftPackage + ".inventory.CraftItemStack");
+            Method toNative = craftStack.getMethod("asNMSCopy", ItemStack.class);
+            Class<?> nativeStack = toNative.getReturnType();
+            Method toBukkit = craftStack.getMethod("asBukkitCopy", nativeStack);
+            Method toHolder = Class.forName(craftPackage + ".enchantments.CraftEnchantment")
+                    .getMethod("bukkitToMinecraftHolder", Enchantment.class);
+            List<Object> holders = new ArrayList<>(enchantments.size());
+            for (Enchantment enchantment : enchantments) {
+                holders.add(toHolder.invoke(null, enchantment));
+            }
+            Field randomSource = Bukkit.getItemFactory().getClass().getDeclaredField("randomSource");
+            randomSource.setAccessible(true);
+            Object random = randomSource.get(null);
+            Class<?> helper;
+            try {
+                helper = Class.forName("net.minecraft.world.item.enchantment.EnchantmentHelper");
+            } catch (ClassNotFoundException ignored) {
+                helper = Class.forName("net.minecraft.world.item.enchantment.EnchantmentManager");
+            }
+            Class<?>[] signature = {randomSource.getType(), nativeStack, int.class, Stream.class};
+            Method roll = Arrays.stream(helper.getMethods())
+                    .filter(method -> method.getReturnType() == nativeStack && Arrays.equals(method.getParameterTypes(), signature))
+                    .findFirst().orElseThrow(() -> new NoSuchMethodException("Missing native enchantItem overload"));
+            return () -> {
+                try {
+                    Object nativeItem = toNative.invoke(null, item);
+                    return (ItemStack) toBukkit.invoke(null, roll.invoke(null, random, nativeItem, power, holders.stream()));
+                } catch (ReflectiveOperationException exception) {
+                    ErrorManager.errorManager.sendErrorMessage("§cError: Failed to apply Spigot level-based enchanting: " + exception);
+                    return item;
+                }
+            };
+        } catch (ReflectiveOperationException exception) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Failed to prepare Spigot level-based enchanting: " + exception);
+            return () -> item;
+        }
     }
 
     @Override
@@ -187,7 +254,7 @@ public class SpigotMethodUtil implements SpecialMethodUtil {
     @Override
     public void sendHoverChat(Player player, String text, String command) {
         if (player != null) {
-            player.spigot().sendMessage(net.md_5.bungee.api.chat.TextComponent.fromLegacyText(TextUtil.parse(text, player)));
+            player.spigot().sendMessage(TextComponent.fromLegacyText(TextUtil.parse(text, player)));
         }
     }
 
@@ -204,8 +271,8 @@ public class SpigotMethodUtil implements SpecialMethodUtil {
             return;
         }
         player.spigot().sendMessage(
-                net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
-                net.md_5.bungee.api.chat.TextComponent.fromLegacyText(TextUtil.parse(message, player))
+                ChatMessageType.ACTION_BAR,
+                TextComponent.fromLegacyText(TextUtil.parse(message, player))
         );
     }
 

@@ -59,6 +59,12 @@ permissions:
     default: op
   enchantmentreform.temppower:
     default: op
+  enchantmentreform.enchantmentinfo.givebook:
+    default: op
+  enchantmentreform.givebook:
+    default: op
+  enchantmentreform.randomenchant:
+    default: op
   enchantmentreform.randombook:
     default: op
   enchantmentreform.setattribute:

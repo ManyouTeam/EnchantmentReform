@@ -3,8 +3,10 @@ package cn.superiormc.enchantmentreform.utils;
 import cn.superiormc.enchantmentreform.listeners.EnchantmentPowerListener;
 import cn.superiormc.enchantmentreform.managers.TriggerManager;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -17,10 +19,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public interface SpecialMethodUtil {
 
     String methodID();
+
+    default Supplier<ItemStack> enchantedBookGenerator(int power, List<Enchantment> enchantments) {
+        return enchantedItemGenerator(new ItemStack(Material.BOOK), power, enchantments);
+    }
+
+    Supplier<ItemStack> enchantedItemGenerator(ItemStack item, int power, List<Enchantment> enchantments);
 
     void dispatchCommand(String command);
 

@@ -14,6 +14,8 @@ Aliases: `/er`, `/enchants`
 
 Opens the YAML menu whose file name matches `menu-id`. For example, use `menu main`, `menu enchantment-info`, `menu skill-info`, `menu attribute-info`, or `menu attribute-allocation`.
 
+Players with `enchantmentreform.enchantmentinfo.givebook` can Shift-click an enchantment in the catalogue to receive one book at its maximum level. This permission defaults to operators. If the inventory is full, the book drops at the player’s feet.
+
 Omit the menu ID to open `main`. The console can open menus for online players:
 
 ```text
@@ -62,17 +64,40 @@ The target must be online. An omitted level uses `default-level` from `temp_powe
 ## Give random enchanted books
 
 ```text
-/er randombook <player> levels <power> [amount]
-/er randombook <player> all [amount]
+/er randombook [player] all [amount] [--level <level|range>] [--target <supported-item tag>] [--rarity <rarity ID>]
+/er randombook [player] levels <power> [amount] [--target <supported-item tag>] [--rarity <rarity ID>]
 ```
 
-Examples: `/er randombook Steve levels 30 5` and `/er randombook Steve all 5`. Players and the console can target an online player. The amount defaults to `1` and must be between `1` and `64`. Each book is rolled independently. Books that do not fit in the inventory drop at the target player's location.
+Players may omit the target player to give themselves books. The console must specify an online player. The amount defaults to 1 and accepts 1–64. Each book is rolled independently. Overflow drops at the target player's location.
 
-`levels` calls the vanilla algorithm used by `minecraft:enchant_with_levels` without specifying `options`. It considers all registered enchantments and applies their weights, enchanting costs, item compatibility, and conflicts. Power is a positive integer such as `30`, representing the algorithm's input cost/power rather than the final enchantment level. A book can contain multiple compatible enchantments. If any roll produces no valid enchanted book, the entire batch is withheld.
+`all` rolls one registered enchantment per book. Use `--level 3` to restrict the pool to enchantments that support level III and give books at that level. Use `--level 5~10` to roll a level from 5 through 10 within each selected enchantment’s supported range. `levels` (also `level`) uses vanilla enchanting power and can generate multiple compatible enchantments per book. If a roll fails, the batch is withheld.
 
-`all` uniformly selects one enchantment from the entire registered enchantment registry, including vanilla and other plugins' enchantments, then uniformly chooses a level between its normal starting and maximum levels. Each book contains one enchantment. Enchantment weights and acquisition sources do not restrict this mode.
+Use `--target enchantmentreform:sword` to select enchantments applicable to items in that `supported-items.tags` entry in `config.yml`. Enter the configured key without a `#` prefix. Use `--rarity common` as the final option to select a configured rarity. Both filters can be combined, as in `/er randombook levels 30 5 --target enchantmentreform:sword --rarity common`.
 
-Permission: `enchantmentreform.randombook`, granted to operators by default. Online player names, modes, power, and amounts support tab completion.
+The permission is `enchantmentreform.randombook`, granted to operators by default.
+
+## Give a specific enchanted book
+
+```text
+/er givebook [player] <enchantment> [level]
+```
+
+Players may omit the target. Console commands require an online target. For example, `/er givebook minecraft:sharpness 5` gives the sender a Sharpness V book. Omitting the level gives a book at the enchantment’s maximum level. You can also specify a level from 1 to 255. Bare IDs look up Minecraft first and then EnchantmentReform. Use a namespaced ID for other plugins.
+
+The permission is `enchantmentreform.givebook`, granted to operators by default.
+
+## Randomly enchant a held item
+
+```text
+/er randomenchant [player] all [rolls] [--level <level|range>] [--rarity <rarity ID>]
+/er randomenchant [player] levels <power> [rolls] [--rarity <rarity ID>]
+```
+
+Players may omit the target to enchant their own main-hand item. Console commands require an online target.
+
+For example, `/er randomenchant Steve all 2 --level 3 --rarity common` adds two compatible level III common enchantments to Steve’s main-hand stack. In `all` mode, `--level` also accepts an inclusive range such as `5~10`. Each roll excludes existing and conflicting enchantments. In levels mode the native algorithm uses the item and the given power. The entire batch is applied only when every roll succeeds.
+
+The permission is `enchantmentreform.randomenchant`, granted to operators by default.
 
 ## Reload runtime files
 

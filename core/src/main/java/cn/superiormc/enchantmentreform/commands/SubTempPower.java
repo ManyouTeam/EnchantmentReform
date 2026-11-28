@@ -42,7 +42,7 @@ public final class SubTempPower extends AbstractCommand {
             default -> false;
         };
         if (!valid) {
-            LanguageManager.languageManager.sendStringText(sender, "temp-power.usage");
+            LanguageManager.languageManager.sendStringText(sender, "error.args");
             return;
         }
         Player target = Bukkit.getPlayerExact(args[2]);

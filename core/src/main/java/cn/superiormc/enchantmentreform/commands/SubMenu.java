@@ -35,14 +35,14 @@ public final class SubMenu extends AbstractCommand {
         boolean bypass = args[args.length - 1].equalsIgnoreCase("-b");
         int length = args.length - (bypass ? 1 : 0);
         if (length < 2 || length > 4) {
-            LanguageManager.languageManager.sendStringText("error.menu-console-usage");
+            LanguageManager.languageManager.sendStringText("error.args");
             return;
         }
         String menuId = length == 2 ? "main" : args[1].toLowerCase(Locale.ROOT);
         String playerName = length == 2 ? args[1] : args[2];
         String context = length == 4 ? args[3] : null;
         if (context != null && !menuId.equals("skill-detail") && !menuId.equals("attribute-detail")) {
-            LanguageManager.languageManager.sendStringText("error.menu-console-usage");
+            LanguageManager.languageManager.sendStringText("error.args");
             return;
         }
         Player target = Bukkit.getPlayerExact(playerName);

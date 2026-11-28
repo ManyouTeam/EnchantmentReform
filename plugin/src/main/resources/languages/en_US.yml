@@ -1,5 +1,4 @@
 error:
-  menu-console-usage: '&#98FB98[EnchantmentReform] &cConsole: er menu [menu-id] <player> [skill-id|attribute-id] [-b]'
   player-not-found: "&#98FB98[EnchantmentReform] &cWe can't find player {player}!"
   args: "&#98FB98[EnchantmentReform] &cWrong command usage, if you need help, use /enchantmentreform help!"
   in-game: "&#98FB98[EnchantmentReform] &cYou have to use this command in game!"
@@ -21,7 +20,6 @@ attribute:
   modifier-added: "&#98FB98[EnchantmentReform] &fAdded {modifier} ({operation} {amount}) to {player}'s {attribute}; current value: {value}."
   modifier-set: "&#98FB98[EnchantmentReform] &fSet {modifier} ({operation} {amount}) on {player}'s {attribute}; current value: {value}."
 temp-power:
-  usage: '&#98FB98[EnchantmentReform] &cUsage: /er temppower set <player> <id> [level], remove <player> <id>, clear <player>, or list <player>.'
   not-found: '&#98FB98[EnchantmentReform] &cTemporary power {power} was not found or is disabled!'
   invalid-level: '&#98FB98[EnchantmentReform] &c{value} is not a valid positive integer level!'
   set: '&#98FB98[EnchantmentReform] &fSet {player}''s temporary power {power} to level {level}.'
@@ -38,14 +36,28 @@ plugin:
   registry-restart-required: "&#98FB98[EnchantmentReform] &fEnchantment registry changes require a full server restart!"
   saved: "&#98FB98[EnchantmentReform] &fItem saved!"
   generated: "&#98FB98[EnchantmentReform] &fGenerated hold item's item format at plugin config folder, please copy them into your configs!"
+give-book:
+  unknown: '&#98FB98[EnchantmentReform] &cUnknown enchantment: {value}.'
+  invalid-level: '&#98FB98[EnchantmentReform] &cEnter an enchantment level from 1 to 255.'
+  given: '&#98FB98[EnchantmentReform] &fGave {player} a book with {enchantment} at level {level}.'
+random-enchant:
+  empty-hand: '&#98FB98[EnchantmentReform] &c{player} must hold an item in their main hand.'
+  no-result: '&#98FB98[EnchantmentReform] &cCould not complete every roll with compatible enchantments. The held item was left unchanged.'
+  failed: '&#98FB98[EnchantmentReform] &cFailed to enchant the held item. Check the console for details.'
+  applied-with-enchantments: '&#98FB98[EnchantmentReform] &fAdded {enchantments} &fto the item in {player}’s main hand.'
 random-book:
-  usage: '&#98FB98[EnchantmentReform] &cUsage: /er randombook <player> levels <power> [amount], or /er randombook <player> all [amount].'
+  invalid-target: '&#98FB98[EnchantmentReform] &cUnknown or empty supported-item tag: {value}.'
+  no-target-result: '&#98FB98[EnchantmentReform] &cNo book matched the selected target and filters.'
+  invalid-rarity: '&#98FB98[EnchantmentReform] &cUnknown enchantment rarity: {value}.'
+  no-rarity-result: '&#98FB98[EnchantmentReform] &cNo eligible book was generated for rarity {value}. No books were given.'
+  invalid-level: '&#98FB98[EnchantmentReform] &cInvalid enchantment level {value}. Enter a positive integer or a range such as 5~10.'
+  no-level-result: '&#98FB98[EnchantmentReform] &cNo matching enchantment supports the requested level or range {value}. No books were given.'
   invalid-power: '&#98FB98[EnchantmentReform] &c{value} is not a valid positive integer enchanting power!'
   invalid-amount: '&#98FB98[EnchantmentReform] &c{value} is not a valid amount; enter an integer from 1 to 64!'
   no-enchantments: '&#98FB98[EnchantmentReform] &cThere are no registered enchantments to choose from.'
   no-result: '&#98FB98[EnchantmentReform] &cVanilla enchanting produced no valid enchanted book at power {power}. No items were given.'
   failed: '&#98FB98[EnchantmentReform] &cFailed to generate enchanted books. Check the console for details.'
-  given: '&#98FB98[EnchantmentReform] &fGave {amount} random enchanted books to {player}.'
+  given-with-enchantments: '&#98FB98[EnchantmentReform] &fGave {player} {amount} random enchanted books containing {enchantments}&f.'
 
 give-save-item: "&#98FB98[EnchantmentReform] &fGave {amount} of saved item {item} to {player}!"
 command-tab:
@@ -53,8 +65,8 @@ command-tab:
 dupe-removed: "&#98FB98[EnchantmentReform] &fAn illegal item from your inventory has been removed!"
 help:
   main: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID."
-  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform temppower set|remove|clear|list &7- Manage player temporary powers."
-  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform randombook <player> levels <power> [amount] &7- Give books using vanilla enchanting.\n&f/enchantmentreform randombook <player> all [amount] &7- Give random single-enchantment books.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player.\n&f/enchantmentreform temppower set|remove|clear|list &7- Manage player temporary powers."
+  main-admin: "&#98FB98&lEnchantmentReform &7Made by @PQguanfang\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform menu [menu-id] &7- Open a menu by ID.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform temppower set|remove|clear|list &7- Manage player temporary powers.\n&f/er givebook [player] <enchantment> [level]\n&f/er randombook [player] all [amount] [--level <level|range>] [--target <supported-item tag>] [--rarity <rarity ID>]\n&f/er randombook [player] levels <power> [amount] [--target <supported-item tag>] [--rarity <rarity ID>]\n&f/er randomenchant [player] all [rolls] [--level <level|range>] [--rarity <rarity ID>]\n&f/er randomenchant [player] levels <power> [rolls] [--rarity <rarity ID>]"
+  main-console: "&#98FB98&lEnchantmentReform\n&f/enchantmentreform help &7- View help.\n&f/enchantmentreform setskillxp|addskillxp <player> <skill> <xp> &7- Change skill XP.\n&f/enchantmentreform setskilllevel|addskilllevel <player> <skill> <level> &7- Change skill level.\n&f/enchantmentreform setskillmultiplier <player> <skill|all> <multiplier> &7- Set a skill XP multiplier.\n&f/enchantmentreform reload &7- Reload the plugin.\n&f/enchantmentreform menu [menu-id] <player> [skill-id|attribute-id] [-b] &7- Open a menu for an online player.\n&f/enchantmentreform temppower set|remove|clear|list &7- Manage player temporary powers.\n&f/er givebook <player> <enchantment> [level]\n&f/er randombook <player> all [amount] [--level <level|range>] [--target <supported-item tag>] [--rarity <rarity ID>]\n&f/er randombook <player> levels <power> [amount] [--target <supported-item tag>] [--rarity <rarity ID>]\n&f/er randomenchant <player> all [rolls] [--level <level|range>] [--rarity <rarity ID>]\n&f/er randomenchant <player> levels <power> [rolls] [--rarity <rarity ID>]"
 override-lang:
   skill-source-farming-breed_animals: 'Breed animals'
   skill-source-farming-breed_animals-desc: 'Gain farming XP from breed animals.'

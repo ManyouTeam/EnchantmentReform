@@ -14,6 +14,8 @@
 
 按照 YAML 文件名打开菜单。例如：`menu main`、`menu enchantment-info`、`menu skill-info`、`menu attribute-info`、`menu attribute-allocation`。
 
+拥有 `enchantmentreform.enchantmentinfo.givebook` 权限的玩家，可在附魔图鉴中 Shift 点击附魔，获得一本对应的最高等级附魔书。该权限默认授予 OP。背包放不下时，附魔书会掉落在玩家脚下。
+
 省略菜单ID时打开 `main`。控制台可以为在线玩家打开菜单：
 
 ```text
@@ -62,17 +64,40 @@ enchantmentreform.menu
 ## 随机给予附魔书
 
 ```text
-/er randombook <玩家> levels <附魔强度> [数量]
-/er randombook <玩家> all [数量]
+/er randombook [玩家] all [数量] [--level <等级|范围>] [--target <支持物品标签>] [--rarity <稀有度ID>]
+/er randombook [玩家] levels <附魔强度> [数量] [--target <支持物品标签>] [--rarity <稀有度ID>]
 ```
 
-例如 `/er randombook Steve levels 30 5` 或 `/er randombook Steve all 5`。目标必须在线，玩家和控制台均可执行。数量默认为 `1`，范围为 `1-64`，每本独立随机生成；背包放不下的书会掉落在目标玩家脚下。
+玩家省略玩家名时给自己发书，控制台必须指定在线玩家。数量默认为 1，范围为 1–64。每本独立抽取，背包放不下的书会掉落在目标玩家脚下。
 
-`levels` 调用与 `minecraft:enchant_with_levels` 相同的原版附魔算法，不指定 `options`，从全部已注册附魔中按权重、附魔费用、物品适用性和互斥规则筛选。附魔强度为正整数，例如 `30`；它是算法输入的费用/强度，并非最终附魔等级。一本书可能包含多个相容附魔。如果任一本未生成有效附魔书，整批均不发放。
+`all` 为每本书随机抽取一种附魔。加上 `--level 3` 时，只抽支持 III 级的附魔并发放 III 级附魔书。`--level 5~10` 会在 5 至 10 级与所选附魔支持等级的交集内抽取一级。`levels`（也可写作 `level`）按原版附魔强度生成，一本书可含多个相容附魔。任一次抽取失败时整批不发放。
 
-`all` 从全部已注册附魔（含原版、自定义和其他插件附魔）中等概率选择一种，再在它的正常起始等级至最高等级之间等概率选一级。每本仅有一种附魔，不按权重或获取来源筛选。
+`--target enchantmentreform:sword` 可筛选适用于 `config.yml` 中对应 `supported-items.tags` 标签的附魔。填写配置中的标签键，无需加 `#`。末尾加 `--rarity common` 可筛选配置中的稀有度。两个筛选可以同时使用，例如 `/er randombook levels 30 5 --target enchantmentreform:sword --rarity common`。
 
-权限：`enchantmentreform.randombook`，默认仅管理员拥有。支持在线玩家、模式、附魔强度和数量补全。
+权限为 `enchantmentreform.randombook`，默认仅管理员拥有。
+
+## 给予指定附魔书
+
+```text
+/er givebook [玩家] <附魔ID> [等级]
+```
+
+玩家省略目标时对自己执行，控制台须指定在线玩家。例如 `/er givebook minecraft:sharpness 5` 给自己一本锋利 V 附魔书。省略等级时发放该附魔的最高等级，也可指定 1 至 255 级。简写 ID 优先查找原版，再查找 EnchantmentReform，其他插件请使用完整命名空间。
+
+权限为 `enchantmentreform.givebook`，默认仅管理员拥有。
+
+## 随机附魔主手物品
+
+```text
+/er randomenchant [玩家] all [次数] [--level <等级|范围>] [--rarity <稀有度ID>]
+/er randomenchant [玩家] levels <附魔强度> [次数] [--rarity <稀有度ID>]
+```
+
+玩家省略目标时会为自己的主手物品附魔，控制台须指定在线玩家。
+
+例如 `/er randomenchant Steve all 2 --level 3 --rarity common` 会给 Steve 的主手物品添加两个相容的普通稀有度 III 级附魔。`all` 模式的 `--level` 也支持 `5~10` 这样的闭区间。每次抽取均排除已存在、互斥或不适用的附魔，levels 模式按物品和附魔强度执行原版算法。所有抽取成功后才写回主手物品。
+
+权限为 `enchantmentreform.randomenchant`，默认仅管理员拥有。
 
 ## 重载运行时文件
 

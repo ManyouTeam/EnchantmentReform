@@ -8,6 +8,7 @@ import cn.superiormc.enchantmentreform.objects.menus.ObjectMenu;
 import cn.superiormc.enchantmentreform.objects.menus.ObjectSkillMenu;
 import cn.superiormc.enchantmentreform.objects.skills.SkillDefinition;
 import cn.superiormc.enchantmentreform.utils.CommonUtil;
+import cn.superiormc.enchantmentreform.utils.ItemUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 
 import org.bukkit.Material;
@@ -226,8 +227,33 @@ public class ConfigManager extends AbstractManager {
         return getSection("supported-items");
     }
 
+    public Map<String, ConfigurationSection> getSupportedItemTags() {
+        ConfigurationSection tags = getSupportedItems()
+                .getConfigurationSection("tags");
+        if (tags == null) {
+            return Map.of();
+        }
+        Map<String, ConfigurationSection> result = new LinkedHashMap<>();
+        for (String id : tags.getKeys(false)) {
+            ConfigurationSection definition = tags.getConfigurationSection(id);
+            if (definition != null) {
+                result.put(ItemUtil.normalizeItemTag(definition.getString("key", id)), definition);
+            }
+        }
+        return result;
+    }
+
     public ConfigurationSection getRarities() {
         return getSection("rarity");
+    }
+
+    public List<String> getRarityNames() {
+        ConfigurationSection section = getRarities();
+        if (section == null) {
+            return List.of();
+        }
+        return section.getKeys(false).stream().filter(section::isConfigurationSection)
+                .map(key -> key.toLowerCase(Locale.ROOT)).toList();
     }
 
     public boolean getBoolean(String path) {

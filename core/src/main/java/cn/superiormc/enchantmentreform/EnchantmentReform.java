@@ -1,26 +1,6 @@
 package cn.superiormc.enchantmentreform;
 
-import cn.superiormc.enchantmentreform.managers.AbilityManager;
-import cn.superiormc.enchantmentreform.managers.AbstractManager;
-import cn.superiormc.enchantmentreform.managers.AntiAbuseManager;
-import cn.superiormc.enchantmentreform.managers.AttributeManager;
-import cn.superiormc.enchantmentreform.managers.ChangesManager;
-import cn.superiormc.enchantmentreform.managers.CommandManager;
-import cn.superiormc.enchantmentreform.managers.ConfigManager;
-import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
-import cn.superiormc.enchantmentreform.managers.ErrorManager;
-import cn.superiormc.enchantmentreform.managers.HookManager;
-import cn.superiormc.enchantmentreform.managers.InitManager;
-import cn.superiormc.enchantmentreform.managers.ItemManager;
-import cn.superiormc.enchantmentreform.managers.LanguageManager;
-import cn.superiormc.enchantmentreform.managers.ListenerManager;
-import cn.superiormc.enchantmentreform.managers.MatchEntityManager;
-import cn.superiormc.enchantmentreform.managers.MatchItemManager;
-import cn.superiormc.enchantmentreform.managers.PowerConditionsManager;
-import cn.superiormc.enchantmentreform.managers.PowerManager;
-import cn.superiormc.enchantmentreform.managers.PowerModifiersManager;
-import cn.superiormc.enchantmentreform.managers.SkillManager;
-import cn.superiormc.enchantmentreform.managers.TriggerManager;
+import cn.superiormc.enchantmentreform.managers.*;
 import cn.superiormc.enchantmentreform.nms.NmsBridge;
 import cn.superiormc.enchantmentreform.nms.NmsLog;
 import cn.superiormc.enchantmentreform.nms.UnsupportedNmsBridge;

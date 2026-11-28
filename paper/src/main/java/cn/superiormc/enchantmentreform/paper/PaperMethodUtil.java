@@ -14,13 +14,9 @@ import cn.superiormc.enchantmentreform.utils.SpecialMethodUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import io.papermc.paper.registry.set.RegistrySet;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -32,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
@@ -51,6 +48,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.projectiles.ProjectileSource;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
+
 public class PaperMethodUtil implements SpecialMethodUtil {
 
     private final Map<UUID, Map<String, BossBar>> bossBarCache = new ConcurrentHashMap<>();
@@ -67,6 +74,12 @@ public class PaperMethodUtil implements SpecialMethodUtil {
     @Override
     public String methodID() {
         return "paper";
+    }
+
+    @Override
+    public Supplier<ItemStack> enchantedItemGenerator(ItemStack item, int power, List<Enchantment> enchantments) {
+        RegistryKeySet<Enchantment> options = RegistrySet.keySetFromValues(RegistryKey.ENCHANTMENT, enchantments);
+        return () -> item.enchantWithLevels(power, options, ThreadLocalRandom.current());
     }
 
     @Override

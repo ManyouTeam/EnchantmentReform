@@ -1,16 +1,22 @@
 package cn.superiormc.enchantmentreform.utils;
 
-import cn.superiormc.enchantmentreform.methods.DebuildItem;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
+import cn.superiormc.enchantmentreform.methods.DebuildItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-import java.util.Map;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class ItemUtil {
 
@@ -20,6 +26,37 @@ public class ItemUtil {
             normalized = normalized.substring(1);
         }
         return normalized.contains(":") ? normalized : "enchantmentreform:" + normalized;
+    }
+
+    public static Set<Material> resolveItemTag(String tag, Map<String, ConfigurationSection> definitions,
+                                                Set<String> resolving) {
+        String normalized = normalizeItemTag(tag);
+        if (!resolving.add(normalized)) {
+            return Set.of();
+        }
+        ConfigurationSection definition = definitions.get(normalized);
+        LinkedHashSet<Material> result = new LinkedHashSet<>();
+        if (definition != null) {
+            for (String value : definition.getStringList("values")) {
+                if (value.startsWith("#")) {
+                    result.addAll(resolveItemTag(value, definitions, resolving));
+                } else {
+                    Material material = Material.matchMaterial(value);
+                    if (material != null && material.isItem()) {
+                        result.add(material);
+                    }
+                }
+            }
+        } else {
+            NamespacedKey key = NamespacedKey.fromString(normalized);
+            Tag<Material> bukkitTag = key == null ? null
+                    : Bukkit.getTag(Tag.REGISTRY_ITEMS, key, Material.class);
+            if (bukkitTag != null) {
+                result.addAll(bukkitTag.getValues());
+            }
+        }
+        resolving.remove(normalized);
+        return Set.copyOf(result);
     }
 
     public static ItemStack generateEnchantedBook(Enchantment enchantment, int level) {

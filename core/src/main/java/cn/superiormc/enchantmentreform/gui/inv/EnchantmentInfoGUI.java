@@ -7,6 +7,7 @@ import cn.superiormc.enchantmentreform.gui.action.GUIPageController;
 import cn.superiormc.enchantmentreform.managers.ConfigManager;
 import cn.superiormc.enchantmentreform.managers.EnchantmentConfigManager;
 import cn.superiormc.enchantmentreform.methods.BuildItem;
+import cn.superiormc.enchantmentreform.objects.EnchantmentRarity;
 import cn.superiormc.enchantmentreform.objects.PowerEnchantmentDefinition;
 import cn.superiormc.enchantmentreform.objects.VanillaEnchantmentOverride;
 import cn.superiormc.enchantmentreform.objects.buttons.ObjectButton;
@@ -15,11 +16,9 @@ import cn.superiormc.enchantmentreform.utils.CommonUtil;
 import cn.superiormc.enchantmentreform.utils.EnchantmentOrderUtil;
 import cn.superiormc.enchantmentreform.utils.ItemUtil;
 import cn.superiormc.enchantmentreform.utils.TextUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
-import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -132,6 +131,14 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
         }
         EnchantmentInfoEntry enchantment = slotEnchantments.get(slot);
         if (enchantment != null) {
+            if (type.isShiftClick() && player.hasPermission("enchantmentreform.enchantmentinfo.givebook")) {
+                NamespacedKey key = NamespacedKey.fromString(enchantment.key());
+                Enchantment registered = key == null ? null : Registry.ENCHANTMENT.get(key);
+                if (registered != null) {
+                    CommonUtil.giveOrDrop(player, ItemUtil.generateEnchantedBook(registered, registered.getMaxLevel()));
+                    return true;
+                }
+            }
             ConfigurationSection content = slotContents.get(slot);
             String descriptionKey = content.getName() + ":" + enchantment.key();
             int pageCount = descriptionPageCounts.getOrDefault(descriptionKey, 1);
@@ -572,9 +579,10 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
     }
 
     private boolean matchesFilter(EnchantmentInfoEntry enchantment, SupportedItemsFilter filter) {
+        Map<String, ConfigurationSection> definitions = ConfigManager.configManager.getSupportedItemTags();
         Set<Material> filterItems = new LinkedHashSet<>();
         for (String tag : filter.tags()) {
-            filterItems.addAll(resolveItemTag(tag, new LinkedHashSet<>()));
+            filterItems.addAll(resolveItemTag(tag, definitions));
         }
         if (filterItems.isEmpty()) {
             return enchantment.definition() != null && filter.tags().stream().anyMatch(tag ->
@@ -587,81 +595,19 @@ public final class EnchantmentInfoGUI extends InvGUI implements GUIPageControlle
                     .anyMatch(material -> enchantment.vanilla().canEnchantItem(new ItemStack(material)));
         }
         Set<Material> supported = enchantment.definition().getSupportedItemKeys().stream()
-                .flatMap(tag -> resolveItemTag(ItemUtil.normalizeItemTag(tag), new LinkedHashSet<>()).stream())
+                .flatMap(tag -> resolveItemTag(tag, definitions).stream())
                 .collect(Collectors.toSet());
         return filterItems.stream().anyMatch(supported::contains);
     }
 
-    private Set<Material> resolveItemTag(String tag, Set<String> resolving) {
+    private Set<Material> resolveItemTag(String tag, Map<String, ConfigurationSection> definitions) {
         String normalized = ItemUtil.normalizeItemTag(tag);
-        Set<Material> cached = itemTagCache.get(normalized);
-        if (cached != null) {
-            return cached;
-        }
-        if (!resolving.add(normalized)) {
-            return Set.of();
-        }
-        ConfigurationSection definition = configuredTagDefinitions().get(normalized);
-        LinkedHashSet<Material> result = new LinkedHashSet<>();
-        if (definition != null) {
-            for (String value : definition.getStringList("values")) {
-                if (value.startsWith("#")) {
-                    result.addAll(resolveItemTag(value.substring(1), resolving));
-                } else {
-                    Material material = Material.matchMaterial(value);
-                    if (material != null && material.isItem()) {
-                        result.add(material);
-                    }
-                }
-            }
-        } else {
-            NamespacedKey key = NamespacedKey.fromString(normalized);
-            Tag<Material> bukkitTag = key == null ? null
-                    : Bukkit.getTag(Tag.REGISTRY_ITEMS, key, Material.class);
-            if (bukkitTag != null) {
-                result.addAll(bukkitTag.getValues());
-            }
-        }
-        resolving.remove(normalized);
-        Set<Material> resolved = Set.copyOf(result);
-        itemTagCache.put(normalized, resolved);
-        return resolved;
-    }
-
-    private Map<String, ConfigurationSection> configuredTagDefinitions() {
-        ConfigurationSection tags = ConfigManager.configManager.getSupportedItems()
-                .getConfigurationSection("tags");
-        if (tags == null) {
-            return Map.of();
-        }
-        Map<String, ConfigurationSection> result = new LinkedHashMap<>();
-        for (String id : tags.getKeys(false)) {
-            ConfigurationSection definition = tags.getConfigurationSection(id);
-            if (definition != null) {
-                result.put(ItemUtil.normalizeItemTag(definition.getString("key", id)), definition);
-            }
-        }
-        return result;
+        return itemTagCache.computeIfAbsent(normalized,
+                key -> ItemUtil.resolveItemTag(key, definitions, new LinkedHashSet<>()));
     }
 
     private String rarity(EnchantmentInfoEntry enchantment) {
-        if (enchantment.definition() != null) {
-            return enchantment.definition().getRarity();
-        }
-        if (enchantment.vanilla().isCursed()) {
-            return "CURSE";
-        }
-        try {
-            Method method = enchantment.vanilla().getClass().getMethod("getRarity");
-            method.setAccessible(true);
-            Object paperRarity = method.invoke(enchantment.vanilla());
-            if (paperRarity != null) {
-                String value = paperRarity.toString().toUpperCase(Locale.ROOT);
-                return value.equals("VERY_RARE") ? "LEGENDARY" : value;
-            }
-        } catch (ReflectiveOperationException ignored) {
-        }
-        return enchantment.vanilla().isTreasure() ? "RARE" : "COMMON";
+        return EnchantmentRarity.idOf(enchantment.definition(), enchantment.vanilla());
     }
 
     private int weight(EnchantmentInfoEntry enchantment) {
